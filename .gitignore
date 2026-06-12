@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+vendor/
+
+# XAMPP/DB
+xampp/
+*.log
+*.sql
+config/New Text Document.txt
+
+# Env
+.env
+*.env
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Builds
+dist/
+build/
+

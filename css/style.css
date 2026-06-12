@@ -1,0 +1,261 @@
+/* Almosafir - Professional Global Design by Ammar Adel Al-Mas'oudi */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  text-align: right;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #00d2ff 100%);
+  min-height: 100vh;
+  padding: 10px;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.95);
+  border-radius: 25px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+  padding: 50px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.header h1 {
+  font-size: 3.5em;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.developer {
+  color: #666;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+}
+
+.developer strong {
+  color: #ff6b6b;
+}
+
+.phone {
+  background: #f8f9fa;
+  padding: 15px 25px;
+  border-radius: 50px;
+  border-left: 5px solid #4ecdc4;
+  display: inline-block;
+  font-weight: 600;
+  color: #333;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 25px;
+  max-width: 1000px;
+  margin: 0 auto 40px;
+}
+
+@media (max-width: 768px) {
+  form { grid-template-columns: 1fr; }
+}
+
+input, button {
+  padding: 20px 25px;
+  font-size: 1.2em;
+  font-family: 'Cairo', sans-serif;
+  border: 3px solid #e9ecef;
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: white;
+}
+
+input:focus {
+  outline: none;
+  border-color: #4ecdc4;
+  box-shadow: 0 15px 35px rgba(78,205,196,0.3);
+  transform: translateY(-3px);
+}
+
+button {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: white;
+  border: none;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+button:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(78,205,196,0.4);
+}
+
+.trips-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 30px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+.trips-table th {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 25px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 1.1em;
+}
+
+.trips-table td {
+  padding: 25px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.trips-table tr:hover {
+  background: linear-gradient(135deg, #f8f9ff, #e8f4f8);
+  transform: scale(1.01);
+}
+
+.stars {
+  color: #ffd700;
+  font-size: 2em;
+  text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+.seats-available {
+  font-size: 1.5em;
+  font-weight: 800;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.book-btn, .start-btn, .finish-btn {
+  padding: 15px 30px;
+  border-radius: 50px;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1em;
+  transition: all 0.3s;
+  display: inline-block;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.book-btn { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+.start-btn { background: linear-gradient(135deg, #ffa726, #fb8c00); }
+.finish-btn { background: linear-gradient(135deg, #28a745, #20c997); }
+
+.book-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(255,107,107,0.4); }
+.start-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(255,167,38,0.4); }
+.finish-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(40,167,69,0.4); }
+
+.error, .success {
+  padding: 20px 30px;
+  border-radius: 15px;
+  margin: 20px 0;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.error {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  animation: shake 0.5s;
+}
+
+.success {
+  background: linear-gradient(135deg, #51cf66, #40c057);
+  color: white;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.footer {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid #e9ecef;
+  color: #666;
+}
+
+.footer strong {
+  color: #1e3c72;
+  font-size: 1.3em;
+}
+
+@media (max-width: 768px) {
+  .container { padding: 30px 20px; margin: 10px; }
+  .header h1 { font-size: 2.5em; }
+  form { grid-template-columns: 1fr; }
+  .trips-table { font-size: 0.9em; }
+  .trips-table th, .trips-table td { padding: 15px 10px; }
+}
+
+.animated-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 3em;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
