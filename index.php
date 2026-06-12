@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المسافر - حجز رحلات بين المحافظات</title>
+    <title>Almosafir | المسافر</title>
+    <link rel="icon" href="assets/images/favicon/favicon-32.png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 المسافر</h1>
+            <div class="brand" style="display:flex; align-items:center; gap:12px; justify-content:center;">
+                <img src="assets/images/logo/logo-main.png" alt="Almosafir" style="height:48px; width:auto;" loading="lazy">
+                <h1 style="margin:0;">🚀 المسافر</h1>
+            </div>
             <div class="developer">
                 تطوير احترافي <strong>عمار عادل المصوعي</strong> | 📞 <span class="phone">712275038</span>
             </div>

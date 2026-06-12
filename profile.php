@@ -46,12 +46,17 @@ $ratings_stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الملف الشخصي - المسافر</title>
+    <title>Almosafir | المسافر</title>
+    <link rel="icon" href="assets/images/favicon/favicon-32.png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
+        <div style="text-align:center; margin-bottom:10px;">
+            <img src="assets/images/logo/logo-main.png" alt="Almosafir" style="height:56px; width:auto;" loading="lazy">
+        </div>
         <h1>👤 <?= htmlspecialchars($user['name']) ?> (<?= $user['role'] == 'driver' ? 'سائق' : 'مسافر' ?>)</h1>
+
         
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:30px;">
             <div class="profile-card">

@@ -54,12 +54,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل حساب جديد - المسافر</title>
+    <title>Almosafir | المسافر</title>
+    <link rel="icon" href="assets/images/favicon/favicon-32.png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
+        <div style="text-align:center; margin-bottom:10px;">
+            <img src="assets/images/logo/logo-main.png" alt="Almosafir" style="height:56px; width:auto;" loading="lazy">
+        </div>
         <h2>إنشاء حساب جديد</h2>
+        
+
         
         <?php if ($error): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>

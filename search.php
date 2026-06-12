@@ -56,11 +56,15 @@ require_once "helpers/ui.php";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نتائج البحث - المسافر</title>
+    <title>Almosafir | المسافر</title>
+    <link rel="icon" href="assets/images/favicon/favicon-32.png">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
+        <div style="text-align:center; margin-bottom:10px;">
+            <img src="assets/images/logo/logo-main.png" alt="Almosafir" style="height:56px; width:auto;" loading="lazy">
+        </div>
         <div class="header">
 <h1>🔍 نتائج البحث الذكي (BlaBlaCar Style)</h1>
 <h2><?= htmlspecialchars($from_city) ?> → <?= htmlspecialchars($to_city) ?></h2>

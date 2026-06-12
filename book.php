@@ -49,6 +49,42 @@ if ($trip_id <= 0) {
             $booking_id = $conn->insert_id;
             $book_stmt->close();
 
+            // 3) Create conversation owned by this booking (transaction-safe)
+            // Prevent duplicates using UNIQUE(conversations.booking_id)
+            // Fetch trip + driver for fast authorization fields.
+            $driver_id = null;
+            $trip_check_stmt = $conn->prepare("SELECT driver_id FROM trips WHERE id = ? AND status = 'open'");
+            $trip_check_stmt->bind_param("i", $trip_id);
+            $trip_check_stmt->execute();
+            $trip_res = $trip_check_stmt->get_result();
+            if (!$trip_res) {
+                $trip_check_stmt->close();
+                throw new Exception("TRIP_LOOKUP_FAILED");
+            }
+            $row = $trip_res->fetch_assoc();
+            $trip_check_stmt->close();
+            if (!$row) {
+                throw new Exception("TRIP_NOT_FOUND");
+            }
+            $driver_id = (int)$row['driver_id'];
+
+            $conv_stmt = $conn->prepare(
+                "INSERT INTO conversations (booking_id, trip_id, driver_id, traveler_id, created_at, last_message_at)
+                 VALUES (?, ?, ?, ?, NOW(), NULL)
+                 ON DUPLICATE KEY UPDATE
+                   trip_id = VALUES(trip_id),
+                   driver_id = VALUES(driver_id),
+                   traveler_id = VALUES(traveler_id),
+                   last_message_at = conversations.last_message_at"
+            );
+            $conv_stmt->bind_param("iiii", $booking_id, $trip_id, $driver_id, $traveler_id);
+            if (!$conv_stmt->execute()) {
+                $err = $conn->error;
+                $conv_stmt->close();
+                throw new Exception("CONVERSATION_CREATE_FAILED: " . $err);
+            }
+            $conv_stmt->close();
+
             $conn->commit();
             $success = "تم حجز $seats_booked مقعد بنجاح!";
         } catch (Exception $e) {

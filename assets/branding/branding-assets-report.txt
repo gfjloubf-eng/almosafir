@@ -1,0 +1,47 @@
+Almosafir Branding Assets Report
+
+Generated files (assets/images/):
+- logo.png (placeholder raster - icon copied)
+- logo.svg (SVG embedding master PNG; contains Arabic + English wordmark text elements referencing Cairo/Poppins)
+- logo-white.png (PNG on white background - placeholder)
+- logo-dark.png (PNG on dark background - placeholder)
+- logo-horizontal.png (placeholder raster)
+- logo-horizontal.svg (vector embedding PNG and wordmark)
+- logo-icon-only.png (512x512 copy)
+- logo-icon-only.svg (embedded PNG)
+- favicon-64.png
+- favicon-128.png
+- favicon-256.png
+- app-icon-1024.png
+- app-icon-1024-rounded.png
+- splash-logo.png (placeholder)
+
+assets/branding/brand-guidelines.png (placeholder copy of master logo)
+assets/branding/branding-assets-report.txt (this file)
+
+Recommended usage:
+- logo.svg: master vector for web; use for production exports. Install Cairo and Poppins locally before rasterizing to match typography exactly.
+- logo-horizontal.svg: use in header/navbars (responsive)
+- logo-icon-only.svg/png: use for favicons, app icons, social avatars
+- favicon-*.png: favicons (64/128/256 as needed)
+- app-icon-1024-rounded.png: app store and Play/App icons (use manufacturer-specific rounding masks if needed)
+- splash-logo.png: startup splash (placeholder)
+- brand-guidelines.png: one-page guideline (placeholder)
+
+Brand Colors (recommendation):
+Primary: #2F4F61
+Secondary: #B9C3CC
+Accent: #00B8F4
+Background: #FFFFFF
+Text: #0B2233
+
+Typography:
+Arabic: Cairo (Google Fonts) — modern geometric Arabic, mobile-first
+English: Poppins (Google Fonts) — clean geometric sans-serif
+
+Notes and next steps:
+- The master PNG was embedded in SVGs to preserve the AM monogram exactly (per instruction). For truly scalable, editable vectors, provide a master SVG or approve a manual vector redraw.
+- PNGs are placeholders (exact wordmark rasterization requires Cairo/Poppins installed). If you want high-fidelity PNG exports, either upload font files or allow rasterization locally with the recommended fonts.
+
+Files created on: $(Get-Date)
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
