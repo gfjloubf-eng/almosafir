@@ -1,0 +1,53 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Messaging.ConversationDto>
+@{
+    ViewData["Title"] = "مراقبة محادثات السائقين والركاب — نظام المسافر";
+}
+
+<div class="py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">مراقبة محادثات الركاب والسائقين 💬</h3>
+            <p class="text-muted mb-0">حصر غرف المحادثات المفتوحة مع الحفاظ التام على خصوصية المحتوى النصي</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon">💬</div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد محادثات نشطة حالياً</h4>
+            <p class="text-muted mb-0">لم يتم بدء محادثات بين الركاب والسائقين في النظام حتى الآن.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th># Conversation ID</th>
+                            <th>الأطراف المشاركة</th>
+                            <th>الرحلة المرتبطة</th>
+                            <th>آخر نشاط</th>
+                            <th>الخصوصية والحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model)
+                        {
+                            <tr>
+                                <td><strong>#CONV-@c.ConversationId.ToString("D5")</strong></td>
+                                <td class="font-weight-bold text-dark">@c.OtherUserName</td>
+                                <td>@c.TripRoute</td>
+                                <td>@c.LastMessageAt.ToString("yyyy-MM-dd — hh:mm tt")</td>
+                                <td><span class="badge bg-secondary">محادثة مشفرة ومحميّة 🔒</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

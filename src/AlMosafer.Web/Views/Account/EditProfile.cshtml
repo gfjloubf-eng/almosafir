@@ -1,0 +1,74 @@
+@model AlMosafer.Application.DTOs.Auth.UpdateUserProfileDto
+@{
+    ViewData["Title"] = "تعديل البيانات الشخصية — نظام المسافر";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom p-4 text-center">
+                <h4 class="font-weight-bold mb-1">تعديل البيانات الشخصية ✏️</h4>
+                <small class="text-light">قم بتحديث معلومات الاتصال والمدينة والسكن</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="EditProfile" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label font-weight-bold">الاسم الكامل *</label>
+                        <input asp-for="Name" class="form-control form-control-custom" placeholder="أدخل اسمك الرباعي" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label font-weight-bold">رقم الهاتف</label>
+                            <input asp-for="Phone" class="form-control form-control-custom" placeholder="77XXXXXXX" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label font-weight-bold">المدينة / السكن</label>
+                            <input asp-for="City" class="form-control form-control-custom" placeholder="مثال: تعز، صنعاء" />
+                            <span asp-validation-for="City" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @if (User.IsInRole("Driver"))
+                    {
+                        <div class="form-section-title mt-4">بيانات المركبة للسائق</div>
+                        <div class="mb-3">
+                            <label asp-for="VehicleModel" class="form-label font-weight-bold">موديل السيارة / المركبة</label>
+                            <input asp-for="VehicleModel" class="form-control form-control-custom" placeholder="مثال: تويوتا هيلوكس 2022" />
+                            <span asp-validation-for="VehicleModel" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="PlateNumber" class="form-label font-weight-bold">رقم اللوحة</label>
+                                <input asp-for="PlateNumber" class="form-control form-control-custom" placeholder="مثال: 12345/أ" />
+                                <span asp-validation-for="PlateNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="VehicleYear" class="form-label font-weight-bold">سنة الصنع</label>
+                                <input asp-for="VehicleYear" type="number" class="form-control form-control-custom" placeholder="2022" />
+                                <span asp-validation-for="VehicleYear" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <a asp-action="Profile" class="btn btn-outline-secondary font-weight-bold">إلغاء والتراجع</a>
+                        <button type="submit" class="btn btn-accent btn-lg font-weight-bold">حفظ التغييرات 💾</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+@model AlMosafer.Application.DTOs.Auth.UserProfileDto
+@{
+    ViewData["Title"] = "الملف الشخصي — نظام المسافر";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-8">
+        <div class="card-almosafer shadow-lg border-0 overflow-hidden">
+            <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary mb-1">بيانات الحساب</span>
+                    <h3 class="mb-0 font-weight-bold">الملف الشخصي (Profile)</h3>
+                </div>
+                <span class="badge badge-status badge-open fs-6">@Model.Role</span>
+            </div>
+            <div class="card-body p-4">
+                <!-- Main Header info -->
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <div class="display-2 bg-light rounded-circle text-primary d-inline-block p-3 border shadow-sm">
+                            👤
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3 class="font-weight-bold text-dark mb-1">@Model.Name</h3>
+                        <p class="text-muted mb-1">📧 <strong>البريد الإلكتروني:</strong> @Model.Email</p>
+                        <p class="text-muted mb-0">📱 <strong>هاتف التواصل:</strong> @(string.IsNullOrEmpty(Model.Phone) ? "غير محدد" : Model.Phone) | 📍 <strong>المدينة:</strong> @(string.IsNullOrEmpty(Model.City) ? "غير محدد" : Model.City)</p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Details Grid -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <h6 class="text-primary font-weight-bold">📅 تاريخ التسجيل للانضمام</h6>
+                            <p class="mb-0 text-dark font-weight-bold">@Model.CreatedAt.ToString("yyyy-MM-dd")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <h6 class="text-primary font-weight-bold">🚗 إجمالي الرحلات</h6>
+                            <p class="mb-0 text-dark font-weight-bold">@Model.TotalTrips رحلة</p>
+                        </div>
+                    </div>
+
+                    @if (Model.Role == AlMosafer.Domain.Enums.UserRole.Driver)
+                    {
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded border">
+                                <h6 class="text-success font-weight-bold">🚙 بيانات المركبة المسجلة</h6>
+                                <p class="mb-0 text-dark font-weight-bold">@Model.VehicleModel (@(Model.VehicleYear?.ToString() ?? "N/A"))</p>
+                                <small class="text-muted">رقم اللوحة: <strong>@Model.PlateNumber</strong></small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded border">
+                                <h6 class="text-success font-weight-bold">⭐ التقييم والأرباح</h6>
+                                <p class="mb-0 text-dark font-weight-bold">تقييم السائق: ⭐ @Model.Rating.ToString("0.0") / 5.0</p>
+                                <small class="text-muted">الأرباح المؤكدة: <strong>@Model.TotalEarnings.ToString("N0") ريال</strong></small>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Profile Actions Bar -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pt-3 border-top">
+                    <a asp-action="EditProfile" class="btn btn-accent font-weight-bold">تعديل البيانات الشخصية ✏️</a>
+                    <div class="d-flex gap-2">
+                        <a asp-action="ChangePassword" class="btn btn-outline-danger font-weight-bold">تغيير كلمة المرور 🔑</a>
+                        <a asp-action="Settings" class="btn btn-outline-secondary font-weight-bold">إعدادات الحساب ⚙️</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

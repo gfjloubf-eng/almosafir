@@ -1,0 +1,55 @@
+@model AlMosafer.Application.DTOs.Auth.LoginDto
+@{
+    ViewData["Title"] = "تسجيل الدخول — منصة المسافر";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom text-center py-3">
+                <h4 class="font-weight-bold mb-1">تسجيل الدخول 🔑</h4>
+                <small class="text-light">مرحباً بك مجدداً في منصة المسافر</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ReturnUrl" value="@ViewData["ReturnUrl"]" />
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label font-weight-bold">البريد الإلكتروني *</label>
+                        <input asp-for="Email" type="email" class="form-control form-control-custom" placeholder="name@example.com" autofocus />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label font-weight-bold">كلمة المرور *</label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" id="loginPassword" class="form-control form-control-custom" placeholder="أدخل كلمة المرور" />
+                            <button type="button" class="btn btn-outline-secondary btn-toggle-password" data-target="loginPassword" aria-label="إظهار كلمة المرور">👁️ إظهار</button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-lg w-100 font-weight-bold mb-3">دخول للحساب 🚪</button>
+
+                    <hr>
+
+                    <div class="text-center pt-2">
+                        <p class="text-muted mb-2">ليس لديك حساب بعد؟</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a asp-action="RegisterTraveler" class="btn btn-outline-primary btn-sm">حساب مسافر</a>
+                            <a asp-action="RegisterDriver" class="btn btn-outline-success btn-sm">حساب سائق</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,318 @@
+@model AlMosafer.Application.DTOs.Reports.AdminReportSummaryDto
+@{
+    ViewData["Title"] = "التقارير والإحصائيات البيانية — نظام المسافر";
+}
+
+<div class="py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">التقارير والإحصائيات 📊</h3>
+            <p class="text-muted mb-0">لوحة تحليلية تعتمد على البيانات الفعلية للنظام ودعم اتخاذ القرار.</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card-almosafer shadow-sm border-0 mb-4 p-3 bg-light">
+        <form method="get" asp-action="Reports" class="row g-3 align-items-end">
+            <div class="col-md-4 col-sm-6">
+                <label class="form-label text-dark font-weight-bold">من تاريخ 📅</label>
+                <input type="date" name="fromDate" value="@(Model.ActiveFilter.FromDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <label class="form-label text-dark font-weight-bold">إلى تاريخ 📅</label>
+                <input type="date" name="toDate" value="@(Model.ActiveFilter.ToDate?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-md-4 col-sm-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1 font-weight-bold">تطبيق الفلترة 🔍</button>
+                <a asp-action="Reports" class="btn btn-outline-secondary font-weight-bold">إلغاء</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Summary Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100 text-center">
+                <div class="text-primary fs-3 mb-1">👥</div>
+                <div class="text-muted small">إجمالي المستخدمين المسجلين</div>
+                <div class="display-6 font-weight-bold text-dark my-1">@Model.UserStats.TotalUsers.ToString("N0")</div>
+                <div class="small text-muted">
+                    مسافرين: <strong class="text-dark">@Model.UserStats.TravelersCount</strong> (@Model.UserStats.TravelersPercentage%) 
+                    | سائقين: <strong class="text-dark">@Model.UserStats.DriversCount</strong> (@Model.UserStats.DriversPercentage%)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100 text-center">
+                <div class="text-success fs-3 mb-1">🚗</div>
+                <div class="text-muted small">إجمالي الرحلات المعروضة</div>
+                <div class="display-6 font-weight-bold text-dark my-1">@Model.TripStats.TotalTrips.ToString("N0")</div>
+                <div class="small text-muted">
+                    مفتوحة: <span class="badge bg-success">@Model.TripStats.ActiveTrips</span> 
+                    | مكتملة: <span class="badge bg-secondary">@Model.TripStats.CompletedTrips</span> 
+                    | ملغاة: <span class="badge bg-danger">@Model.TripStats.CancelledTrips</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100 text-center">
+                <div class="text-warning fs-3 mb-1">🎫</div>
+                <div class="text-muted small">إجمالي الحجوزات الفعلية</div>
+                <div class="display-6 font-weight-bold text-dark my-1">@Model.BookingStats.TotalBookings.ToString("N0")</div>
+                <div class="small text-muted">
+                    مؤكدة: <span class="badge bg-success">@Model.BookingStats.ConfirmedBookings</span> 
+                    | نسبة التأكيد: <strong class="text-success">@Model.BookingStats.ConfirmationRate%</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100 text-center">
+                <div class="text-info fs-3 mb-1">💳</div>
+                <div class="text-muted small">العمليات المالية المسجلة بالنظام</div>
+                <div class="display-6 font-weight-bold text-success my-1">@Model.PaymentStats.TotalPaidAmount.ToString("N0") <small class="fs-6">ريال</small></div>
+                <div class="small text-muted">
+                    عدد المعاملات: <strong class="text-dark">@Model.PaymentStats.PaidTransactionsCount</strong> 
+                    | متوسط المعاملة: <strong class="text-dark">@Model.PaymentStats.AverageTransactionAmount.ToString("N0") ريال</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Chart 1: User Roles Distribution -->
+        <div class="col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100">
+                <h5 class="font-weight-bold text-dark mb-3">توزيع مستخدمي المنظومة حسب الدور 👥</h5>
+                @if (Model.UserStats.TotalUsers == 0)
+                {
+                    <div class="text-center py-4 text-muted">لا توجد بيانات كافية لعرض هذا التقرير.</div>
+                }
+                else
+                {
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="userRolesChart"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Chart 2: Booking Status Breakdown -->
+        <div class="col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100">
+                <h5 class="font-weight-bold text-dark mb-3">تحليل حالات الحجوزات 🎫</h5>
+                @if (Model.BookingStats.TotalBookings == 0)
+                {
+                    <div class="text-center py-4 text-muted">لا توجد بيانات كافية لعرض هذا التقرير.</div>
+                }
+                else
+                {
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="bookingStatusChart"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Chart 3: Ratings Distribution -->
+        <div class="col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100">
+                <h5 class="font-weight-bold text-dark mb-3">توزيع تقييمات السائقين ⭐ (متوسط: @Model.RatingStats.AverageRating / 5)</h5>
+                @if (Model.RatingStats.TotalRatingsCount == 0)
+                {
+                    <div class="text-center py-4 text-muted">لا توجد بيانات كافية لعرض هذا التقرير.</div>
+                }
+                else
+                {
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="ratingsChart"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Chart 4: Booking Trend Over Time -->
+        <div class="col-md-6">
+            <div class="card-almosafer shadow-sm border-0 p-3 bg-white h-100">
+                <h5 class="font-weight-bold text-dark mb-3">مسار وتوجه الحجوزات بمرور الوقت 📈</h5>
+                @if (!Model.BookingTrend.Any())
+                {
+                    <div class="text-center py-4 text-muted">لا توجد بيانات كافية لعرض هذا التقرير.</div>
+                }
+                else
+                {
+                    <div style="position: relative; height: 260px;">
+                        <canvas id="bookingTrendChart"></canvas>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Table 1: Most Active Routes -->
+    <div class="card-almosafer shadow-sm border-0 mb-4 overflow-hidden">
+        <div class="p-3 bg-light border-bottom">
+            <h5 class="font-weight-bold text-dark mb-0">أكثر المسارات نشاطاً وإيراداً 🛣️</h5>
+        </div>
+        @if (!Model.PopularRoutes.Any())
+        {
+            <div class="text-center py-4 text-muted">لا توجد بيانات كافية لعرض هذا التقرير.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>مسار الرحلة</th>
+                            <th>عدد الرحلات</th>
+                            <th>عدد الحجوزات</th>
+                            <th>المقاعد المحجوزة</th>
+                            <th>إجمالي الإيرادات المتوقعة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var route in Model.PopularRoutes)
+                        {
+                            <tr>
+                                <td class="font-weight-bold text-dark">@route.RouteName</td>
+                                <td><span class="badge bg-primary">@route.TripsCount رحلات</span></td>
+                                <td><span class="badge bg-success">@route.BookingsCount حجوزات</span></td>
+                                <td>@route.SeatsBookedCount مقعد</td>
+                                <td class="text-success font-weight-bold">@route.TotalRevenue.ToString("N0") ريال</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <!-- Table 2: Driver Performance -->
+    <div class="card-almosafer shadow-sm border-0 mb-4 overflow-hidden">
+        <div class="p-3 bg-light border-bottom">
+            <h5 class="font-weight-bold text-dark mb-0">أداء ترتيب السائقين 🏆</h5>
+        </div>
+        @if (!Model.TopDrivers.Any())
+        {
+            <div class="text-center py-4 text-muted">لا توجد بيانات كافية لعرض هذا التقرير.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>اسم السائق</th>
+                            <th>رقم الهاتف</th>
+                            <th>الرحلات</th>
+                            <th>الحجوزات</th>
+                            <th>المقاعد المحجوزة</th>
+                            <th>متوسط التقييم</th>
+                            <th>إجمالي العائدات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var driver in Model.TopDrivers)
+                        {
+                            <tr>
+                                <td class="font-weight-bold text-dark">@driver.DriverName</td>
+                                <td>@(driver.DriverPhone ?? "غير متوفر")</td>
+                                <td><span class="badge bg-info text-dark">@driver.TripsCount</span></td>
+                                <td><span class="badge bg-success">@driver.BookingsCount</span></td>
+                                <td>@driver.SeatsBookedCount</td>
+                                <td><span class="badge bg-warning text-dark">⭐ @driver.AverageRating</span></td>
+                                <td class="text-success font-weight-bold">@driver.TotalEarnings.ToString("N0") ريال</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Include Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (typeof Chart === 'undefined') return;
+
+        // Chart 1: User Roles
+        var ctxUsers = document.getElementById('userRolesChart');
+        if (ctxUsers) {
+            new Chart(ctxUsers, {
+                type: 'doughnut',
+                data: {
+                    labels: ['مسافرون', 'سائقون', 'مشرفون'],
+                    datasets: [{
+                        data: [@Model.UserStats.TravelersCount, @Model.UserStats.DriversCount, @Model.UserStats.AdminsCount],
+                        backgroundColor: ['#0d6efd', '#198754', '#6c757d']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // Chart 2: Booking Status
+        var ctxBookings = document.getElementById('bookingStatusChart');
+        if (ctxBookings) {
+            new Chart(ctxBookings, {
+                type: 'pie',
+                data: {
+                    labels: ['مؤكدة', 'معلقة', 'ملغاة'],
+                    datasets: [{
+                        data: [@Model.BookingStats.ConfirmedBookings, @Model.BookingStats.PendingBookings, @Model.BookingStats.CancelledBookings],
+                        backgroundColor: ['#198754', '#ffc107', '#dc3545']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // Chart 3: Ratings
+        var ctxRatings = document.getElementById('ratingsChart');
+        if (ctxRatings) {
+            new Chart(ctxRatings, {
+                type: 'bar',
+                data: {
+                    labels: ['5 نجوم ⭐', '4 نجوم ⭐', '3 نجوم ⭐', '2 نجوم ⭐', 'نجمة 1 ⭐'],
+                    datasets: [{
+                        label: 'عدد التقييمات',
+                        data: [@Model.RatingStats.FiveStarCount, @Model.RatingStats.FourStarCount, @Model.RatingStats.ThreeStarCount, @Model.RatingStats.TwoStarCount, @Model.RatingStats.OneStarCount],
+                        backgroundColor: '#ffc107'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        // Chart 4: Booking Trend
+        var ctxTrend = document.getElementById('bookingTrendChart');
+        if (ctxTrend) {
+            var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.BookingTrend.Select(t => t.PeriodLabel)));
+            var counts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.BookingTrend.Select(t => t.Count)));
+
+            new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'عدد الحجوزات',
+                        data: counts,
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+    });
+</script>

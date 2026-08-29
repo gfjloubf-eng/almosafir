@@ -1,0 +1,86 @@
+@model AlMosafer.Application.DTOs.Auth.UserProfileDto
+@{
+    ViewData["Title"] = "إعدادات الحساب والنظام — منصة المسافر";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-8">
+        <div class="card-almosafer shadow-lg border-0 overflow-hidden">
+            <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary mb-1">التحكم والإعدادات</span>
+                    <h3 class="mb-0 font-weight-bold">إعدادات الحساب والنظام ⚙️</h3>
+                </div>
+                <span class="badge badge-status badge-open fs-6">@Model.Role</span>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- Section 1: Account Settings -->
+                <div class="mb-4">
+                    <h5 class="font-weight-bold text-primary mb-3">1. تفضيلات الحساب والهوية 👤</h5>
+                    <div class="p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="d-block text-dark">اسم المستخدم: @Model.Name</strong>
+                                <small class="text-muted">البريد المسجل: @Model.Email</small>
+                            </div>
+                            <a asp-action="EditProfile" class="btn btn-sm btn-outline-primary font-weight-bold">تحديث البيانات ✏️</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Security & Authentication -->
+                <div class="mb-4">
+                    <h5 class="font-weight-bold text-primary mb-3">2. الأمان والمصادقة 🔑</h5>
+                    <div class="p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="d-block text-dark">كلمة المرور المشفرة (PBKDF2/SHA-256)</strong>
+                                <small class="text-muted">آخر تحديث لكلمة المرور مؤمن ومحمي بنجاح</small>
+                            </div>
+                            <a asp-action="ChangePassword" class="btn btn-sm btn-outline-danger font-weight-bold">تغيير كلمة المرور 🔑</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Visual & Localization Preferences -->
+                <div class="mb-4">
+                    <h5 class="font-weight-bold text-primary mb-3">3. تفضيلات اللغة والعرض 🌐</h5>
+                    <div class="p-3 bg-light rounded border">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label font-weight-bold text-dark mb-1">لغة واجهة المنصة المعتمدة:</label>
+                                <select class="form-select form-select-custom" disabled>
+                                    <option selected>اللغة العربية (العربية RTL - اليمن)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label font-weight-bold text-dark mb-1">منطقة التوقيت والمواعيد:</label>
+                                <input type="text" class="form-control form-control-custom" value="توقيت صنعاء (GMT+3)" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: System Architecture Info -->
+                <div class="mb-4">
+                    <h5 class="font-weight-bold text-primary mb-3">4. معلومات المنظومة البرمجية 💻</h5>
+                    <div class="p-3 bg-light rounded border">
+                        <p class="mb-1 text-dark"><strong>إطار العمل:</strong> C# & ASP.NET Core 10 (Target Framework net10.0)</p>
+                        <p class="mb-1 text-dark"><strong>معمارية المشروع:</strong> Clean Layered Architecture (Domain, Application, Infrastructure, Web)</p>
+                        <p class="mb-1 text-dark"><strong>قاعدة البيانات:</strong> MySQL / MariaDB (XAMPP Server Environment)</p>
+                        <p class="mb-0 text-dark"><strong>فريق الدعم الفني:</strong> عمار عادل المصوعي (712275038)</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Profile" class="btn btn-outline-primary font-weight-bold">العودة للملف الشخصي</a>
+                    <form asp-action="Logout" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger font-weight-bold">تسجيل الخروج 🚪</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

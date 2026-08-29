@@ -1,0 +1,125 @@
+@model AlMosafer.Application.DTOs.Dashboard.TravelerDashboardDto
+@{
+    ViewData["Title"] = "لوحة المسافر — Traveler Dashboard";
+}
+
+<div class="py-4">
+    <!-- Header / Context -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">مرحباً بك في منصة المسافر 🧳</h3>
+            <p class="text-muted mb-0">متابعة حجوزاتك، الرحلات القادمة، والتواصل المباشر مع السائقين</p>
+        </div>
+        <span class="badge bg-primary fs-6 px-3 py-2">Role: Traveler</span>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-primary h-100">
+                <h6 class="text-muted font-weight-bold mb-2">إجمالي الحجوزات</h6>
+                <h2 class="font-weight-bold text-primary mb-2">@Model.TotalBookings</h2>
+                <small class="text-muted">جميع الرحلات المحجوزة</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-success h-100">
+                <h6 class="text-muted font-weight-bold mb-2">الحجوزات النشطة</h6>
+                <h2 class="font-weight-bold text-success mb-2">@Model.ActiveBookings</h2>
+                <small class="text-muted">رحلات مؤكدة قادمة</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-warning h-100">
+                <h6 class="text-muted font-weight-bold mb-2">الإشعارات الجديدة</h6>
+                <h2 class="font-weight-bold text-warning mb-2">@Model.UnreadNotificationsCount</h2>
+                <small class="text-muted">تنبيهات غبر مقروءة</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-info h-100">
+                <h6 class="text-muted font-weight-bold mb-2">المحادثات</h6>
+                <h2 class="font-weight-bold text-info mb-2">@Model.ConversationsCount</h2>
+                <small class="text-muted">غرف محادثات مع السائقين</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card-almosafer p-4 mb-5">
+        <h5 class="font-weight-bold text-primary mb-3">الخدمات والإجراءات السريعة 🚀</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a asp-controller="Trips" asp-action="Index" class="btn btn-accent w-100 py-3 font-weight-bold text-start">
+                    🔍 البحث عن رحلة بين المدن
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Bookings" asp-action="MyBookings" class="btn btn-emerald w-100 py-3 font-weight-bold text-start">
+                    🧾 عرض وتتبع كافة حجوزاتي
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Notifications" asp-action="Index" class="btn btn-primary w-100 py-3 font-weight-bold text-start">
+                    🔔 مركز تنبيهات الحساب
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="font-weight-bold text-dark mb-0">آخر الحجوزات المسجلة 🕒</h4>
+        <a asp-controller="Bookings" asp-action="MyBookings" class="btn btn-sm btn-outline-primary font-weight-bold">عرض الكل</a>
+    </div>
+
+    @if (!Model.RecentBookings.Any())
+    {
+        <div class="empty-state-card mb-4">
+            <div class="empty-state-icon">🧳</div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد حجوزات مسجلة حتى الآن</h4>
+            <p class="text-muted mb-4">ابدأ بالبحث عن رحلتك بين المدن وحجز مقعدك بكل سهولة وأمان.</p>
+            <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-4">
+            @foreach (var booking in Model.RecentBookings)
+            {
+                <div class="col-md-6">
+                    <div class="card-almosafer shadow-sm h-100 d-flex flex-column">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold">حجز رقم #BK-@booking.BookingId.ToString("D6")</span>
+                            @if (booking.Status == AlMosafer.Domain.Enums.BookingStatus.Confirmed)
+                            {
+                                <span class="badge badge-status badge-open">مؤكد (Confirmed)</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-status badge-full">@booking.Status</span>
+                            }
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <h5 class="font-weight-bold text-primary mb-2">@booking.FromCity ← @booking.ToCity</h5>
+                            <p class="text-muted mb-1">📅 <strong>تاريخ السفر:</strong> @booking.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</p>
+                            <p class="text-muted mb-1">👤 <strong>السائق:</strong> @booking.DriverName</p>
+                            <p class="text-muted mb-3">🪑 <strong>المقاعد:</strong> @booking.SeatsBooked | 💳 <strong>المبلغ:</strong> <strong class="text-success fs-6">@booking.TotalAmount.ToString("N0") ريال</strong></p>
+
+                            <div class="mt-auto pt-3 border-top text-end">
+                                <a asp-controller="Bookings" asp-action="Receipt" asp-route-id="@booking.BookingId" class="btn btn-outline-primary btn-sm font-weight-bold">عرض الإيصال 🧾</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="alert alert-info d-flex align-items-center mb-0 shadow-sm" role="alert">
+        <span class="me-2 fs-4">ℹ️</span>
+        <div>
+            <strong>لوحة المسافر المحمية:</strong> جميع المؤشرات والبيانات المعروضة حقيقية ومجلبة مباشرة من قاعدة البيانات.
+        </div>
+    </div>
+</div>

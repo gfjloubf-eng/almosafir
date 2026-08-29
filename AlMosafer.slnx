@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AlMosafer.Application/AlMosafer.Application.csproj" />
+    <Project Path="src/AlMosafer.Domain/AlMosafer.Domain.csproj" />
+    <Project Path="src/AlMosafer.Infrastructure/AlMosafer.Infrastructure.csproj" />
+    <Project Path="src/AlMosafer.Web/AlMosafer.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AlMosafer.Tests/AlMosafer.Tests.csproj" />
+  </Folder>
+</Solution>

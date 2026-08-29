@@ -1,0 +1,53 @@
+@model AlMosafer.Application.DTOs.Payments.PaymentDetailsDto
+@{
+    ViewData["Title"] = $"تفاصيل المعاملة المالية #{Model.TransactionId}";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom text-center py-3 bg-primary">
+                <h4 class="font-weight-bold mb-1">تفاصيل المعاملة المالية 💳</h4>
+                <small class="text-light">معاملة مالية موثقة (Simulated Internal Payment Record)</small>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <span class="badge badge-status badge-open fs-6 px-3 py-2">حالة العملية: @Model.Status (Paid)</span>
+                    <h2 class="font-weight-bold text-success mt-3 mb-0">@Model.Amount.ToString("N0") ريال يمني</h2>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light">رقم المعاملة (Transaction ID):</th>
+                                <td><code>@Model.TransactionId</code></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">رقم الحجز المرتبط:</th>
+                                <td><strong>#BK-@Model.BookingId.ToString("D6")</strong></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">مسار الرحلة:</th>
+                                <td>@Model.TripRoute</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">اسم المسافر:</th>
+                                <td>@Model.TravelerName</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">تاريخ العملية:</th>
+                                <td>@Model.CreatedAt.ToString("yyyy-MM-dd — hh:mm tt")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 pt-2 border-top">
+                    <a asp-controller="Bookings" asp-action="Receipt" asp-route-id="@Model.BookingId" class="btn btn-outline-primary font-weight-bold">عرض إيصال الحجز 🧾</a>
+                    <a asp-controller="Bookings" asp-action="MyBookings" class="btn btn-secondary font-weight-bold">العودة لحجوزاتي</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

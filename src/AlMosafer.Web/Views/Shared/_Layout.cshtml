@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - منصة المسافر AlMosafer</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AlMosafer.Web.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <a href="#main-content" class="visually-hidden-focusable p-2 bg-primary text-white position-absolute">الانتقال المباشر إلى المحتوى الرئيسي</a>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-almosafer">
+            <div class="container">
+                <a class="navbar-brand-custom text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span>🚗 المسافر</span>
+                    <span class="brand-badge">AlMosafer</span>
+                </a>
+                <button class="navbar-toggler text-white border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" 
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="تبديل القائمة">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">الرئيسية 🏠</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="Index">البحث عن رحلة 🔍</a>
+                        </li>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom text-warning font-weight-bold" asp-controller="Admin" asp-action="Dashboard">لوحة الإدارة 🛡️</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Users">المستخدمون</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Trips">الرحلات</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Bookings">الحجوزات</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Reports">التقارير 📊</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Driver"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom text-success font-weight-bold" asp-controller="Driver" asp-action="Dashboard">لوحة السائق 🚗</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="MyTrips">رحلاتي</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="Create">+ نشر رحلة</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Traveler"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom text-info font-weight-bold" asp-controller="Traveler" asp-action="Dashboard">لوحة المسافر 🧳</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Bookings" asp-action="MyBookings">حجوزاتي</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-controller="Conversations" asp-action="Index">💬 المحادثات</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-controller="Notifications" asp-action="Index">🔔 الإشعارات</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="dropdown">
+                                <button class="btn btn-outline-light dropdown-toggle font-weight-bold" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                    👤 @User.Identity.Name
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end text-end shadow" aria-labelledby="userMenu">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">الملف الشخصي 👤</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="EditProfile">تعديل البيانات ✏️</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">تغيير كلمة المرور 🔑</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Settings">الإعدادات ⚙️</a></li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-warning" asp-controller="Admin" asp-action="SystemHealth">صحة النظام 💻</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger font-weight-bold">تسجيل الخروج 🚪</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light font-weight-bold">تسجيل الدخول</a>
+                            <a asp-controller="Account" asp-action="RegisterTraveler" class="btn btn-accent font-weight-bold">حساب مسافر</a>
+                            <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald font-weight-bold">حساب سائق</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="container py-4">
+        <!-- Toast / System Messages -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <strong>✅ نجاح:</strong> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق التنبيه"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <strong>⚠️ خطأ:</strong> @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق التنبيه"></button>
+            </div>
+        }
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+                <strong>ℹ️ تنبيه:</strong> @TempData["InfoMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق التنبيه"></button>
+            </div>
+        }
+
+        <!-- Breadcrumbs -->
+        <partial name="_Breadcrumbs" />
+
+        @RenderBody()
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-white border-top text-muted">
+        <div class="container">
+            <div class="row align-items-center gy-3">
+                <div class="col-md-6 text-md-start text-center">
+                    <p class="mb-1 font-weight-bold text-dark">© 2026 - <strong>منصة المسافر AlMosafer Platform</strong></p>
+                    <small class="text-muted">هندسة وتصميم المعمارية البرمجية C# & ASP.NET Core Clean Architecture</small>
+                </div>
+                <div class="col-md-6 text-md-end text-center">
+                    <div class="footer-support-box">
+                        <span class="font-weight-bold text-dark">🛠️ فريق الدعم الفني:</span>
+                        <span class="text-dark">مسؤول الدعم: <strong>عمار عادل المصوعي</strong></span>
+                        <a href="tel:712275038" class="footer-support-link" aria-label="الاتصال بمسؤول الدعم الفني">📞 712275038</a>
+                        <a href="https://wa.me/967712275038" target="_blank" rel="noopener noreferrer" class="footer-whatsapp-link" aria-label="التواصل عبر واتساب مع مسؤول الدعم الفني">💬 واتساب 712275038</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
