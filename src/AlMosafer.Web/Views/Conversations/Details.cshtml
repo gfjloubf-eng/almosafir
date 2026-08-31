@@ -17,7 +17,7 @@
             </div>
 
             <!-- Chat Messages Box -->
-            <div class="card-body p-4 bg-light" id="messages-box" style="max-height: 450px; overflow-y: auto;">
+            <div class="card-body p-4 bg-light" id="messages-box" data-conversation-id="@Model.ConversationId" style="max-height: 450px; overflow-y: auto;">
                 @if (!messages.Any())
                 {
                     <div class="text-center py-5 text-muted">
@@ -62,15 +62,15 @@
 </div>
 
 <script>
-    // تحديث تلقائي رفيق: يجلب الرسائل الجديدة كل 15 ثانية دون مقاطعة الكتابة الجارية
+    // الجلب الموحّد: يستبدل محتوى الصندوق بنسخة الخادم عند وجود جديد فقط (بحذر لا يمس كتابتك)
     (function () {
         var box = document.getElementById('messages-box');
         var input = document.querySelector('input[name="Content"]');
         if (!box) return;
         box.scrollTop = box.scrollHeight;
-        setInterval(async function () {
-            if (document.hidden) return;
-            if (input && input.value.trim() !== '') return;
+
+        var refresh = async function () {
+            if (input && input.value.trim() !== '') return; // لا يُقاطع رسالة تُكتب الآن
             try {
                 var res = await fetch(window.location.href, { headers: { 'X-Requested-With': 'fetch-refresh' } });
                 if (!res.ok) return;
@@ -82,6 +82,22 @@
                     box.scrollTop = box.scrollHeight;
                 }
             } catch (e) { /* أفضل جهد — لا يُقاطع المستخدم عند أي خلل شبكي */ }
-        }, 15000);
+        };
+
+        // شبكة أمان: كل 15 ثانية — بحذر لا تعمل حين تخفي الصفحة
+        setInterval(function () { if (!document.hidden) { refresh(); } }, 15000);
+
+        // «النبض الحي» الموجة ٢: نبضة SignalR = تحديث فوري دون انتظار الدورة
+        document.addEventListener('almosafer:chat-refresh', function () { refresh(); });
+
+        // انضمام لمجموعة هذه المحادثة (الخادم يتحقق من العضوية — IDOR مرفوض)
+        var joinConv = function () {
+            if (window.__almConnection) {
+                window.__almConnection.invoke('JoinConversation', Number(box.getAttribute('data-conversation-id')) || 0)
+                    .catch(function () { });
+            }
+        };
+        document.addEventListener('almosafer:realtime-join', joinConv);
+        joinConv(); // قد يسبقنا الاتصال لجاهزيته إن كانت الصفحة أبطأ
     })();
 </script>

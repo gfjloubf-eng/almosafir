@@ -58,7 +58,36 @@
         toast(payload.title, payload.message);
     });
 
+    // الموجة ٢: الدردشة اللحظية — تحديث صندوق الرسائل فوراً أو تنبيه عائم إن كان خارجها
+    connection.on('ReceiveMessage', function (p) {
+        if (!p) { return; }
+        var box = document.getElementById('messages-box');
+        var openHere = box && String(box.getAttribute('data-conversation-id')) === String(p.conversationId);
+        var mine = window.__uid && String(p.senderId) === String(window.__uid);
+
+        if (openHere) {
+            try { document.dispatchEvent(new CustomEvent('almosafer:chat-refresh')); } catch (e) { }
+        }
+        if (!mine && !(openHere && !document.hidden)) {
+            toast('رسالة جديدة' + (p.senderName ? ' من ' + p.senderName : ''), p.preview || '');
+        }
+    });
+
+    function broadcastReady() {
+        try { document.dispatchEvent(new CustomEvent('almosafer:realtime-join')); } catch (e) { }
+    }
+
+    connection.onreconnected(function () {
+        window.__almConnection = connection;
+        refreshCount(); // ما فاتك أثناء الانقطاع يعود ظاهراً في العدّاد
+        broadcastReady(); // إعادة الانضمام لمجموعات المحادثات المفتوحة
+    });
+
     connection.start()
-        .then(function () { refreshCount(); })
+        .then(function () {
+            window.__almConnection = connection;
+            refreshCount();
+            broadcastReady();
+        })
         .catch(function () { /* صامت: ربما جلسة غير مكتملة أو خادم قديم */ });
 })();
