@@ -37,7 +37,8 @@ catch
 }
 
 builder.Services.AddDbContext<AlMosaferDbContext>(options =>
-    options.UseMySql(connectionString, serverVersion));
+    options.UseMySql(connectionString, serverVersion,
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(3, System.TimeSpan.FromSeconds(3), null)));
 
 // Register Infrastructure Services
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
