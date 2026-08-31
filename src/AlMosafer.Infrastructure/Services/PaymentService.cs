@@ -111,7 +111,7 @@ public class PaymentService : IPaymentService
         {
             PaymentId = payment.Id,
             BookingId = payment.BookingId,
-            TransactionId = payment.TransactionId,
+            TransactionId = payment.TransactionId ?? string.Empty,
             Amount = payment.Amount,
             Status = payment.Status,
             CreatedAt = payment.CreatedAt,
