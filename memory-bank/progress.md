@@ -27,3 +27,10 @@
 - manifest: أربعة shortcuts للتثبيت. تقرير: docs/PROMPT_40_REALTIME_REPORT.md.
 - عملية: ملف workflow تسرّب مرة (drift قديم بمحفزات arena) — استُرجع وأُعيد الالتزام --amend؛ القاعدة قائمة: لا تلمس ci-cd.yml أبداً.
 - main HEAD: دمج 9c59c816. fix5 (EnableRetryOnFailure) CI 33443864157 أخضر مؤكد.
+
+## «النبض الحي» الموجة ٢ + ختم الحقوق (2026-08-31) — مُسلَّم ✅ (CI 33445982815 أخضر)
+- RealtimeMessageServiceDecorator :IMessageService (يلتف MessageService؛ يقرأ طرفي المحادثة AsNoTracking؛ بث conv-{id}+user-{recipient}؛ فشل البث آمِن).
+- AppHub.JoinConversation(int) بفحص عضوية DB (IDOR مرفوض صامتاً). realtime.js: حدث ReceiveMessage + CustomEvent almosafer:chat-refresh + almosafer:realtime-join (إعادة انضمام بعد reconnect) + window.__uid من Layout.
+- Details.cshtml: data-conversation-id + refresh() مستخرجة؛ polling 15ث شبكة أمان فقط.
+- Footer Layout: «© 2026–2027 منصة المسافر — حقوق الطبع محفوظة لدى عمار الموعي» (طلبه حرفياً؛ ملاحظة: قسم «معلومات المنظومة» وقسم SupportTeam بالاسم الكامل عمار عادل المصوعي/712275038 من يد المالك في 74bab19).
+- خارطة: ترويسة قرار المالك «تنفيذ هذا الشهر» + البند 2 مُعلَّم ✅. main: merge 46d5d8d7. تقرير: docs/PROMPT_41_LIVE_CHAT_REPORT.md.
