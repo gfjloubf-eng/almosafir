@@ -116,6 +116,21 @@ var app = builder.Build();
 
 app.UseForwardedHeaders();
 
+// بصلاحية المالك (2026-08-31): تطبيق هجرات EF تلقائياً عند الإقلاع —
+// يستحدث أي جداول ناقصة (مثل Phase2 RouteLines) دون dotnet-ef أو خطوات يدوية.
+// Migrate() ذكي: لا يمس شيئاً إن كانت القاعدة محدّثة؛ وإن كان MySQL مطفأً نسجل تحذيراً ونكمل (مثله مثل بذر الأدمن).
+try
+{
+    using var migrateScope = app.Services.CreateScope();
+    var migrateDb = migrateScope.ServiceProvider.GetRequiredService<AlMosaferDbContext>();
+    migrateDb.Database.Migrate();
+    Console.WriteLine("[AlMosafer] Database migrations applied (or already up to date).");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[Warning] DB migrate skipped: {ex.Message}");
+}
+
 // Seed Default Admin Account Securely on Startup
 try
 {
