@@ -95,6 +95,9 @@
                             <li class="nav-item">
                                 <a class="nav-link nav-link-custom" asp-controller="Notifications" asp-action="Index">🔔 الإشعارات <span id="navNotifBadge" class="badge rounded-pill bg-danger d-none">0</span></a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-controller="Account" asp-action="Settings" title="الإعدادات — بطاقة فريق الدعم والمطورين">⚙️ الإعدادات</a>
+                            </li>
                         }
                                             @if (User.Identity?.IsAuthenticated == true)
                         {
