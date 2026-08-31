@@ -142,6 +142,11 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health");
 app.MapStaticAssets();
+// إسناد صريح للملفات الجذرية للـPWA (manifest/sw.js) بأنواع MIME مؤكدة — معلول أي ثغرة تخطيط نوع
+var staticContentProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+staticContentProvider.Mappings[".webmanifest"] = "application/manifest+json";
+staticContentProvider.Mappings[".svg"] = "image/svg+xml";
+app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = staticContentProvider });
 
 app.MapControllerRoute(
     name: "default",
