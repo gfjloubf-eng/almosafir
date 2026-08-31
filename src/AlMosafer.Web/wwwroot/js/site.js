@@ -56,3 +56,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// ⭐ حزمة «محبوب»: الوضع الليلي وحجم الخط — يُحفظان محلياً في متصفح المستخدم
+(function () {
+    var root = document.documentElement;
+    function apply() {
+        root.setAttribute('data-theme', localStorage.getItem('musafer-theme') || 'light');
+        if (localStorage.getItem('musafer-font') === 'large') {
+            root.classList.add('font-large');
+        } else {
+            root.classList.remove('font-large');
+        }
+    }
+    apply();
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-toggle-theme]')) {
+            localStorage.setItem('musafer-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+            apply();
+        }
+        if (e.target.closest('[data-toggle-font]')) {
+            localStorage.setItem('musafer-font', root.classList.contains('font-large') ? '' : 'large');
+            apply();
+        }
+    });
+})();

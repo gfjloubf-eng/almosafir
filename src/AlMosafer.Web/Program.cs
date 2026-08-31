@@ -54,6 +54,7 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IReportingService, ReportingService>();
+builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 
 // Configure Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

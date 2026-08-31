@@ -257,3 +257,32 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
         border: 1px solid #000000 !important;
     }
 }
+
+/* ⭐ حزمة «محبوب»: سمة ليلية لطيفة + إتاحة الخط الكبير */
+[data-theme="dark"] body {
+    background-color: #10161e;
+    color: #e8ecf1;
+}
+[data-theme="dark"] .card-almosafer,
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light,
+[data-theme="dark"] .table-responsive,
+[data-theme="dark"] .card-footer {
+    background-color: #1b2634 !important;
+    color: #e8ecf1;
+    border-color: #2c3a4d !important;
+}
+[data-theme="dark"] .text-dark { color: #f4f6f8 !important; }
+[data-theme="dark"] .text-muted { color: #9fb0c3 !important; }
+[data-theme="dark"] .table { color: #e8ecf1; }
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-control:focus {
+    background-color: #14202c;
+    color: #e8ecf1;
+    border-color: #2c3a4d;
+}
+[data-theme="dark"] .border, [data-theme="dark"] .border-top, [data-theme="dark"] hr { border-color: #2c3a4d !important; }
+
+.font-large body, .font-large .card-almosafer, .font-large .btn, .font-small .form-control, .font-large .form-control {
+    font-size: 1.12rem;
+}

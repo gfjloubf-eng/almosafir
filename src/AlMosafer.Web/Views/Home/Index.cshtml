@@ -103,6 +103,34 @@
     </div>
 </div>
 
+@{
+    var topDrivers = ViewBag.TopDrivers as IEnumerable<AlMosafer.Application.DTOs.Reports.DriverPerformanceDto> ?? Enumerable.Empty<AlMosafer.Application.DTOs.Reports.DriverPerformanceDto>();
+}
+@if (topDrivers.Any())
+{
+    <section class="my-5 text-center">
+        <h3 class="font-weight-bold text-dark mb-1">🏆 ركائز المسافر — نخبة السائقين</h3>
+        <p class="text-muted mb-4">الأعلى تقييماً من مجتمعنا عبر كل الرحلات المنجزة</p>
+        <div class="row g-3 justify-content-center">
+            @{
+                var medals = new[] { "🥇", "🥈", "🥉", "🎖️" };
+                var rank = 0;
+            }
+            @foreach (var d in topDrivers)
+            {
+                <div class="col-6 col-md-3">
+                    <div class="card-almosafer card-almosafer-hover p-4 h-100">
+                        <div class="display-5 mb-2">@medals[Math.Min(rank++, 3)]</div>
+                        <h6 class="font-weight-bold text-dark mb-1">@d.DriverName</h6>
+                        <div class="text-warning font-weight-bold">⭐ @d.AverageRating.ToString("0.0") / 5</div>
+                        <small class="text-muted">@d.TripsCount رحلة · @d.BookingsCount حجز</small>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
 <!-- Final Call to Action -->
 <div class="card-almosafer p-4 p-md-5 text-center bg-white border-0 shadow-sm rounded-xl">
     <h3 class="font-weight-bold text-primary mb-3">جاهز للبدء في رحلتك القادمة؟ 🚗</h3>

@@ -9,11 +9,13 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IDbConnectionHealthService _healthService;
+    private readonly IReportingService _reportingService;
 
-    public HomeController(ILogger<HomeController> logger, IDbConnectionHealthService healthService)
+    public HomeController(ILogger<HomeController> logger, IDbConnectionHealthService healthService, IReportingService reportingService)
     {
         _logger = logger;
         _healthService = healthService;
+        _reportingService = reportingService;
     }
 
     public async Task<IActionResult> Index()
@@ -22,6 +24,7 @@ public class HomeController : Controller
         ViewBag.DbConnected = health.CanConnect;
         ViewBag.DbMessage = health.Message;
         ViewBag.DbName = health.DatabaseName;
+        ViewBag.TopDrivers = await _reportingService.GetTopDriversAsync(4);
 
         return View();
     }
