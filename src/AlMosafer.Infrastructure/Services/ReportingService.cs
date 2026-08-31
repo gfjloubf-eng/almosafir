@@ -98,7 +98,7 @@ public class ReportingService : IReportingService
         var topOrigin = trips.GroupBy(t => t.FromCity).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? "غير محدد";
         var topDest = trips.GroupBy(t => t.ToCity).OrderByDescending(g => g.Count()).FirstOrDefault()?.Key ?? "غير محدد";
 
-        var totalSeatsBooked = trips.Sum(t => t.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked));
+        var totalSeatsBooked = trips.Sum(t => t.Bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked));
 
         return new TripStatisticsDto
         {
@@ -128,12 +128,12 @@ public class ReportingService : IReportingService
 
         if (!bookings.Any()) return new BookingStatisticsDto();
 
-        var totalSeatsBooked = bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked);
+        var totalSeatsBooked = bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked);
 
         return new BookingStatisticsDto
         {
             TotalBookings = bookings.Count,
-            ConfirmedBookings = bookings.Count(b => b.Status == BookingStatus.Confirmed),
+            ConfirmedBookings = bookings.Count(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)),
             CancelledBookings = bookings.Count(b => b.Status == BookingStatus.Cancelled),
             PendingBookings = bookings.Count(b => b.Status == BookingStatus.Pending),
             AverageSeatsPerBooking = bookings.Any() ? Math.Round(bookings.Average(b => b.SeatsBooked), 1) : 0,
@@ -207,9 +207,9 @@ public class ReportingService : IReportingService
         var routeGroups = trips.GroupBy(t => new { t.FromCity, t.ToCity })
             .Select(g =>
             {
-                var confirmedBookings = g.SelectMany(t => t.Bookings).Where(b => b.Status == BookingStatus.Confirmed).ToList();
+                var confirmedBookings = g.SelectMany(t => t.Bookings).Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).ToList();
                 var seatsCount = confirmedBookings.Sum(b => b.SeatsBooked);
-                var revenue = g.Sum(t => t.PricePerSeat * t.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked));
+                var revenue = g.Sum(t => t.PricePerSeat * t.Bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked));
 
                 return new RouteStatisticsDto
                 {
@@ -260,9 +260,9 @@ public class ReportingService : IReportingService
             .Select(g =>
             {
                 var driver = g.First().Driver;
-                var confirmedBookings = g.SelectMany(t => t.Bookings).Where(b => b.Status == BookingStatus.Confirmed).ToList();
+                var confirmedBookings = g.SelectMany(t => t.Bookings).Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).ToList();
                 var seatsCount = confirmedBookings.Sum(b => b.SeatsBooked);
-                var earnings = g.Sum(t => t.PricePerSeat * t.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked));
+                var earnings = g.Sum(t => t.PricePerSeat * t.Bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked));
 
                 return new DriverPerformanceDto
                 {
@@ -303,7 +303,7 @@ public class ReportingService : IReportingService
                 Date = g.Key,
                 PeriodLabel = g.Key.ToString("yyyy-MM-dd"),
                 Count = g.Count(),
-                Amount = g.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => (b.Trip?.PricePerSeat ?? 0) * b.SeatsBooked)
+                Amount = g.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => (b.Trip?.PricePerSeat ?? 0) * b.SeatsBooked)
             })
             .OrderBy(pt => pt.Date)
             .Take(30)

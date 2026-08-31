@@ -9,4 +9,6 @@ public interface IBookingService
     Task<BookingDetailsDto?> GetBookingByIdAsync(int bookingId);
     Task<IEnumerable<BookingDetailsDto>> GetUserBookingsAsync(int travelerId);
     Task<IEnumerable<BookingDetailsDto>> GetTripBookingsAsync(int driverId, int tripId);
+    Task<TripManifestDto?> GetTripManifestAsync(int driverId, int tripId);
+    Task<(bool Success, string Message)> MarkBoardedAsync(int driverId, int bookingId);
 }

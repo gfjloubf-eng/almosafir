@@ -42,7 +42,7 @@ public class RatingService : IRatingService
 
         // 4. Verify Traveler has a valid confirmed booking for this trip
         var hasBooking = await _dbContext.Bookings
-            .AnyAsync(b => b.TripId == dto.TripId && b.TravelerId == travelerId && b.Status == BookingStatus.Confirmed);
+            .AnyAsync(b => b.TripId == dto.TripId && b.TravelerId == travelerId && (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded));
 
         if (!hasBooking)
         {

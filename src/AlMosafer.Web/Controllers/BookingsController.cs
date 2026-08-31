@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using QRCoder;
 using AlMosafer.Application.DTOs.Bookings;
 using AlMosafer.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -62,7 +63,36 @@ public class BookingsController : Controller
             return Forbid();
         }
 
+        // تذكرة QR تعريفية: تُحمِل رابط الإيصال (محروس بحساب المسافر) — التوقيع ضد التزوير مرحلة لاحقة (يحتاج عمود رمز)
+        var receiptUrl = Url.Action(nameof(Receipt), "Bookings", new { id }, Request.Scheme) ?? string.Empty;
+        using var qrGenerator = new QRCodeGenerator();
+        using var qrData = qrGenerator.CreateQrCode(receiptUrl, QRCodeGenerator.ECCLevel.Q);
+        var qrCode = new PngByteQRCode(qrData);
+        ViewBag.QrCodeDataUri = "data:image/png;base64," + Convert.ToBase64String(qrCode.GetGraphic(6));
+
         return View(booking);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Manifest(int tripId)
+    {
+        var manifest = await _bookingService.GetTripManifestAsync(GetCurrentUserId(), tripId);
+        if (manifest == null)
+        {
+            return Forbid(); // كشف الركوب لسائق الرحلة أو الإدمن فقط
+        }
+        return View(manifest);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Board(int bookingId, int tripId)
+    {
+        var result = await _bookingService.MarkBoardedAsync(GetCurrentUserId(), bookingId);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Manifest), new { tripId });
     }
 
     [HttpPost]
