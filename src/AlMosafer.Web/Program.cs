@@ -44,6 +44,7 @@ builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IResourceOwnershipService, ResourceOwnershipService>();
 builder.Services.AddScoped<IDbConnectionHealthService, DbConnectionHealthService>();
+builder.Services.AddScoped<IPaymentGateway, MockPaymentGateway>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();

@@ -1,6 +1,6 @@
 @model AlMosafer.Application.DTOs.Payments.PaymentDetailsDto
 @{
-    ViewData["Title"] = $"تفاصيل المعاملة المالية #{Model.TransactionId}";
+    ViewData["Title"] = $"تفاصيل المعاملة المالية — حجز #BK-{Model.BookingId:D6}";
 }
 
 <div class="row justify-content-center py-4">
@@ -12,7 +12,18 @@
             </div>
             <div class="card-body p-4">
                 <div class="text-center mb-4">
-                    <span class="badge badge-status badge-open fs-6 px-3 py-2">حالة العملية: @Model.Status (Paid)</span>
+                    @if (Model.Status == AlMosafer.Domain.Enums.PaymentStatus.Paid)
+                    {
+                        <span class="badge bg-success fs-6 px-3 py-2">مدفوعة ✅</span>
+                    }
+                    else if (Model.Status == AlMosafer.Domain.Enums.PaymentStatus.Pending)
+                    {
+                        <span class="badge bg-warning text-dark fs-6 px-3 py-2">💵 مستحقة نقداً عند الركوب</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger fs-6 px-3 py-2">فاشلة/ملغاة</span>
+                    }
                     <h2 class="font-weight-bold text-success mt-3 mb-0">@Model.Amount.ToString("N0") ريال يمني</h2>
                 </div>
 
@@ -21,7 +32,16 @@
                         <tbody>
                             <tr>
                                 <th class="bg-light">رقم المعاملة (Transaction ID):</th>
-                                <td><code>@Model.TransactionId</code></td>
+                                <td>
+                                    @if (string.IsNullOrEmpty(Model.TransactionId))
+                                    {
+                                        <span class="text-muted">— تُسدد نقداً عند الركوب</span>
+                                    }
+                                    else
+                                    {
+                                        <code>@Model.TransactionId</code>
+                                    }
+                                </td>
                             </tr>
                             <tr>
                                 <th class="bg-light">رقم الحجز المرتبط:</th>
@@ -42,6 +62,24 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success font-weight-bold mt-3">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger font-weight-bold mt-3">@TempData["ErrorMessage"]</div>
+                }
+                @if (Model.Status == AlMosafer.Domain.Enums.PaymentStatus.Pending && (User.IsInRole("Driver") || User.IsInRole("Admin")))
+                {
+                    <form asp-action="ConfirmCash" method="post" class="mt-3">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="paymentId" value="@Model.PaymentId" />
+                        <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                        <button type="submit" class="btn btn-success w-100 font-weight-bold" onclick="return confirm('تأكيد أن المسافر سلّمك المبلغ نقداً؟');">✅ تأكيد استلام المبلغ نقداً من المسافر</button>
+                    </form>
+                }
 
                 <div class="d-flex justify-content-between mt-4 pt-2 border-top">
                     <a asp-controller="Bookings" asp-action="Receipt" asp-route-id="@Model.BookingId" class="btn btn-outline-primary font-weight-bold">عرض إيصال الحجز 🧾</a>

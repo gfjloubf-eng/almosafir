@@ -10,20 +10,25 @@ namespace AlMosafer.Infrastructure.Services;
 public class PaymentService : IPaymentService
 {
     private readonly AlMosaferDbContext _dbContext;
+    private readonly IPaymentGateway _gateway;
 
-    public PaymentService(AlMosaferDbContext dbContext)
+    public PaymentService(AlMosaferDbContext dbContext, IPaymentGateway? gateway = null)
     {
         _dbContext = dbContext;
+        _gateway = gateway ?? new MockPaymentGateway();
     }
 
     public async Task<Payment> ProcessBookingPaymentAsync(int bookingId, decimal amount)
     {
+        // الدفع عبر طبقة التجريد — حالياً محاكاة، ولاحقاً أي بوابة محلية حقيقية
+        var charge = await _gateway.ChargeAsync(amount, $"BOOKING-{bookingId}");
+
         var payment = new Payment
         {
             BookingId = bookingId,
             Amount = amount,
-            Status = PaymentStatus.Paid,
-            TransactionId = $"TXN-{Guid.NewGuid().ToString("N")[..8].ToUpper()}",
+            Status = charge.Success ? PaymentStatus.Paid : PaymentStatus.Failed,
+            TransactionId = charge.TransactionId,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -31,6 +36,52 @@ public class PaymentService : IPaymentService
         await _dbContext.SaveChangesAsync();
 
         return payment;
+    }
+
+    public async Task<Payment> RegisterCashPaymentAsync(int bookingId, decimal amount)
+    {
+        var payment = new Payment
+        {
+            BookingId = bookingId,
+            Amount = amount,
+            Status = PaymentStatus.Pending,
+            TransactionId = null,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _dbContext.Payments.Add(payment);
+        await _dbContext.SaveChangesAsync();
+
+        return payment;
+    }
+
+    public async Task<(bool Success, string Message)> ConfirmCashReceivedAsync(int driverId, int paymentId)
+    {
+        var payment = await _dbContext.Payments
+            .Include(p => p.Booking)
+                .ThenInclude(b => b.Trip)
+            .FirstOrDefaultAsync(p => p.Id == paymentId);
+        if (payment == null)
+        {
+            return (false, "المعاملة غير موجودة.");
+        }
+
+        var driver = await _dbContext.Users.FindAsync(driverId);
+        if (payment.Booking.Trip.DriverId != driverId && (driver == null || driver.Role != UserRole.Admin))
+        {
+            return (false, "لا تملك الصلاحية لتأكيد هذه المعاملة.");
+        }
+
+        if (payment.Status != PaymentStatus.Pending)
+        {
+            return (false, "هذه المعاملة ليست بانتظار الاستلام (مدفوعة أو ملغاة سلفاً).");
+        }
+
+        payment.Status = PaymentStatus.Paid;
+        payment.TransactionId = $"CASH-{payment.BookingId:D6}";
+        await _dbContext.SaveChangesAsync();
+
+        return (true, "تم تأكيد استلام المبلغ نقداً. نتمنى رحلة مباركة للجميع!");
     }
 
     public async Task<PaymentDetailsDto?> GetPaymentByBookingIdAsync(int userId, int bookingId)

@@ -15,6 +15,16 @@ public class PaymentsController : Controller
         _paymentService = paymentService;
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> ConfirmCash(int paymentId, int bookingId)
+    {
+        var result = await _paymentService.ConfirmCashReceivedAsync(GetCurrentUserId(), paymentId);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Details), new { bookingId });
+    }
+
     [HttpGet]
     public async Task<IActionResult> Details(int bookingId)
     {
