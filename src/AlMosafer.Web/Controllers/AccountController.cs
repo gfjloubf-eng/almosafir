@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AlMosafer.Web.Controllers;
 
@@ -32,6 +33,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("StrictLimiter")]
     public async Task<IActionResult> RegisterTraveler(RegisterTravelerDto dto)
     {
         if (!ModelState.IsValid)
@@ -64,6 +66,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("StrictLimiter")]
     public async Task<IActionResult> RegisterDriver(RegisterDriverDto dto)
     {
         if (!ModelState.IsValid)
@@ -97,6 +100,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [EnableRateLimiting("StrictLimiter")]
     public async Task<IActionResult> Login(LoginDto dto, string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
@@ -203,6 +207,7 @@ public class AccountController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize]
+    [EnableRateLimiting("StrictLimiter")]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
     {
         if (!ModelState.IsValid)

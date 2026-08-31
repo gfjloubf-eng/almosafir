@@ -19,3 +19,9 @@
 **/obj
 **/secrets.json
 **/scratch
+
+# Legacy PHP-era artifacts — kept in Git history, excluded from the C# Docker build context
+**/*.php
+db_setup.sql
+docs/
+memory-bank/

@@ -16,6 +16,15 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// Fail fast on unexpanded env placeholders — ASP.NET Core does NOT expand "${VAR}" syntax in JSON config.
+// Provide real values via environment variables (e.g. ConnectionStrings__DefaultConnection).
+if (connectionString.Contains("${", StringComparison.Ordinal))
+{
+    throw new InvalidOperationException(
+        "Connection string contains unexpanded placeholders ('${...}'). " +
+        "Set the environment variable 'ConnectionStrings__DefaultConnection' with the real connection string.");
+}
+
 ServerVersion serverVersion;
 try
 {
@@ -87,12 +96,24 @@ app.UseForwardedHeaders();
 // Seed Default Admin Account Securely on Startup
 try
 {
-    using (var scope = app.Services.CreateScope())
+    // No plaintext default credentials are kept in source code.
+    // Provide AdminSettings__Email / AdminSettings__Password via secrets or environment.
+    // If not configured, seeding is skipped safely with a clear operational message.
+    var adminEmail = builder.Configuration["AdminSettings:Email"];
+    var adminPassword = builder.Configuration["AdminSettings:Password"];
+
+    if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
     {
-        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-        var adminEmail = builder.Configuration["AdminSettings:Email"] ?? "admin@almosafir.com";
-        var adminPassword = builder.Configuration["AdminSettings:Password"] ?? "Admin@123456";
-        await authService.SeedDefaultAdminAsync(adminEmail, adminPassword);
+        Console.WriteLine("[AlMosafer] Admin seed skipped: AdminSettings:Email/Password not configured. " +
+            "Set AdminSettings__Email and AdminSettings__Password to provision the initial admin account.");
+    }
+    else
+    {
+        using (var scope = app.Services.CreateScope())
+        {
+            var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+            await authService.SeedDefaultAdminAsync(adminEmail, adminPassword);
+        }
     }
 }
 catch (Exception ex)
