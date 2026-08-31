@@ -33,7 +33,7 @@
                         <div class="p-3 bg-light rounded border">
                             <h6 class="text-accent font-weight-bold mb-2">مواعيد التجمع والأسعار 📅</h6>
                             <p class="mb-1 text-dark">📅 <strong>تاريخ السفر:</strong> @Model.TripTime.ToString("yyyy-MM-dd")</p>
-                            <p class="mb-1 text-dark">⏰ <strong>وقت الانطلاق:</strong> @Model.TripTime.ToString("hh:mm tt")</p>
+                            <p class="mb-1 text-dark">⏰ <strong>وقت الانطلاق:</strong> @Model.TripTime.ToString("HH:mm")</p>
                             <p class="mb-1 text-dark">📍 <strong>نقطة التجمع:</strong> @(string.IsNullOrEmpty(Model.FromLocation) ? "حسب الاتفاق مع السائق" : Model.FromLocation)</p>
                             <h4 class="text-success font-weight-bold mt-2">@Model.PricePerSeat.ToString("N0") ريال / مقعد</h4>
                         </div>
@@ -97,7 +97,7 @@
                                         <div class="modal-body p-4">
                                             <div class="p-3 bg-light rounded border mb-3">
                                                 <p class="mb-1"><strong>الرحلة:</strong> @Model.FromCity ← @Model.ToCity</p>
-                                                <p class="mb-1"><strong>موعد الانطلاق:</strong> @Model.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</p>
+                                                <p class="mb-1"><strong>موعد الانطلاق:</strong> @Model.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
                                                 <p class="mb-0"><strong>السائق:</strong> @Model.DriverName</p>
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center">

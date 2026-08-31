@@ -9,6 +9,15 @@
         <a asp-action="Create" class="btn btn-success font-weight-bold">+ نشر رحلة جديدة</a>
     </div>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success font-weight-bold">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
+    }
+
     @if (!Model.Any())
     {
         <div class="alert alert-info text-center py-5">
@@ -38,7 +47,7 @@
                         <tr>
                             <td><strong>#@trip.Id</strong></td>
                             <td class="font-weight-bold text-primary">@trip.FromCity ← @trip.ToCity</td>
-                            <td>@trip.TripTime.ToString("yyyy-MM-dd hh:mm tt")</td>
+                            <td>@trip.TripTime.ToString("yyyy-MM-dd HH:mm")</td>
                             <td>
                                 <span class="badge bg-secondary">@trip.AvailableSeats / @trip.TotalSeats</span>
                             </td>
@@ -48,13 +57,42 @@
                                 {
                                     <span class="badge bg-success">نشطة ومتاحة</span>
                                 }
+                                else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Started)
+                                {
+                                    <span class="badge bg-info text-dark">🚌 انطلقت — في الطريق</span>
+                                }
+                                else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Completed)
+                                {
+                                    <span class="badge bg-secondary">✅ مكتملة</span>
+                                }
                                 else
                                 {
                                     <span class="badge bg-danger">@trip.Status</span>
                                 }
                             </td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">عرض الحجوزات والتفاصيل</a>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">التفاصيل</a>
+                                    @if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Open)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-secondary">✏️ تعديل</a>
+                                        <form asp-action="Start" asp-route-id="@trip.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-success">🚀 بدء الرحلة</button>
+                                        </form>
+                                        <form asp-action="Cancel" asp-route-id="@trip.Id" method="post" class="d-inline" onsubmit="return confirm('تأكيد إلغاء هذه الرحلة نهائياً؟');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">إلغاء</button>
+                                        </form>
+                                    }
+                                    else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Started)
+                                    {
+                                        <form asp-action="Complete" asp-route-id="@trip.Id" method="post" class="d-inline" onsubmit="return confirm('هل وصلت الرحلة فعلاً؟ سيتم تسجيلها مكتملة.');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success">✅ إنهاء الرحلة</button>
+                                        </form>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }

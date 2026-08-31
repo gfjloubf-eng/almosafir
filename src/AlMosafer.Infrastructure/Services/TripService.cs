@@ -267,4 +267,54 @@ public class TripService : ITripService
             };
         });
     }
+
+    public async Task<(bool Success, string Message)> StartTripAsync(int driverId, int tripId)
+    {
+        var trip = await _dbContext.Trips.FindAsync(tripId);
+        if (trip == null)
+        {
+            return (false, "الرحلة غير موجودة.");
+        }
+
+        var driver = await _dbContext.Users.FindAsync(driverId);
+        if (trip.DriverId != driverId && (driver == null || driver.Role != UserRole.Admin))
+        {
+            return (false, "لا تملك الصلاحية لبدء هذه الرحلة.");
+        }
+
+        if (trip.Status != TripStatus.Open)
+        {
+            return (false, "لا يمكن بدء رحلة غير مفتوحة (قد تكون منطلقة أو ملغاة أو مكتملة بالفعل).");
+        }
+
+        trip.Status = TripStatus.Started;
+        await _dbContext.SaveChangesAsync();
+
+        return (true, "تمنياتنا برحلة آمنة! تم تسجيل انطلاق الرحلة ولم يعد الحجز متاحاً لمقاعد جديدة.");
+    }
+
+    public async Task<(bool Success, string Message)> CompleteTripAsync(int driverId, int tripId)
+    {
+        var trip = await _dbContext.Trips.FindAsync(tripId);
+        if (trip == null)
+        {
+            return (false, "الرحلة غير موجودة.");
+        }
+
+        var driver = await _dbContext.Users.FindAsync(driverId);
+        if (trip.DriverId != driverId && (driver == null || driver.Role != UserRole.Admin))
+        {
+            return (false, "لا تملك الصلاحية لإنهاء هذه الرحلة.");
+        }
+
+        if (trip.Status != TripStatus.Started)
+        {
+            return (false, "لا يمكن إنهاء رحلة لم تنطلق بعد (ابدأ الرحلة أولاً).");
+        }
+
+        trip.Status = TripStatus.Completed;
+        await _dbContext.SaveChangesAsync();
+
+        return (true, "وصلت الرحلة بسلامة! تم إنهاء الرحلة وتسجيلها مكتملة.");
+    }
 }

@@ -41,7 +41,7 @@
                         </div>
                         <div class="card-body p-4 d-flex flex-column">
                             <h4 class="font-weight-bold text-primary mb-2">@booking.FromCity ← @booking.ToCity</h4>
-                            <p class="text-muted mb-1">📅 <strong>تاريخ ووقت السفر:</strong> @booking.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</p>
+                            <p class="text-muted mb-1">📅 <strong>تاريخ ووقت السفر:</strong> @booking.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
                             <p class="text-muted mb-1">👤 <strong>اسم السائق:</strong> @booking.DriverName (@(string.IsNullOrEmpty(booking.DriverPhone) ? "غير محدد" : booking.DriverPhone))</p>
                             <p class="text-muted mb-3">🪑 <strong>عدد المقاعد:</strong> @booking.SeatsBooked مقعد | 💳 <strong>إجمالي الإيصال:</strong> <strong class="text-success fs-5">@booking.TotalAmount.ToString("N0") ريال</strong></p>
 

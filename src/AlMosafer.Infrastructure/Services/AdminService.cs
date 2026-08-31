@@ -197,7 +197,7 @@ public class AdminService : IAdminService
                 TravelerName = p.Booking != null && p.Booking.Traveler != null ? p.Booking.Traveler.Name : "مسافر",
                 Amount = p.Amount,
                 Status = p.Status,
-                TransactionId = p.TransactionId,
+                TransactionId = p.TransactionId ?? string.Empty,
                 CreatedAt = p.CreatedAt,
                 TripRoute = p.Booking != null && p.Booking.Trip != null ? $"{p.Booking.Trip.FromCity} ← {p.Booking.Trip.ToCity}" : "غير محدد"
             })
@@ -240,7 +240,7 @@ public class AdminService : IAdminService
                 Id = n.Id,
                 UserId = n.UserId,
                 Title = n.Title,
-                Message = n.Message,
+                Message = n.Message ?? string.Empty,
                 Type = n.Type,
                 IsRead = n.IsRead,
                 CreatedAt = n.CreatedAt
