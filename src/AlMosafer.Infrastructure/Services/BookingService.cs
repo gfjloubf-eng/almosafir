@@ -109,9 +109,16 @@ public class BookingService : IBookingService
             _dbContext.Bookings.Add(booking);
             await _dbContext.SaveChangesAsync();
 
-            // Delegate Payment Processing
+            // Delegate Payment Processing (تجريبي فوري أو نقد عند الركوب)
             decimal totalAmount = dto.SeatsBooked * trip.PricePerSeat;
-            await _paymentService.ProcessBookingPaymentAsync(booking.Id, totalAmount);
+            if (dto.PaymentMethod == PaymentMethod.Cash)
+            {
+                await _paymentService.RegisterCashPaymentAsync(booking.Id, totalAmount);
+            }
+            else
+            {
+                await _paymentService.ProcessBookingPaymentAsync(booking.Id, totalAmount);
+            }
 
             // Update Driver Earnings Stats
             trip.Driver.TotalEarnings += totalAmount;
@@ -124,7 +131,7 @@ public class BookingService : IBookingService
             await _notificationService.SendNotificationAsync(
                 travelerId,
                 "تأكيد الحجز بنجاح 🎫",
-                $"تم تأكيد حجزك لعدد {dto.SeatsBooked} مقعد في رحلة {trip.FromCity} ← {trip.ToCity}.",
+                $"تم تأكيد حجزك لعدد {dto.SeatsBooked} مقعد في رحلة {trip.FromCity} ← {trip.ToCity}." + (dto.PaymentMethod == PaymentMethod.Cash ? " المبلغ مستحق نقداً عند الركوب للسائق مباشرة. أحضر المبلغ المطلوب معك." : string.Empty),
                 NotificationType.Booking);
 
             await _notificationService.SendNotificationAsync(

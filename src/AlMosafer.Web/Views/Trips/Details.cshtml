@@ -124,6 +124,17 @@
                                                 <span>سعر المقعد: <strong>@Model.PricePerSeat.ToString("N0") ريال</strong></span>
                                                 <span class="fs-5 text-success font-weight-bold">التأكيد الفوري</span>
                                             </div>
+                                            <div class="mt-3 pt-3 border-top">
+                                                <label class="form-label font-weight-bold text-dark d-block mb-2">طريقة الدفع:</label>
+                                                <div class="form-check mb-1">
+                                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="pmMock" value="MockOnline" checked />
+                                                    <label class="form-check-label" for="pmMock">💳 دفع تجريبي فوري <small class="text-muted">(محاكاة — لا يوجد خصم حقيقي)</small></label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="pmCash" value="Cash" />
+                                                    <label class="form-check-label" for="pmCash">💵 نقداً عند الركوب — تدفع للسائق مباشرة عند اللقاء</label>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="modal-footer bg-light">
                                             <button type="button" class="btn btn-outline-secondary font-weight-bold" data-bs-dismiss="modal">تعديل الاختيار</button>

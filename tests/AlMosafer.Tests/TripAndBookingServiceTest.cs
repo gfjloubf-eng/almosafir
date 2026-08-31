@@ -399,4 +399,97 @@ public class TripAndBookingServiceTest
         Assert.Equal(0, notified);
         Assert.False(await dbContext.Notifications.AnyAsync(n => n.UserId == traveler.Id));
     }
+
+
+    [Fact]
+    public async Task CreateBooking_CashOption_PaymentStaysPending()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "cash1@test.com");
+        var traveler = new User { Name = "مسافر", Email = "cash1t@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var (bookingService, _) = CreateServices(dbContext);
+
+        var result = await bookingService.CreateBookingAsync(traveler.Id, new CreateBookingDto
+        {
+            TripId = tripId,
+            SeatsBooked = 1,
+            PaymentMethod = PaymentMethod.Cash
+        });
+
+        Assert.True(result.Success);
+        var payment = await dbContext.Payments.FirstOrDefaultAsync(p => p.BookingId == result.BookingId!.Value);
+        Assert.NotNull(payment);
+        Assert.Equal(PaymentStatus.Pending, payment!.Status);
+        Assert.Null(payment.TransactionId);
+    }
+
+    [Fact]
+    public async Task CreateBooking_DefaultOption_MockGatewayMarksPaid()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "mock1@test.com");
+        var traveler = new User { Name = "مسافر", Email = "mock1t@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var (bookingService, _) = CreateServices(dbContext);
+
+        var result = await bookingService.CreateBookingAsync(traveler.Id, new CreateBookingDto
+        {
+            TripId = tripId,
+            SeatsBooked = 1
+        });
+
+        Assert.True(result.Success);
+        var payment = await dbContext.Payments.FirstOrDefaultAsync(p => p.BookingId == result.BookingId!.Value);
+        Assert.NotNull(payment);
+        Assert.Equal(PaymentStatus.Paid, payment!.Status);
+        Assert.StartsWith("TXN-", payment.TransactionId);
+    }
+
+    [Fact]
+    public async Task ConfirmCash_TripDriver_MarksPaymentPaid()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "cash2@test.com");
+        var traveler = new User { Name = "مسافر", Email = "cash2t@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var (bookingService, _) = CreateServices(dbContext);
+        var booking = await bookingService.CreateBookingAsync(traveler.Id, new CreateBookingDto { TripId = tripId, SeatsBooked = 1, PaymentMethod = PaymentMethod.Cash });
+        var payment = await dbContext.Payments.FirstAsync(p => p.BookingId == booking.BookingId!.Value);
+        var paymentService = new PaymentService(dbContext);
+
+        var result = await paymentService.ConfirmCashReceivedAsync(driverId, payment.Id);
+
+        Assert.True(result.Success);
+        var reloaded = await dbContext.Payments.FindAsync(payment.Id);
+        Assert.Equal(PaymentStatus.Paid, reloaded!.Status);
+        Assert.StartsWith("CASH-", reloaded.TransactionId);
+    }
+
+    [Fact]
+    public async Task ConfirmCash_StrangerUser_Fails()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "cash3@test.com");
+        var traveler = new User { Name = "مسافر", Email = "cash3t@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var (bookingService, _) = CreateServices(dbContext);
+        var booking = await bookingService.CreateBookingAsync(traveler.Id, new CreateBookingDto { TripId = tripId, SeatsBooked = 1, PaymentMethod = PaymentMethod.Cash });
+        var payment = await dbContext.Payments.FirstAsync(p => p.BookingId == booking.BookingId!.Value);
+        var paymentService = new PaymentService(dbContext);
+
+        var result = await paymentService.ConfirmCashReceivedAsync(traveler.Id, payment.Id);
+
+        Assert.False(result.Success);
+        var reloaded = await dbContext.Payments.FindAsync(payment.Id);
+        Assert.Equal(PaymentStatus.Pending, reloaded!.Status);
+    }
 }
