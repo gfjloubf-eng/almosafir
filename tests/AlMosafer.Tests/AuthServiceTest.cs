@@ -306,4 +306,74 @@ public class AuthServiceTest
             Assert.False(canDriverBEdit);
         }
     }
+
+
+    [Fact]
+    public async Task RequestPasswordReset_UnknownEmail_ReturnsGenericSuccessToPreventEnumeration()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var authService = new AuthService(dbContext, new PasswordHasherService());
+
+        var result = await authService.RequestPasswordResetAsync("ghost@test.com", "http://x/reset?token=__TOKEN__");
+
+        Assert.True(result.Success);
+    }
+
+    [Fact]
+    public async Task RequestPasswordReset_KnownEmail_StoresSingleUseToken()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        dbContext.Users.Add(new User { Name = "مستخدم", Email = "reset1@test.com", Role = UserRole.Traveler, PasswordHash = "old" });
+        await dbContext.SaveChangesAsync();
+        var authService = new AuthService(dbContext, new PasswordHasherService());
+
+        await authService.RequestPasswordResetAsync("reset1@test.com", "http://x/reset?token=__TOKEN__");
+
+        var user = await dbContext.Users.FirstAsync(u => u.Email == "reset1@test.com");
+        Assert.NotNull(user.PreferencesJson);
+        Assert.Contains("PasswordReset", user.PreferencesJson);
+    }
+
+    [Fact]
+    public async Task ResetPassword_ValidToken_ChangesHash_AndTokenIsSingleUse()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        dbContext.Users.Add(new User { Name = "مستخدم", Email = "reset2@test.com", Role = UserRole.Traveler, PasswordHash = "old" });
+        await dbContext.SaveChangesAsync();
+        var hasher = new PasswordHasherService();
+        var authService = new AuthService(dbContext, hasher);
+
+        await authService.RequestPasswordResetAsync("reset2@test.com", "http://x/reset?token=__TOKEN__");
+        var raw = (await dbContext.Users.FirstAsync(u => u.Email == "reset2@test.com")).PreferencesJson!;
+        var token = System.Text.Json.JsonDocument.Parse(raw).RootElement.GetProperty("PasswordReset").GetProperty("Token").GetString()!;
+
+        var first = await authService.ResetPasswordAsync(token, "newStrongPass1");
+        Assert.True(first.Success);
+
+        var user = await dbContext.Users.FirstAsync(u => u.Email == "reset2@test.com");
+        Assert.NotEqual("old", user.PasswordHash);
+        Assert.True(hasher.VerifyPassword(user, user.PasswordHash, "newStrongPass1"));
+
+        var second = await authService.ResetPasswordAsync(token, "anotherPass123");
+        Assert.False(second.Success);
+    }
+
+    [Fact]
+    public async Task ResetPassword_InvalidToken_Fails()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        dbContext.Users.Add(new User { Name = "مستخدم", Email = "reset3@test.com", Role = UserRole.Traveler, PasswordHash = "old" });
+        await dbContext.SaveChangesAsync();
+        var authService = new AuthService(dbContext, new PasswordHasherService());
+
+        var result = await authService.ResetPasswordAsync("does-not-exist-token-value-abcdef123456", "newStrongPass1");
+
+        Assert.False(result.Success);
+        var user = await dbContext.Users.FirstAsync(u => u.Email == "reset3@test.com");
+        Assert.Equal("old", user.PasswordHash);
+    }
 }
