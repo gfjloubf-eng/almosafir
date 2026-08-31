@@ -23,6 +23,15 @@ public class NotificationsController : Controller
         return View(notifications);
     }
 
+    // P40: عدّاد خفيف لشارة الجرس عند فتح أي صفحة (يشقّه realtime.js)
+    [HttpGet]
+    public async Task<IActionResult> Count()
+    {
+        var userId = GetCurrentUserId();
+        var unread = await _notificationService.GetUnreadCountAsync(userId);
+        return Json(new { unread });
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkAsRead(int notificationId)

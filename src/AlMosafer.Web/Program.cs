@@ -12,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// P40 «النبض الحي»: قناة SignalR الدائمة (جزء من إطار ASP.NET Core — بلا أي حزمة إضافية)
+builder.Services.AddSignalR();
+
 // Configure MySQL Database Connection via Pomelo EntityFrameworkCore MySql
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -47,7 +50,14 @@ builder.Services.AddScoped<IResourceOwnershipService, ResourceOwnershipService>(
 builder.Services.AddScoped<IDbConnectionHealthService, DbConnectionHealthService>();
 builder.Services.AddScoped<IPaymentGateway, MockPaymentGateway>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
+// P40: الخدمة الأصلية تُسجَّل باسمها ثم يُغلِّفها مُزخرِف البث اللحظي —
+//      بذلك تبقى NotificationService حيادية عن الويب واختباراتها سليمة بلا لمس.
+builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<INotificationService>(sp =>
+    new AlMosafer.Web.Services.RealtimeNotificationServiceDecorator(
+        sp.GetRequiredService<NotificationService>(),
+        sp.GetRequiredService<Microsoft.AspNetCore.SignalR.IHubContext<AlMosafer.Web.Hubs.AppHub>>(),
+        sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<AlMosafer.Web.Services.RealtimeNotificationServiceDecorator>>()));
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ITripService, TripService>();
@@ -148,6 +158,9 @@ var staticContentProvider = new Microsoft.AspNetCore.StaticFiles.FileExtensionCo
 staticContentProvider.Mappings[".webmanifest"] = "application/manifest+json";
 staticContentProvider.Mappings[".svg"] = "image/svg+xml";
 app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = staticContentProvider });
+
+// P40: نقطة النبض الحي — يحرسها [Authorize] على Hub نفسه (نفس كوكي الجلسة)
+app.MapHub<AlMosafer.Web.Hubs.AppHub>("/hubs/app");
 
 app.MapControllerRoute(
     name: "default",
