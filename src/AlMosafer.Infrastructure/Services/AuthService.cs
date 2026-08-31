@@ -1,5 +1,7 @@
 using AlMosafer.Application.DTOs.Auth;
 using AlMosafer.Application.Interfaces;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using AlMosafer.Domain.Entities;
 using AlMosafer.Domain.Enums;
 using AlMosafer.Infrastructure.Persistence;
@@ -12,10 +14,123 @@ public class AuthService : IAuthService
     private readonly AlMosaferDbContext _dbContext;
     private readonly IPasswordHasherService _passwordHasher;
 
-    public AuthService(AlMosaferDbContext dbContext, IPasswordHasherService passwordHasher)
+    private readonly IEmailService? _emailService;
+
+    public AuthService(AlMosaferDbContext dbContext, IPasswordHasherService passwordHasher, IEmailService? emailService = null)
     {
         _dbContext = dbContext;
         _passwordHasher = passwordHasher;
+        _emailService = emailService;
+    }
+
+    private sealed class PasswordResetPrefs
+    {
+        [JsonPropertyName("PasswordReset")]
+        public PasswordResetEntry? PasswordReset { get; set; }
+    }
+
+    private sealed class PasswordResetEntry
+    {
+        [JsonPropertyName("Token")]
+        public string Token { get; set; } = string.Empty;
+        [JsonPropertyName("ExpiresUtc")]
+        public long ExpiresUtc { get; set; }
+    }
+
+    private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
+
+    public async Task<(bool Success, string Message)> RequestPasswordResetAsync(string email, string resetUrlTemplate)
+    {
+        // حماية من استعلام الوجود: نرد بنفس الرسالة سواء وُجد البريد أم لا
+        const string genericMessage = "إن كان هذا البريد مسجلاً لدينا فستصله تعليمات إعادة التعيين خلال دقائق.";
+
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email.Trim().ToLower());
+        if (user == null)
+        {
+            return (true, genericMessage);
+        }
+
+        var token = Guid.NewGuid().ToString("N") + Guid.NewGuid().ToString("N");
+        var expiry = DateTimeOffset.UtcNow.AddMinutes(30).ToUnixTimeSeconds();
+
+        // تخزين الرمز في PreferencesJson (بلا هجرة مخطط) — لقطة واحدة مستقلة حصراً للاستعادة
+        Dictionary<string, JsonElement>? prefs = null;
+        if (!string.IsNullOrWhiteSpace(user.PreferencesJson))
+        {
+            try { prefs = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(user.PreferencesJson, JsonOpts); } catch (JsonException) { prefs = null; }
+        }
+        var dict = prefs?.ToDictionary(k => k.Key, v => (object?)v.Value) ?? new Dictionary<string, object?>();
+        dict["PasswordReset"] = new Dictionary<string, object> { ["Token"] = token, ["ExpiresUtc"] = expiry };
+        user.PreferencesJson = JsonSerializer.Serialize(dict, JsonOpts);
+        await _dbContext.SaveChangesAsync();
+
+        var resetUrl = resetUrlTemplate.Replace("__TOKEN__", token);
+        var html = $"<div dir="rtl" style="font-family:Tahoma">" +
+                   $"<h3>إعادة تعيين كلمة المرور — منصة المسافر</h3>" +
+                   $"<p>طلبت استعادة كلمة مرور حسابك. اضغط الرابط خلال 30 دقيقة:</p>" +
+                   $"<p><a href="{resetUrl}">{resetUrl}</a></p>" +
+                   $"<p style="color:#888">إن لم تطلب ذلك تجاهل هذه الرسالة وستبقى كلمة مرورك كما هي.</p></div>";
+
+        if (_emailService != null)
+        {
+            await _emailService.SendAsync(user.Email, "إعادة تعيين كلمة المرور — منصة المسافر", html);
+        }
+
+        return (true, genericMessage);
+    }
+
+    public async Task<(bool Success, string Message)> ResetPasswordAsync(string token, string newPassword)
+    {
+        if (string.IsNullOrWhiteSpace(token) || token.Length < 32)
+        {
+            return (false, "رابط إعادة التعيين غير صالح أو منتهي. اطلب رابطاً جديداً.");
+        }
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+        {
+            return (false, "كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.");
+        }
+
+        var candidates = await _dbContext.Users
+            .Where(u => u.PreferencesJson != null && u.PreferencesJson.Contains(""PasswordReset""))
+            .ToListAsync();
+
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        User? matched = null;
+        foreach (var u in candidates)
+        {
+            try
+            {
+                var pr = JsonSerializer.Deserialize<PasswordResetPrefs>(u.PreferencesJson!, JsonOpts)?.PasswordReset;
+                if (pr != null && pr.Token == token && pr.ExpiresUtc >= now)
+                {
+                    matched = u;
+                    break;
+                }
+            }
+            catch (JsonException) { /* تجاهل سجلات تالفة بأمان */ }
+        }
+
+        if (matched == null)
+        {
+            return (false, "رابط إعادة التعيين غير صالح أو منتهي. اطلب رابطاً جديداً.");
+        }
+
+        matched.PasswordHash = _passwordHasher.HashPassword(matched, newPassword);
+
+        // رمز استخدام واحد: يُحذف فور النجاح
+        try
+        {
+            var dict = JsonSerializer.Deserialize<Dictionary<string, object>>(matched.PreferencesJson!, JsonOpts) ?? new Dictionary<string, object>();
+            dict.Remove("PasswordReset");
+            matched.PreferencesJson = dict.Count > 0 ? JsonSerializer.Serialize(dict, JsonOpts) : null;
+        }
+        catch (JsonException)
+        {
+            matched.PreferencesJson = null;
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return (true, "عُيّنت كلمة المرور الجديدة بنجاح — سجّل الدخول بها الآن.");
     }
 
     public async Task<(bool Success, string Message, User? User)> RegisterTravelerAsync(RegisterTravelerDto dto)

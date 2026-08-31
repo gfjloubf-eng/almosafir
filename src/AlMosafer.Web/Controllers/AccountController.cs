@@ -98,6 +98,63 @@ public class AccountController : Controller
         return View();
     }
 
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    [HttpPost]    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("StrictLimiter")]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ModelState.AddModelError(string.Empty, "أدخل بريدك الإلكتروني.");
+            return View();
+        }
+
+        var urlTemplate = Url.Action(nameof(ResetPassword), "Account", new { token = "__TOKEN__" }, Request.Scheme) ?? string.Empty;
+        var result = await _authService.RequestPasswordResetAsync(email, urlTemplate);
+        TempData["InfoMessage"] = result.Message;
+        return RedirectToAction(nameof(Login));
+    }
+
+    [HttpGet]
+    public IActionResult ResetPassword(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return RedirectToAction(nameof(Login));
+        }
+        ViewBag.Token = token;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("StrictLimiter")]
+    public async Task<IActionResult> ResetPassword(string token, string newPassword, string confirmPassword)
+    {
+        if (newPassword != confirmPassword)
+        {
+            TempData["ErrorMessage"] = "كلمتا المرور غير متطابقتين.";
+            ViewBag.Token = token;
+            return View();
+        }
+
+        var result = await _authService.ResetPasswordAsync(token, newPassword);
+        if (!result.Success)
+        {
+            TempData["ErrorMessage"] = result.Message;
+            ViewBag.Token = token;
+            return View();
+        }
+
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAction(nameof(Login));
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [EnableRateLimiting("StrictLimiter")]
