@@ -325,4 +325,78 @@ public class TripAndBookingServiceTest
         var trip = await dbContext.Trips.FindAsync(tripId);
         Assert.Equal(TripStatus.Cancelled, trip!.Status);
     }
+
+
+    [Fact]
+    public async Task WatchRoute_NewRoute_SavesToPreferences()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var user = new User { Name = "مسافر", Email = "w1@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(user);
+        await dbContext.SaveChangesAsync();
+        var watchlist = new WatchlistService(dbContext, new NotificationService(dbContext));
+
+        var result = await watchlist.WatchRouteAsync(user.Id, "صنعاء", "عدن");
+
+        Assert.True(result.Success);
+        var routes = await watchlist.GetWatchedRoutesAsync(user.Id);
+        Assert.Single(routes);
+        Assert.Equal("صنعاء", routes[0].FromCity);
+    }
+
+    [Fact]
+    public async Task WatchRoute_Duplicate_ReturnsFailure()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var user = new User { Name = "مسافر", Email = "w2@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(user);
+        await dbContext.SaveChangesAsync();
+        var watchlist = new WatchlistService(dbContext, new NotificationService(dbContext));
+        await watchlist.WatchRouteAsync(user.Id, "صنعاء", "عدن");
+
+        var second = await watchlist.WatchRouteAsync(user.Id, "صنعاء", "عدن");
+
+        Assert.False(second.Success);
+        Assert.Single(await watchlist.GetWatchedRoutesAsync(user.Id));
+    }
+
+    [Fact]
+    public async Task NotifyWatchers_MatchingRoute_CreatesTripUpdateNotification()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var traveler = new User { Name = "مسافر", Email = "w3@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var watchlist = new WatchlistService(dbContext, new NotificationService(dbContext));
+        await watchlist.WatchRouteAsync(traveler.Id, "صنعاء", "عدن");
+        var (_, tripId) = await SeedOpenTrip(dbContext, "drive-w@test.com");
+
+        var notified = await watchlist.NotifyWatchersForTripAsync(tripId);
+
+        Assert.Equal(1, notified);
+        var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == traveler.Id);
+        Assert.NotNull(notification);
+        Assert.Equal(NotificationType.TripUpdate, notification!.Type);
+    }
+
+    [Fact]
+    public async Task NotifyWatchers_NonMatchingRoute_NotifiesNobody()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var traveler = new User { Name = "مسافر", Email = "w4@test.com", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var watchlist = new WatchlistService(dbContext, new NotificationService(dbContext));
+        await watchlist.WatchRouteAsync(traveler.Id, "تعز", "الحديدة");
+        var (_, tripId) = await SeedOpenTrip(dbContext, "drive-x@test.com");
+
+        var notified = await watchlist.NotifyWatchersForTripAsync(tripId);
+
+        Assert.Equal(0, notified);
+        Assert.False(await dbContext.Notifications.AnyAsync(n => n.UserId == traveler.Id));
+    }
 }

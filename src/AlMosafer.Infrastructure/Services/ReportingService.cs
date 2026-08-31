@@ -229,6 +229,16 @@ public class ReportingService : IReportingService
         return routeGroups;
     }
 
+    public async Task<IEnumerable<DriverPerformanceDto>> GetTopDriversAsync(int count = 4)
+    {
+        var performances = await CalculateDriverPerformanceAsync(new ReportFilterDto());
+        return performances
+            .OrderByDescending(d => d.AverageRating)
+            .ThenByDescending(d => d.TripsCount)
+            .Take(count)
+            .ToList();
+    }
+
     private async Task<List<DriverPerformanceDto>> CalculateDriverPerformanceAsync(ReportFilterDto filter)
     {
         var query = _dbContext.Trips

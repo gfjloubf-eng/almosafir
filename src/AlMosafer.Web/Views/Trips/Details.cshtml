@@ -14,6 +14,26 @@
                 <span class="badge badge-status badge-open fs-6">@Model.Status</span>
             </div>
             <div class="card-body p-4">
+                @{
+                    var shareUrl = Url.Action("Details", "Trips", new { id = Model.Id }, Context.Request.Scheme) ?? string.Empty;
+                    var shareText = Uri.EscapeDataString($"🚗 رحلة مشتركة: {Model.FromCity} ← {Model.ToCity} | يوم {Model.TripTime:yyyy-MM-dd} الساعة {Model.TripTime:HH:mm} | المقعد {Model.PricePerSeat:N0} ريال — {shareUrl}");
+                }
+                <div class="d-flex gap-2 mb-3 flex-wrap">
+                    <a href="https://wa.me/?text=@shareText" target="_blank" rel="noopener" class="btn btn-sm text-white font-weight-bold" style="background-color:#25D366;">
+                        📲 شارك الرحلة عبر واتساب
+                    </a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Watchlist" asp-action="Watch" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="fromCity" value="@Model.FromCity" />
+                            <input type="hidden" name="toCity" value="@Model.ToCity" />
+                            <input type="hidden" name="returnUrl" value="@Url.Action("Details", new { id = Model.Id })" />
+                            <button type="submit" class="btn btn-sm btn-outline-warning font-weight-bold">⭐ راقب هذا الخط</button>
+                        </form>
+                    }
+                </div>
+
                 <!-- Trip Summary Section -->
                 <div class="row g-4 mb-4">
                     <div class="col-md-6">

@@ -9,10 +9,12 @@ namespace AlMosafer.Web.Controllers;
 public class TripsController : Controller
 {
     private readonly ITripService _tripService;
+    private readonly IWatchlistService _watchlistService;
 
-    public TripsController(ITripService tripService)
+    public TripsController(ITripService tripService, IWatchlistService watchlistService)
     {
         _tripService = tripService;
+        _watchlistService = watchlistService;
     }
 
     [HttpGet]
@@ -59,6 +61,8 @@ public class TripsController : Controller
             ModelState.AddModelError(string.Empty, result.Message);
             return View(dto);
         }
+
+        await _watchlistService.NotifyWatchersForTripAsync(result.TripId.Value);
 
         TempData["SuccessMessage"] = result.Message;
         return RedirectToAction(nameof(Details), new { id = result.TripId.Value });

@@ -6,6 +6,15 @@
 
 <div class="py-2">
     <!-- Filter Card -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success font-weight-bold">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
+    }
+
     <div class="card-almosafer p-4 mb-4 text-white" style="background-color: var(--color-primary);">
         <h4 class="font-weight-bold mb-3">ابحث عن رحلتك بين المدن 🚗</h4>
         <form method="get" asp-action="Index" class="row g-3">
@@ -78,7 +87,19 @@
                                     <span class="badge badge-status badge-full">مكتمل العدد Full</span>
                                 }
 
-                                <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-accent btn-sm font-weight-bold">التفاصيل والحجز 🎫</a>
+                                <div class="d-flex gap-1">
+                                    <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-accent btn-sm font-weight-bold">التفاصيل والحجز 🎫</a>
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <form asp-controller="Watchlist" asp-action="Watch" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="fromCity" value="@trip.FromCity" />
+                                            <input type="hidden" name="toCity" value="@trip.ToCity" />
+                                            <input type="hidden" name="returnUrl" value="@Url.Action("Index")" />
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="راقب هذا الخط — نبهني بأي رحلة جديدة عليه">⭐</button>
+                                        </form>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
