@@ -542,4 +542,18 @@ public class TripAndBookingServiceTest
 
         Assert.Empty(lines);
     }
+
+
+    [Fact]
+    public async Task CreateTrip_SameCity_AllowedAsInternalLine()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var tripId = await SeedTrip(dbContext, "samecity@test.com", "صنعاء", "صنعاء");
+
+        var trip = await dbContext.Trips.FindAsync(tripId);
+
+        Assert.NotNull(trip);
+        Assert.Equal(trip!.FromCity, trip.ToCity);
+    }
 }
