@@ -1,0 +1,67 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Trips.TripDetailsDto>
+@{
+    ViewData["Title"] = "المواصلات الداخلية 🚌";
+}
+
+<div class="py-4">
+    <div class="text-center mb-4">
+        <h3 class="font-weight-bold text-dark mb-1">🚌 المواصلات الداخلية — الخطوط المنشورة الآن</h3>
+        <p class="text-muted mb-0">تنقلات داخل الأحياء والمدينة الواحدة ينشرها سائقونا مباشرة — احجز مقعدك وادفع نقداً عند الركوب إن شئت</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="display-4 mb-3">🛣️</div>
+            <h5 class="font-weight-bold text-dark mb-2">لا توجد خطوط داخلية منشورة حالياً</h5>
+            <p class="text-muted mb-3">
+                أهلاً بأول سائق ينشر خطاً داخلياً! من «نشر رحلة» اختر المدينة نفسها في خانتَي الانطلاق والوصول
+                (مثال: صنعاء ← صنعاء) وحدد الحيين في نقطة التجمع والملاحظات.
+            </p>
+            @if (User.IsInRole("Driver") || User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-emerald font-weight-bold">+ انشر أول خط داخلي</a>
+            }
+            else
+            {
+                <a asp-action="Index" class="btn btn-outline-primary font-weight-bold">تصفح رحلات ما بين المدن 🔍</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var trip in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-almosafer card-almosafer-hover h-100 d-flex flex-column">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center" style="background-color: var(--color-primary);">
+                            <span class="font-weight-bold fs-6">🚌 خط داخلي — @trip.FromCity</span>
+                            <span class="badge bg-success font-weight-bold">@trip.PricePerSeat.ToString("N0") ريال</span>
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
+                            <p class="mb-1 text-dark"><strong>📍 التجمع:</strong> @(string.IsNullOrEmpty(trip.FromLocation) ? "يُحدد في الوصف" : trip.FromLocation)</p>
+                            <p class="mb-1 text-muted">📅 <strong>الموعد:</strong> @trip.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
+                            <p class="mb-2 text-muted">👤 <strong>السائق:</strong> @trip.DriverName <span class="text-warning">⭐ @trip.DriverRating.ToString("0.0")</span></p>
+                            @if (!string.IsNullOrWhiteSpace(trip.Description))
+                            {
+                                <p class="mb-3 text-muted small">@trip.Description</p>
+                            }
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                <span class="badge badge-status @(trip.AvailableSeats > 0 ? "badge-open" : "badge-full")">
+                                    @(trip.AvailableSeats > 0 ? $"متاح {trip.AvailableSeats} مقاعد" : "مكتمل العدد")
+                                </span>
+                                <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-accent btn-sm font-weight-bold">التفاصيل والحجز 🎫</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="alert alert-light border mt-4 small text-muted mb-0">
+        ℹ️ <strong>ملاحظة شفافية:</strong> «المواصلات الداخلية» هنا حل مرحلي ذكي — الخط الداخلي هو رحلة اختار سائقها المدينة نفسها مرتين.
+        نموذج الخطوط الثابتة بمواقف وجداول رسمية قادم بإذن الله في مرحلة لاحقة بقرار إداري (يتطلب توسعة قاعدة البيانات).
+    </div>
+</div>
