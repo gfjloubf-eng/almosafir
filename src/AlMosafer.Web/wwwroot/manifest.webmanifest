@@ -1,0 +1,16 @@
+{
+  "name": "منصة المسافر — سفر ومواصلات",
+  "short_name": "المسافر",
+  "description": "رحلات مشتركة بين المدن وخطوط مواصلات داخلية معتمدة — حجز، دفع نقدي عند الركوب، وكشف ركوب رقمي.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

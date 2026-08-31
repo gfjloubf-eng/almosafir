@@ -3,6 +3,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="manifest" href="~/manifest.webmanifest" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="المسافر" />
+    <link rel="icon" type="image/svg+xml" href="~/icons/icon.svg" />
+    <link rel="apple-touch-icon" href="~/icons/icon-512.png" />
     <title>@ViewData["Title"] - منصة المسافر AlMosafer</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -193,5 +200,14 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // تسجيل عامل الخدمة (PWA): يجعل المنصة قابلة للتثبيت وتُلطّف انقطاع الشبكة
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').catch(function () { /* صامت: PWA تحسين لا شرط */ });
+            });
+        }
+    </script>
 </body>
 </html>
