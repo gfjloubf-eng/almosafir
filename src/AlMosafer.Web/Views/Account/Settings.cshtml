@@ -1,4 +1,5 @@
 @model AlMosafer.Application.DTOs.Auth.UserProfileDto
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
 @{
     ViewData["Title"] = "إعدادات الحساب والنظام — منصة المسافر";
 }
@@ -14,6 +15,26 @@
                 <span class="badge badge-status badge-open fs-6">@Model.Role</span>
             </div>
             <div class="card-body p-4">
+
+                <!-- Section 0: App Install + Support Team -->
+                <div class="mb-4">
+                    <h5 class="font-weight-bold text-primary mb-3">0. التطبيق وفريق الدعم 📲🛠️</h5>
+                    <div class="p-3 bg-light rounded border mb-2">
+                        <strong class="d-block text-dark mb-1">📲 ثبّت «المسافر» كتطبيق</strong>
+                        <small class="text-muted d-block mb-2">من متصفحك (جوالاً أو دسكتوب): القائمة ← «إضافة إلى الشاشة الرئيسية / Install app». بعدها تعمل كتطبيق مستقل بشاشة كاملة وأيقونة خاصة، وتصمد الصفحات الثابتة عند انقطاع الشبكة.</small>
+                        <span class="badge bg-success">PWA جاهز ✅</span>
+                    </div>
+                    <div class="p-3 bg-white rounded border">
+                        <strong class="d-block text-dark mb-2">🛠️ فريق الدعم والمطورين</strong>
+                        <ul class="mb-0 small text-muted">
+                            <li>المطوّر المسؤول: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Developer"]) ? "فريق تطوير سفر" : Config["SupportTeam:Developer"])</strong></li>
+                            <li>إدارة المنصة: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Management"]) ? "إدارة منصة المسافر" : Config["SupportTeam:Management"])</strong></li>
+                            <li>بريد الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:ContactEmail"]) ? "support@almusafer.local" : Config["SupportTeam:ContactEmail"])</strong></li>
+                            <li>واتساب الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:WhatsApp"]) ? "عبر صفحة المحادثات داخل المنصة" : Config["SupportTeam:WhatsApp"])</strong></li>
+                        </ul>
+                        <small class="text-muted d-block mt-2">«تُدار هذه الأسماء من إعدادات النظام (SupportTeam:*) ولا تُحرَّر من هنا.»</small>
+                    </div>
+                </div>
 
                 <!-- Section 1: Account Settings -->
                 <div class="mb-4">
