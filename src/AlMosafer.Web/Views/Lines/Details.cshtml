@@ -1,0 +1,69 @@
+@model AlMosafer.Application.DTOs.Lines.LineDetailsDto
+@{
+    ViewData["Title"] = $"الخط: {Model.Name}";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-7">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-light text-dark mb-1">@Model.City</span>
+                    <h4 class="mb-0 font-weight-bold">🛣️ @Model.Name</h4>
+                </div>
+                <a asp-action="Index" class="btn btn-outline-light btn-sm">كل الخطوط</a>
+            </div>
+            <div class="card-body p-4">
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <p class="text-muted">@Model.Description</p>
+                }
+
+                <h6 class="font-weight-bold text-dark mt-3 mb-2">🚏 المواقف بالترتيب</h6>
+                @if (Model.Stops.Any())
+                {
+                    <ol class="list-group list-group-numbered mb-4">
+                        @foreach (var stop in Model.Stops)
+                        {
+                            <li class="list-group-item">@stop.Name</li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <p class="text-muted mb-4">لم تُعلن مواقف هذا الخط بعد.</p>
+                }
+
+                <h6 class="font-weight-bold text-dark mb-2">🗓️ المواعيد الأسبوعية</h6>
+                @if (Model.Schedules.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-4">
+                            <thead class="table-dark">
+                                <tr><th>اليوم</th><th>وقت الانطلاق</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var sch in Model.Schedules)
+                                {
+                                    <tr>
+                                        <td class="font-weight-bold">@sch.DayName</td>
+                                        <td>@sch.TimeText</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-4">لم تُعلن مواعيد دورية لهذا الخط بعد — تابع صفحة «المواصلات الداخلية» للتحركات الفعلية.</p>
+                }
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a asp-controller="Trips" asp-action="InternalLines" class="btn btn-primary font-weight-bold">رحلات ناشطة داخل @Model.City 🚌</a>
+                    <a asp-controller="Trips" asp-action="Index" asp-route-FromCity="@Model.City" class="btn btn-outline-primary font-weight-bold">ابحث رحلات @Model.City 🔍</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

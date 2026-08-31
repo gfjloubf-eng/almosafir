@@ -1,0 +1,107 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Lines.LineSummaryDto>
+@{
+    ViewData["Title"] = "إدارة شبكة الخطوط 🛣️";
+}
+
+<div class="py-4">
+    <h3 class="font-weight-bold text-dark mb-4">🛣️ إدارة شبكة الخطوط الرسمية</h3>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success font-weight-bold">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card-almosafer p-4 mb-4">
+        <h5 class="font-weight-bold text-dark mb-3">+ إنشاء خط جديد</h5>
+        <form asp-action="CreateLine" method="post" class="row g-2">
+            @Html.AntiForgeryToken()
+            <div class="col-md-4">
+                <input type="text" name="name" class="form-control" placeholder="اسم الخط: خط شملان — الجامعة" required />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="city" class="form-control" placeholder="المدينة: صنعاء" required />
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="description" class="form-control" placeholder="وصف اختياري" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-emerald w-100 font-weight-bold">إنشاء الخط</button>
+            </div>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-4 mb-0">لا توجد خطوط بعد — ابدأ بإنشاء أول خط من النموذج أعلاه.</div>
+    }
+    else
+    {
+        <div class="table-responsive bg-white rounded shadow-sm p-3">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th><th>الخط</th><th>المدينة</th><th>المواقف</th><th>المواعيد</th><th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var line in Model)
+                    {
+                        <tr>
+                            <td><strong>#@line.Id</strong></td>
+                            <td class="font-weight-bold">@line.Name</td>
+                            <td>@line.City</td>
+                            <td>@line.StopsCount 🚏</td>
+                            <td>@line.SchedulesCount 🗓️</td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <form asp-action="ToggleLineActive" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@line.Id" />
+                                        <input type="hidden" name="isActive" value="@(line.Name.EndsWith("(موقوف)") ? "true" : "false")" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                                            @(line.Name.EndsWith("(موقوف)") ? "تفعيل" : "إيقاف مؤقت")
+                                        </button>
+                                    </form>
+                                    <form asp-action="DeleteLine" method="post" class="d-inline" onsubmit="return confirm('حذف الخط مع مواقفه وجداوله نهائياً — متأكد؟');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@line.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>
+                                    </form>
+                                </div>
+                                <details class="mt-2">
+                                    <summary class="text-primary small" style="cursor:pointer;">+ موقف / + موعد</summary>
+                                    <form asp-action="AddStop" method="post" class="d-flex gap-1 mt-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@line.Id" />
+                                        <input type="text" name="name" class="form-control form-control-sm" placeholder="اسم الموقف" required />
+                                        <input type="number" name="orderIndex" class="form-control form-control-sm" placeholder="الترتيب" min="1" style="max-width:80px;" required />
+                                        <button type="submit" class="btn btn-sm btn-primary">إضافة</button>
+                                    </form>
+                                    <form asp-action="AddSchedule" method="post" class="d-flex gap-1 mt-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@line.Id" />
+                                        <select name="dayOfWeek" class="form-select form-select-sm" style="max-width:120px;">
+                                            <option value="0">الأحد</option>
+                                            <option value="1">الاثنين</option>
+                                            <option value="2">الثلاثاء</option>
+                                            <option value="3">الأربعاء</option>
+                                            <option value="4">الخميس</option>
+                                            <option value="5">الجمعة</option>
+                                            <option value="6">السبت</option>
+                                        </select>
+                                        <input type="time" name="timeText" class="form-control form-control-sm" style="max-width:120px;" required />
+                                        <button type="submit" class="btn btn-sm btn-primary">إضافة</button>
+                                    </form>
+                                </details>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
