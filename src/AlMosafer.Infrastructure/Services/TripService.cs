@@ -29,11 +29,8 @@ public class TripService : ITripService
             return (false, "تاريخ ووقت الرحلة يجب أن يكون في المستقبل.", null);
         }
 
-        if (dto.FromCity.Trim().Equals(dto.ToCity.Trim(), StringComparison.OrdinalIgnoreCase))
-        {
-            return (false, "مدينة الانطلاق ومدينة الوصول لا يمكن أن تكونا متطابقتين.", null);
-        }
-
+        // تنويه موثق: تطابق المدينتين مقصود الآن = «خط مواصلات داخلي» (مرحلة 0)
+        // تظهر هذه الرحلات في صفحة «المواصلات الداخلية» وتُوسَّم 🚌 في البحث
         var trip = new Trip
         {
             DriverId = driverId,
