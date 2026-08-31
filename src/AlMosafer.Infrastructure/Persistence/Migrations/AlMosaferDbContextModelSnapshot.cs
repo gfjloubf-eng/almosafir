@@ -601,6 +601,128 @@ namespace AlMosafer.Infrastructure.Persistence.Migrations
 
                     b.Navigation("TravelerConversations");
                 });
+            modelBuilder.Entity("AlMosafer.Domain.Entities.LineSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int")
+                        .HasColumnName("day_of_week");
+
+                    b.Property<TimeSpan>("DepartureTime")
+                        .HasColumnType("time(6)")
+                        .HasColumnName("departure_time");
+
+                    b.Property<int>("LineId")
+                        .HasColumnType("int")
+                        .HasColumnName("line_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LineId");
+
+                    b.ToTable("line_schedules", (string)null);
+                });
+
+            modelBuilder.Entity("AlMosafer.Domain.Entities.LineStop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("LineId")
+                        .HasColumnType("int")
+                        .HasColumnName("line_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("int")
+                        .HasColumnName("order_index");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LineId");
+
+                    b.ToTable("line_stops", (string)null);
+                });
+
+            modelBuilder.Entity("AlMosafer.Domain.Entities.RouteLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("city");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("route_lines", (string)null);
+                });
+
+            modelBuilder.Entity("AlMosafer.Domain.Entities.LineSchedule", b =>
+                {
+                    b.HasOne("AlMosafer.Domain.Entities.RouteLine", "Line")
+                        .WithMany("Schedules")
+                        .HasForeignKey("LineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Line");
+                });
+
+            modelBuilder.Entity("AlMosafer.Domain.Entities.LineStop", b =>
+                {
+                    b.HasOne("AlMosafer.Domain.Entities.RouteLine", "Line")
+                        .WithMany("Stops")
+                        .HasForeignKey("LineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Line");
+                });
+
+            modelBuilder.Entity("AlMosafer.Domain.Entities.RouteLine", b =>
+                {
+                    b.Navigation("Schedules");
+
+                    b.Navigation("Stops");
+                });
+
 #pragma warning restore 612, 618
         }
     }

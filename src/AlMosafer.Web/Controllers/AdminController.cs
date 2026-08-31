@@ -13,12 +13,14 @@ public class AdminController : Controller
     private readonly IDashboardService _dashboardService;
     private readonly IAdminService _adminService;
     private readonly IReportingService _reportingService;
+    private readonly ILineService _lineService;
 
-    public AdminController(IDashboardService dashboardService, IAdminService adminService, IReportingService reportingService)
+    public AdminController(IDashboardService dashboardService, IAdminService adminService, IReportingService reportingService, ILineService lineService)
     {
         _dashboardService = dashboardService;
         _adminService = adminService;
         _reportingService = reportingService;
+        _lineService = lineService;
     }
 
     [HttpGet]
@@ -143,4 +145,56 @@ public class AdminController : Controller
         var reportSummary = await _reportingService.GetAdminReportSummaryAsync(filter);
         return View(reportSummary);
     }
+    [HttpGet]
+    public async Task<IActionResult> Lines()
+    {
+        var lines = await _lineService.GetAllLinesAsync();
+        return View(lines);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateLine(string name, string city, string? description)
+    {
+        var result = await _lineService.CreateLineAsync(name, city, description);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Lines));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddStop(int lineId, string name, int orderIndex)
+    {
+        var result = await _lineService.AddStopAsync(lineId, name, orderIndex);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Lines));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddSchedule(int lineId, int dayOfWeek, string timeText)
+    {
+        var result = await _lineService.AddScheduleAsync(lineId, dayOfWeek, timeText);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Lines));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleLineActive(int lineId, bool isActive)
+    {
+        var result = await _lineService.SetLineActiveAsync(lineId, isActive);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Lines));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteLine(int lineId)
+    {
+        var result = await _lineService.DeleteLineAsync(lineId);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(Lines));
+    }
+
 }

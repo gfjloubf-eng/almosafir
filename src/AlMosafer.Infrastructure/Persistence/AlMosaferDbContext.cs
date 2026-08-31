@@ -18,6 +18,9 @@ public class AlMosaferDbContext : DbContext
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Rating> Ratings => Set<Rating>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<RouteLine> RouteLines => Set<RouteLine>();
+    public DbSet<LineStop> LineStops => Set<LineStop>();
+    public DbSet<LineSchedule> LineSchedules => Set<LineSchedule>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

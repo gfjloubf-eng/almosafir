@@ -556,4 +556,66 @@ public class TripAndBookingServiceTest
         Assert.NotNull(trip);
         Assert.Equal(trip!.FromCity, trip.ToCity);
     }
+
+
+    [Fact]
+    public async Task CreateLine_ThenListAndDetails_WithStopsAndSchedules()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var lineService = new LineService(dbContext);
+
+        var created = await lineService.CreateLineAsync("خط شملان", "صنعاء", "خط تجريبي");
+        Assert.True(created.Success);
+
+        var all = (await lineService.GetActiveLinesAsync()).ToList();
+        Assert.Single(all);
+
+        var lineId = all[0].Id;
+        await lineService.AddStopAsync(lineId, "باب شملان", 1);
+        await lineService.AddStopAsync(lineId, "الجامعة", 2);
+        await lineService.AddScheduleAsync(lineId, 6, "16:30");
+
+        var details = await lineService.GetLineDetailsAsync(lineId);
+        Assert.NotNull(details);
+        Assert.Equal(2, details!.Stops.Count);
+        Assert.Equal("باب شملان", details.Stops[0].Name);
+        Assert.Single(details.Schedules);
+        Assert.Equal("السبت", details.Schedules[0].DayName);
+        Assert.Equal("16:30", details.Schedules[0].TimeText);
+    }
+
+    [Fact]
+    public async Task GetActiveLines_ExcludesInactiveLines()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var lineService = new LineService(dbContext);
+        await lineService.CreateLineAsync("خط أ", "عدن", null);
+        var lineId = (await lineService.GetActiveLinesAsync()).First().Id;
+
+        await lineService.SetLineActiveAsync(lineId, false);
+
+        Assert.Empty(await lineService.GetActiveLinesAsync());
+        Assert.Single(await lineService.GetAllLinesAsync());
+    }
+
+    [Fact]
+    public async Task DeleteLine_RemovesStopsAndSchedulesCascade()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var lineService = new LineService(dbContext);
+        await lineService.CreateLineAsync("خط ب", "تعز", null);
+        var lineId = (await lineService.GetActiveLinesAsync()).First().Id;
+        await lineService.AddStopAsync(lineId, "الحوبان", 1);
+        await lineService.AddScheduleAsync(lineId, 0, "07:00");
+
+        var result = await lineService.DeleteLineAsync(lineId);
+
+        Assert.True(result.Success);
+        Assert.Empty(await lineService.GetAllLinesAsync());
+        Assert.Empty(dbContext.LineStops);
+        Assert.Empty(dbContext.LineSchedules);
+    }
 }
