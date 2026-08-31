@@ -492,4 +492,54 @@ public class TripAndBookingServiceTest
         var reloaded = await dbContext.Payments.FindAsync(payment.Id);
         Assert.Equal(PaymentStatus.Pending, reloaded!.Status);
     }
+
+
+    private async Task<int> SeedTrip(AlMosaferDbContext dbContext, string email, string from, string to)
+    {
+        var driver = new User { Name = "سائق", Email = email, Role = UserRole.Driver };
+        dbContext.Users.Add(driver);
+        await dbContext.SaveChangesAsync();
+        var (_, tripService) = CreateServices(dbContext);
+        var result = await tripService.CreateTripAsync(driver.Id, new CreateTripDto
+        {
+            FromCity = from,
+            ToCity = to,
+            TripTime = DateTime.Now.AddDays(1),
+            Seats = 4,
+            PricePerSeat = 500.00m
+        });
+        return result.TripId!.Value;
+    }
+
+    [Fact]
+    public async Task GetInternalLines_IncludesOnlySameCityTrips()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        await SeedTrip(dbContext, "line1@test.com", "صنعاء", "صنعاء");
+        await SeedTrip(dbContext, "line2@test.com", "صنعاء", "عدن");
+        var (_, tripService) = CreateServices(dbContext);
+
+        var lines = (await tripService.GetInternalLinesAsync()).ToList();
+
+        Assert.Single(lines);
+        Assert.Equal("صنعاء", lines[0].FromCity);
+        Assert.Equal("صنعاء", lines[0].ToCity);
+    }
+
+    [Fact]
+    public async Task GetInternalLines_ExcludesCancelledAndNonOpen()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var tripId = await SeedTrip(dbContext, "line3@test.com", "عدن", "عدن");
+        var (_, tripService) = CreateServices(dbContext);
+        var trip = await dbContext.Trips.FindAsync(tripId);
+        var driver = await dbContext.Users.FindAsync(trip!.DriverId);
+        await tripService.CancelTripAsync(driver!.Id, tripId);
+
+        var lines = await tripService.GetInternalLinesAsync();
+
+        Assert.Empty(lines);
+    }
 }

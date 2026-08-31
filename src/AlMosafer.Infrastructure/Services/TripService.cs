@@ -268,6 +268,51 @@ public class TripService : ITripService
         });
     }
 
+    public async Task<IEnumerable<TripDetailsDto>> GetInternalLinesAsync()
+    {
+        // «مرحلة 0» للمواصلات الداخلية: الخط الداخلي = رحلة مدينتها واحدة (FromCity == ToCity)
+        // بلا أي عمود أو هجرة مخطط — الحي/المنطقة تُذكر في نقطة التجمع ووصف الرحلة
+        var tripsList = await _dbContext.Trips
+            .AsNoTracking()
+            .Include(t => t.Driver)
+            .Include(t => t.Bookings)
+            .Where(t => t.FromCity == t.ToCity && t.Status == TripStatus.Open && t.TripTime > DateTime.Now)
+            .OrderBy(t => t.TripTime)
+            .ToListAsync();
+
+        var result = new List<TripDetailsDto>();
+        foreach (var trip in tripsList)
+        {
+            int bookedSeats = trip.Bookings
+                .Where(b => b.Status == BookingStatus.Confirmed)
+                .Sum(b => b.SeatsBooked);
+
+            result.Add(new TripDetailsDto
+            {
+                Id = trip.Id,
+                DriverId = trip.DriverId,
+                DriverName = trip.Driver.Name,
+                DriverPhone = trip.Driver.Phone,
+                DriverRating = trip.Driver.Rating,
+                PlateNumber = trip.Driver.PlateNumber,
+                VehicleModel = trip.Driver.VehicleModel,
+                FromCity = trip.FromCity,
+                FromLocation = trip.FromLocation,
+                ToCity = trip.ToCity,
+                TripTime = trip.TripTime,
+                TotalSeats = trip.Seats,
+                AvailableSeats = Math.Max(0, trip.Seats - bookedSeats),
+                PricePerSeat = trip.PricePerSeat,
+                Description = trip.Description,
+                VehicleInfo = trip.VehicleInfo,
+                Status = trip.Status,
+                CreatedAt = trip.CreatedAt
+            });
+        }
+
+        return result;
+    }
+
     public async Task<(bool Success, string Message)> StartTripAsync(int driverId, int tripId)
     {
         var trip = await _dbContext.Trips.FindAsync(tripId);

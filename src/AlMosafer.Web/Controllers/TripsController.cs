@@ -37,6 +37,13 @@ public class TripsController : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> InternalLines()
+    {
+        var lines = await _tripService.GetInternalLinesAsync();
+        return View(lines);
+    }
+
+    [HttpGet]
     [Authorize(Roles = "Driver,Admin")]
     public IActionResult Create()
     {
