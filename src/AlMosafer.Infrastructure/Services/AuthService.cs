@@ -65,11 +65,11 @@ public class AuthService : IAuthService
         await _dbContext.SaveChangesAsync();
 
         var resetUrl = resetUrlTemplate.Replace("__TOKEN__", token);
-        var html = $"<div dir="rtl" style="font-family:Tahoma">" +
-                   $"<h3>إعادة تعيين كلمة المرور — منصة المسافر</h3>" +
-                   $"<p>طلبت استعادة كلمة مرور حسابك. اضغط الرابط خلال 30 دقيقة:</p>" +
-                   $"<p><a href="{resetUrl}">{resetUrl}</a></p>" +
-                   $"<p style="color:#888">إن لم تطلب ذلك تجاهل هذه الرسالة وستبقى كلمة مرورك كما هي.</p></div>";
+        var html = "<div dir='rtl' style='font-family:Tahoma'>" +
+                   "<h3>إعادة تعيين كلمة المرور — منصة المسافر</h3>" +
+                   "<p>طلبت استعادة كلمة مرور حسابك. اضغط الرابط خلال 30 دقيقة:</p>" +
+                   $"<p><a href='{resetUrl}'>{resetUrl}</a></p>" +
+                   "<p style='color:#888'>إن لم تطلب ذلك تجاهل هذه الرسالة وستبقى كلمة مرورك كما هي.</p></div>";
 
         if (_emailService != null)
         {
@@ -91,7 +91,7 @@ public class AuthService : IAuthService
         }
 
         var candidates = await _dbContext.Users
-            .Where(u => u.PreferencesJson != null && u.PreferencesJson.Contains(""PasswordReset""))
+            .Where(u => u.PreferencesJson != null && u.PreferencesJson.Contains("\"PasswordReset\""))
             .ToListAsync();
 
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
