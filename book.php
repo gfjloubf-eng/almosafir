@@ -27,9 +27,11 @@ if ($trip_id <= 0) {
         try {
             // 1) Atomic decrement only if seats are sufficient (prevents race)
             $reserve_stmt = $conn->prepare(
-                "UPDATE trips "+
-                "SET seats = seats - ? "+
-                "WHERE id = ? AND status = 'open' AND seats >= ?"
+                "UPDATE trips
+SET seats = seats - ?
+WHERE id = ?
+AND status = 'open'
+AND seats >= ?"
             );
             $reserve_stmt->bind_param("iii", $seats_booked, $trip_id, $seats_booked);
             $reserve_stmt->execute();

@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "وصول غير مصرح به (403)";
+}
+
+<div class="text-center py-5">
+    <div class="display-1 text-danger mb-3">⛔ 403</div>
+    <h1 class="display-5 font-weight-bold text-dark mb-3">عذراً! وصول غير مصرح به</h1>
+    <p class="lead text-muted mb-4">لا تملك الصلاحيات الكافية للوصول إلى هذه الصفحة أو المورد المطلوبة.</p>
+
+    <div class="d-flex justify-content-center gap-3">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">العودة للرئيسية</a>
+        <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-secondary btn-lg">الملف الشخصي</a>
+    </div>
+</div>

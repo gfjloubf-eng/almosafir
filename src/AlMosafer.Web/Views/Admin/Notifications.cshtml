@@ -1,0 +1,66 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Notifications.NotificationDto>
+@{
+    ViewData["Title"] = "مراقبة تنبيهات وإشعارات النظام — نظام المسافر";
+}
+
+<div class="py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">مراقبة إشعارات وتنبيهات المنظومة 🔔</h3>
+            <p class="text-muted mb-0">عرض وحصر التنبيهات المرسلة تلقائياً للمستخدمين والسائقين</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon">🔔</div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد إشعارات مسجلة</h4>
+            <p class="text-muted mb-0">لم يتم إرسال تنبيهات تلقائية في قاعدة البيانات حتى الآن.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th># ID</th>
+                            <th>المستلم (# User ID)</th>
+                            <th>العنوان</th>
+                            <th>نص الإشعار</th>
+                            <th>نوع الإشعار</th>
+                            <th>الحالة</th>
+                            <th>تاريخ الإرسال</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var n in Model)
+                        {
+                            <tr>
+                                <td><strong>#NTF-@n.Id.ToString("D5")</strong></td>
+                                <td>#USR-@n.UserId.ToString("D4")</td>
+                                <td class="font-weight-bold text-dark">@n.Title</td>
+                                <td>@n.Message</td>
+                                <td><span class="badge bg-info">@n.Type</span></td>
+                                <td>
+                                    @if (n.IsRead)
+                                    {
+                                        <span class="badge bg-success">مقروء (Read)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">جديد (Unread)</span>
+                                    }
+                                </td>
+                                <td>@n.CreatedAt.ToString("yyyy-MM-dd — hh:mm tt")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

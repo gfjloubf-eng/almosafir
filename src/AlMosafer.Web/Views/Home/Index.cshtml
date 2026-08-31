@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "الرئيسية — منصة المسافر للتنقل بين المدن اليمنية";
+}
+
+<!-- Hero Search Banner -->
+<div class="card-almosafer p-4 p-md-5 mb-5 text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: none;">
+    <div class="row align-items-center gy-4">
+        <div class="col-lg-7">
+            <span class="badge bg-primary mb-3 px-3 py-2 fs-6 shadow-sm">سافر بأمان وراحة 🚗</span>
+            <h1 class="display-5 font-weight-bold mb-3">حجز رحلات بين المدن بكل سهولة وأمان</h1>
+            <p class="lead text-light mb-4">منصة المسافر تتيح لك البحث عن الرحلات اليومية بين مختلف المدن والتواصل المباشر مع السائقين وتأكيد حجز مقعدك بضغطة زر مع إصدار إيصال حجز إلكتروني مؤكد.</p>
+            <div class="d-flex flex-wrap gap-3">
+                <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold shadow-sm">استكشاف الرحلات المتاحة 🔍</a>
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-controller="Account" asp-action="RegisterTraveler" class="btn btn-outline-light btn-lg font-weight-bold">انضم كـ مسافر جديد 🚀</a>
+                }
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-lg border-0 text-dark rounded-lg p-4 bg-white">
+                <h4 class="font-weight-bold mb-3 text-primary">ابحث عن رحلتك الآن 🔍</h4>
+                <form asp-controller="Trips" asp-action="Index" method="get">
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">من مدينة</label>
+                        <input type="text" name="FromCity" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">إلى مدينة</label>
+                        <input type="text" name="ToCity" class="form-control form-control-custom" placeholder="مثال: عدن، إب" />
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label font-weight-bold">تاريخ السفر</label>
+                        <input type="date" name="Date" class="form-control form-control-custom" />
+                    </div>
+                    <button type="submit" class="btn btn-accent w-100 btn-lg font-weight-bold">عرض الرحلات 🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="mb-5">
+    <div class="text-center mb-4">
+        <h3 class="font-weight-bold text-primary mb-2">كيف تعمل منصة المسافر؟ 🛠️</h3>
+        <p class="text-muted">أربعة خطوات بسيطة لحجز مقعدك والتنقل بأمان بين المدن</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card-almosafer p-4 text-center h-100 position-relative">
+                <div class="badge bg-primary rounded-circle mb-3 p-3 fs-5" style="width: 50px; height: 50px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">1</div>
+                <h6 class="font-weight-bold text-dark mb-2">البحث عن رحلة</h6>
+                <p class="text-muted small mb-0">حدد مدينة الانطلاق والوصول وتاريخ السفر لتصفح الرحلات المتاحة.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-almosafer p-4 text-center h-100 position-relative">
+                <div class="badge bg-accent rounded-circle mb-3 p-3 fs-5" style="width: 50px; height: 50px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">2</div>
+                <h6 class="font-weight-bold text-dark mb-2">اختيار الرحلة والمقاعد</h6>
+                <p class="text-muted small mb-0">اطّلع على بيانات السائق، نوع المركبة، عدد المقاعد الشاغرة وسعر المقعد.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-almosafer p-4 text-center h-100 position-relative">
+                <div class="badge bg-success rounded-circle mb-3 p-3 fs-5" style="width: 50px; height: 50px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">3</div>
+                <h6 class="font-weight-bold text-dark mb-2">تأكيد الحجز الذرّي</h6>
+                <p class="text-muted small mb-0">أكد حجز مقاعدك بنقرة واحدة مع حماية صريحة ضد الحجز المزدوج.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-almosafer p-4 text-center h-100 position-relative">
+                <div class="badge bg-warning text-dark rounded-circle mb-3 p-3 fs-5" style="width: 50px; height: 50px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">4</div>
+                <h6 class="font-weight-bold text-dark mb-2">إصدار الإيصال والتواصل</h6>
+                <p class="text-muted small mb-0">احصل على إيصال الحجز الإلكتروني المؤكد وتواصل مباشرة مع السائق.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Value Propositions -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card-almosafer p-4 text-center h-100 card-almosafer-hover">
+            <div class="display-4 text-primary mb-3">🛡️</div>
+            <h5 class="font-weight-bold text-dark mb-2">سائقون معتمدون</h5>
+            <p class="text-muted mb-0">جميع السائقين مسجلون ببيانات المركبة ورقم اللوحة لضمان أقصى درجات الأمان والسلامة في كل رحلة.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-almosafer p-4 text-center h-100 card-almosafer-hover">
+            <div class="display-4 text-success mb-3">🪑</div>
+            <h5 class="font-weight-bold text-dark mb-2">حجز مقاعد فوري</h5>
+            <p class="text-muted mb-0">اختر عدد المقاعد المطلوب واطلع على الأماكن المتاحة لحظياً مع تأكيد الحجز الفوري بدون انتظار.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-almosafer p-4 text-center h-100 card-almosafer-hover">
+            <div class="display-4 text-warning mb-3">🧾</div>
+            <h5 class="font-weight-bold text-dark mb-2">إيصال حجز مؤكد</h5>
+            <p class="text-muted mb-0">احصل على إيصال حجز إلكتروني رسمي يحتوي على كافة تفاصيل الرحلة وبيانات الاتصال المباشر بالسائق.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Final Call to Action -->
+<div class="card-almosafer p-4 p-md-5 text-center bg-white border-0 shadow-sm rounded-xl">
+    <h3 class="font-weight-bold text-primary mb-3">جاهز للبدء في رحلتك القادمة؟ 🚗</h3>
+    <p class="text-muted mb-4 max-w-2xl mx-auto">سواء كنت مسافراً تبحث عن وسيلة نقل مريحة وأمينة، أو سائقاً ترغب في نشر رحلاتك ومشاركة التكلفة.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald btn-lg font-weight-bold">تسجيل كـ سائق 🚗</a>
+        }
+    </div>
+</div>

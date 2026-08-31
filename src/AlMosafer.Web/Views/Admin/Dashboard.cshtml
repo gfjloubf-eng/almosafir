@@ -1,0 +1,106 @@
+@model AlMosafer.Application.DTOs.Dashboard.AdminDashboardDto
+@{
+    ViewData["Title"] = "لوحة الإدارة — Admin Dashboard";
+}
+
+<div class="py-4">
+    <!-- Header / Context -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">لوحة الإدارة والمراقبة الشاملة 🛡️</h3>
+            <p class="text-muted mb-0">مراقبة أداء منصة المسافر والتحكم بمؤشرات المستخدمين والرحلات والعمليات</p>
+        </div>
+        <span class="badge bg-danger fs-6 px-3 py-2">Role: System Admin</span>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-primary h-100">
+                <h6 class="text-muted font-weight-bold mb-2">إجمالي المستخدمين</h6>
+                <h2 class="font-weight-bold text-primary mb-2">@Model.TotalUsers</h2>
+                <small class="text-muted">@Model.TravelersCount مسافر | @Model.DriversCount سائق</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-success h-100">
+                <h6 class="text-muted font-weight-bold mb-2">إجمالي الرحلات</h6>
+                <h2 class="font-weight-bold text-success mb-2">@Model.TotalTrips</h2>
+                <small class="text-muted">@Model.ActiveTrips رحلة مفتوحة للحجز</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-warning h-100">
+                <h6 class="text-muted font-weight-bold mb-2">إجمالي الحجوزات</h6>
+                <h2 class="font-weight-bold text-warning mb-2">@Model.TotalBookings</h2>
+                <small class="text-muted">حجوزات مسجلة بالكامل</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-info h-100">
+                <h6 class="text-muted font-weight-bold mb-2">حجم المدفوعات</h6>
+                <h2 class="font-weight-bold text-info mb-2">@Model.TotalPaymentsAmount.ToString("N0") <span class="fs-6">ريال</span></h2>
+                <small class="text-muted">إجمالي المبالغ المؤكدة</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Operations & Control Navigation -->
+    <div class="card-almosafer p-4 mb-4">
+        <h5 class="font-weight-bold text-primary mb-3">أقسام التحكّم والمراقبة الإدارية 🛡️</h5>
+        <div class="row g-3">
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Users" class="btn btn-outline-primary w-100 py-3 font-weight-bold text-start">
+                    👥 إدارة المستخدمين
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Trips" class="btn btn-outline-success w-100 py-3 font-weight-bold text-start">
+                    🚗 مراقبة الرحلات
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Bookings" class="btn btn-outline-warning w-100 py-3 font-weight-bold text-start">
+                    🧳 إدارة الحجوزات
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Payments" class="btn btn-outline-info w-100 py-3 font-weight-bold text-start">
+                    💳 المعاملات المالية
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Ratings" class="btn btn-outline-danger w-100 py-3 font-weight-bold text-start">
+                    ⭐️ التقييمات والمراجعات
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Notifications" class="btn btn-outline-secondary w-100 py-3 font-weight-bold text-start">
+                    🔔 مراقبة التنبيهات (@Model.UnreadNotificationsCount)
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Conversations" class="btn btn-outline-dark w-100 py-3 font-weight-bold text-start">
+                    💬 سجل المحادثات
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="Reports" class="btn btn-outline-primary w-100 py-3 font-weight-bold text-start">
+                    📊 التقارير والإحصائيات
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <a asp-action="SystemHealth" class="btn btn-emerald w-100 py-3 font-weight-bold text-start">
+                    💻 صحة النظام (System Health)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-danger d-flex align-items-center mb-0 shadow-sm" role="alert">
+        <span class="me-2 fs-4">🛡️</span>
+        <div>
+            <strong>لوحة الإدارة المحمية:</strong> هذه الشاشة مخصصة صراحة لمديري النظام تحت صلاحيات <code>[Authorize(Roles = "Admin")]</code> وتستعرض الإحصائيات الفعليه لقاعدة البيانات دون أي تلاعب.
+        </div>
+    </div>
+</div>

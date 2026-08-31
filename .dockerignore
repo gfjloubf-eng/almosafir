@@ -1,0 +1,27 @@
+**/.classpath
+**/.dockerignore
+**/.env
+**/.git
+**/.gitignore
+**/.project
+**/.settings
+**/.toolstarget
+**/.vs
+**/.vscode
+**/.gemini
+**/*.*proj.user
+**/bin
+**/charts
+**/docker-compose*
+**/Dockerfile*
+**/node_modules
+**/npm-debug.log
+**/obj
+**/secrets.json
+**/scratch
+
+# Legacy PHP-era artifacts — kept in Git history, excluded from the C# Docker build context
+**/*.php
+db_setup.sql
+docs/
+memory-bank/

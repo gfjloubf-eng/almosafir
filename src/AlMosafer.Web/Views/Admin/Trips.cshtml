@@ -1,0 +1,89 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Trips.TripDetailsDto>
+@{
+    ViewData["Title"] = "مراقبة ورحلات المنظومة — نظام المسافر";
+    var originFilter = ViewData["Origin"] as string;
+    var destinationFilter = ViewData["Destination"] as string;
+    var statusFilter = ViewData["StatusFilter"] as AlMosafer.Domain.Enums.TripStatus?;
+}
+
+<div class="py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">مراقبة ورحلات المنظومة 🚗</h3>
+            <p class="text-muted mb-0">عرض وتتبع الرحلات المنشورة بين المدن حالة المقاعد وحساب الأسعار</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card-almosafer p-4 mb-4">
+        <form method="get" asp-action="Trips" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="origin" value="@originFilter" class="form-control form-control-custom" placeholder="مدينة الانطلاق..." />
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="destination" value="@destinationFilter" class="form-control form-control-custom" placeholder="مدينة الوصول..." />
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 font-weight-bold">تصفية 🔍</button>
+                <a asp-action="Trips" class="btn btn-outline-secondary font-weight-bold">إعادة</a>
+            </div>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon">🚗</div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد رحلات مطابقة</h4>
+            <p class="text-muted mb-0">لم يقم السائقون بنشر رحلات بهذه المعايير بعد.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th># ID</th>
+                            <th>السائق</th>
+                            <th>الخط (الرحلة)</th>
+                            <th>موعد الانطلاق</th>
+                            <th>المقاعد الشاغرة</th>
+                            <th>السعر / مقعد</th>
+                            <th>الحالة</th>
+                            <th>التفاصيل</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var trip in Model)
+                        {
+                            <tr>
+                                <td><strong>#TRIP-@trip.Id.ToString("D4")</strong></td>
+                                <td class="font-weight-bold text-dark">@trip.DriverName</td>
+                                <td>@trip.FromCity ← @trip.ToCity</td>
+                                <td>@trip.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</td>
+                                <td>@trip.AvailableSeats / @trip.TotalSeats مقعد</td>
+                                <td class="text-success font-weight-bold">@trip.PricePerSeat.ToString("N0") ريال</td>
+                                <td>
+                                    @if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Open)
+                                    {
+                                        <span class="badge bg-success">مفتوحة (Open)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@trip.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Trips" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary font-weight-bold">عرض 🔍</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

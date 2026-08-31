@@ -1,0 +1,99 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Auth.UserProfileDto>
+@{
+    ViewData["Title"] = "إدارة مستخدمي المنظومة — نظام المسافر";
+    var currentSearch = ViewData["Search"] as string;
+    var currentRole = ViewData["RoleFilter"] as AlMosafer.Domain.Enums.UserRole?;
+}
+
+<div class="py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">إدارة حسابات مستخدمي المنظومة 👥</h3>
+            <p class="text-muted mb-0">عرض وحصر حسابات المسافرين والسائقين والمدراء المعتمدين بالمنظومة</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    <!-- Search & Filter Bar -->
+    <div class="card-almosafer p-4 mb-4">
+        <form method="get" asp-action="Users" class="row g-3">
+            <div class="col-md-6 col-lg-5">
+                <input type="text" name="search" value="@currentSearch" class="form-control form-control-custom" placeholder="ابحث بالاسم، البريد الإلكتروني، أو رقم الهاتف..." />
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <select name="role" class="form-select form-select-custom">
+                    <option value="">كافة الأدوار (جميع المستخدمين)</option>
+                    <option value="Traveler" selected="@(currentRole == AlMosafer.Domain.Enums.UserRole.Traveler)">مسافر (Traveler)</option>
+                    <option value="Driver" selected="@(currentRole == AlMosafer.Domain.Enums.UserRole.Driver)">سائق (Driver)</option>
+                    <option value="Admin" selected="@(currentRole == AlMosafer.Domain.Enums.UserRole.Admin)">مدير نظام (Admin)</option>
+                </select>
+            </div>
+            <div class="col-md-2 col-lg-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 font-weight-bold">تصفية وبحث 🔍</button>
+                <a asp-action="Users" class="btn btn-outline-secondary font-weight-bold">إعادة</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Users Table -->
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon">👥</div>
+            <h4 class="font-weight-bold text-dark mb-2">لا يوجد مستخدمون يطابقون خيارات البحث</h4>
+            <p class="text-muted mb-0">تأكد من كتابة مصطلح البحث بشكل صحيح أو حدد خيار تصفية آخر.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th># ID</th>
+                            <th>الاسم الكامل</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>رقم الهاتف</th>
+                            <th>الدور (Role)</th>
+                            <th>المدينة</th>
+                            <th>تاريخ التسجيل</th>
+                            <th>التفاصيل</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td><strong>#USR-@user.Id.ToString("D4")</strong></td>
+                                <td class="font-weight-bold text-dark">@user.Name</td>
+                                <td>@user.Email</td>
+                                <td>@(string.IsNullOrEmpty(user.Phone) ? "غير مسجل" : user.Phone)</td>
+                                <td>
+                                    @if (user.Role == AlMosafer.Domain.Enums.UserRole.Admin)
+                                    {
+                                        <span class="badge bg-danger">مدير (Admin)</span>
+                                    }
+                                    else if (user.Role == AlMosafer.Domain.Enums.UserRole.Driver)
+                                    {
+                                        <span class="badge bg-success">سائق (Driver)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">مسافر (Traveler)</span>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrEmpty(user.City) ? "غير محدد" : user.City)</td>
+                                <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    <a asp-action="UserDetails" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary font-weight-bold">عرض 🔍</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,26 @@
+/* AlMosafer Platform Layout & Component Scoped Styles */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+.border-top {
+  border-top: 1px solid var(--color-border);
+}
+.border-bottom {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.box-shadow {
+  box-shadow: var(--shadow-sm);
+}
+
+/* Footer Flexbox Fix: Removed position: absolute; bottom: 0; to prevent footer overlay bugs */
+.footer {
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1px solid var(--color-border);
+  padding: 1.5rem 0;
+}

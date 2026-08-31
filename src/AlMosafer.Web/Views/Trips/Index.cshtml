@@ -1,0 +1,89 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Trips.TripDetailsDto>
+@{
+    ViewData["Title"] = "البحث عن رحلة — منصة المسافر";
+    var filter = ViewData["Filter"] as AlMosafer.Application.DTOs.Trips.TripSearchFilterDto ?? new AlMosafer.Application.DTOs.Trips.TripSearchFilterDto();
+}
+
+<div class="py-2">
+    <!-- Filter Card -->
+    <div class="card-almosafer p-4 mb-4 text-white" style="background-color: var(--color-primary);">
+        <h4 class="font-weight-bold mb-3">ابحث عن رحلتك بين المدن 🚗</h4>
+        <form method="get" asp-action="Index" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label text-light font-weight-bold">من مدينة</label>
+                <input type="text" name="FromCity" value="@filter.FromCity" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-light font-weight-bold">إلى مدينة</label>
+                <input type="text" name="ToCity" value="@filter.ToCity" class="form-control form-control-custom" placeholder="مثال: عدن، إب" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-light font-weight-bold">تاريخ السفر</label>
+                <input type="date" name="Date" value="@(filter.Date?.ToString("yyyy-MM-dd"))" class="form-control form-control-custom" />
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-accent w-100 font-weight-bold">بحث الرحلات 🔍</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="font-weight-bold text-dark mb-0">الرحلات المتاحة (@Model.Count())</h4>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon">🔍</div>
+            <h4 class="font-weight-bold text-dark mb-2">لم نجد رحلات مطابقة لشروط بحثك</h4>
+            <p class="text-muted mb-4">جرّب تغيير مدينة الوصول أو البحث بتاريخ آخر لعرض المزيد من الرحلات اليومية.</p>
+            <a asp-action="Index" class="btn btn-outline-primary font-weight-bold">عرض جميع الرحلات</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var trip in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-almosafer card-almosafer-hover h-100 d-flex flex-column">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold fs-5">@trip.FromCity ← @trip.ToCity</span>
+                            <span class="badge bg-success font-weight-bold fs-6">@trip.PricePerSeat.ToString("N0") ريال</span>
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="display-6 me-2">👤</div>
+                                <div>
+                                    <h6 class="mb-0 font-weight-bold text-dark">@trip.DriverName</h6>
+                                    <small class="text-warning font-weight-bold">⭐ @trip.DriverRating.ToString("0.0") / 5.0 | @trip.VehicleModel</small>
+                                </div>
+                            </div>
+                            <hr class="my-2">
+                            <p class="mb-1 text-muted">📅 <strong>التاريخ والوقت:</strong> @trip.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</p>
+                            <p class="mb-3 text-muted">📍 <strong>نقطة التجمع:</strong> @(string.IsNullOrEmpty(trip.FromLocation) ? "حسب الاتفاق" : trip.FromLocation)</p>
+                            
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                @if (trip.AvailableSeats >= 3)
+                                {
+                                    <span class="badge badge-status badge-open">متاح @trip.AvailableSeats مقاعد</span>
+                                }
+                                else if (trip.AvailableSeats > 0)
+                                {
+                                    <span class="badge badge-status badge-warning-custom">متبقي @trip.AvailableSeats مقاعد فقط!</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-status badge-full">مكتمل العدد Full</span>
+                                }
+
+                                <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-accent btn-sm font-weight-bold">التفاصيل والحجز 🎫</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

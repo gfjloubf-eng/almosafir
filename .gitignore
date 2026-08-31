@@ -1,26 +1,24 @@
-# Dependencies
-node_modules/
-vendor/
+# .NET & ASP.NET Core Build artifacts
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
 
-# XAMPP/DB
-xampp/
+# Environment settings & secrets
+appsettings.Local.json
+*.secrets.json
+
+# Legacy PHP & XAMPP logs
+logs/
 *.log
-*.sql
-config/New Text Document.txt
 
-# Env
-.env
-*.env
-
-# IDE
-.vscode/settings.json
-.idea/
-
-# OS
-.DS_Store
+# OS generated
 Thumbs.db
+Desktop.ini
 
-# Builds
-dist/
-build/
+# Scratch and temporary files
+scratch/
 

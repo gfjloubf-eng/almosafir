@@ -1,0 +1,72 @@
+@model AlMosafer.Application.DTOs.Auth.UserProfileDto
+@{
+    ViewData["Title"] = $"تفاصيل المستخدم {Model.Name} — نظام المسافر";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-8">
+        <div class="card-almosafer shadow-lg border-0 overflow-hidden">
+            <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary mb-1">بيانات الحساب</span>
+                    <h3 class="mb-0 font-weight-bold">#USR-@Model.Id.ToString("D4") — @Model.Name</h3>
+                </div>
+                <span class="badge bg-danger fs-6">@Model.Role</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <div class="display-2 bg-light rounded-circle text-primary d-inline-block p-3 border shadow-sm">
+                            👤
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3 class="font-weight-bold text-dark mb-1">@Model.Name</h3>
+                        <p class="text-muted mb-1">📧 <strong>البريد الإلكتروني:</strong> @Model.Email</p>
+                        <p class="text-muted mb-0">📱 <strong>الهاتف:</strong> @(string.IsNullOrEmpty(Model.Phone) ? "غير مسجل" : Model.Phone) | 📍 <strong>المدينة:</strong> @(string.IsNullOrEmpty(Model.City) ? "غير محدد" : Model.City)</p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <h6 class="text-primary font-weight-bold">📅 تاريخ التسجيل</h6>
+                            <p class="mb-0 text-dark font-weight-bold">@Model.CreatedAt.ToString("yyyy-MM-dd — hh:mm tt")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <h6 class="text-primary font-weight-bold">🚗 إجمالي الرحلات</h6>
+                            <p class="mb-0 text-dark font-weight-bold">@Model.TotalTrips رحلة</p>
+                        </div>
+                    </div>
+
+                    @if (Model.Role == AlMosafer.Domain.Enums.UserRole.Driver)
+                    {
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded border">
+                                <h6 class="text-success font-weight-bold">🚙 بيانات المركبة</h6>
+                                <p class="mb-0 text-dark font-weight-bold">@Model.VehicleModel (@(Model.VehicleYear?.ToString() ?? "N/A"))</p>
+                                <small class="text-muted">رقم اللوحة: <strong>@Model.PlateNumber</strong></small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded border">
+                                <h6 class="text-success font-weight-bold">⭐ التقييم والأرباح</h6>
+                                <p class="mb-0 text-dark font-weight-bold">التقييم: ⭐ @Model.Rating.ToString("0.0") / 5.0</p>
+                                <small class="text-muted">الأرباح المؤكدة: <strong>@Model.TotalEarnings.ToString("N0") ريال</strong></small>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Users" class="btn btn-outline-secondary font-weight-bold">← العودة لقائمة المستخدمين</a>
+                    <span class="text-muted small">محمي ومحكوم سيرفرياً 🛡️</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
