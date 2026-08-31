@@ -27,7 +27,8 @@
                     <div class="p-3 bg-white rounded border">
                         <strong class="d-block text-dark mb-2">🛠️ فريق الدعم والمطورين</strong>
                         <ul class="mb-0 small text-muted">
-                            <li>المطوّر المسؤول: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Developer"]) ? "فريق تطوير سفر" : Config["SupportTeam:Developer"])</strong></li>
+                            <li>المطوّر المسؤول: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Developer"]) ? "عمار عادل المصوعي" : Config["SupportTeam:Developer"])</strong></li>
+                            <li>بمساعدة التطوير: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:AssistantDeveloper"]) ? "عبد الملك فواز" : Config["SupportTeam:AssistantDeveloper"])</strong></li>
                             <li>إدارة المنصة: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Management"]) ? "إدارة منصة المسافر" : Config["SupportTeam:Management"])</strong></li>
                             <li>بريد الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:ContactEmail"]) ? "support@almusafer.local" : Config["SupportTeam:ContactEmail"])</strong></li>
                             <li>واتساب الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:WhatsApp"]) ? "عبر صفحة المحادثات داخل المنصة" : Config["SupportTeam:WhatsApp"])</strong></li>
