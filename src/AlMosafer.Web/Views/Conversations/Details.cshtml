@@ -17,7 +17,7 @@
             </div>
 
             <!-- Chat Messages Box -->
-            <div class="card-body p-4 bg-light" style="max-height: 450px; overflow-y: auto;">
+            <div class="card-body p-4 bg-light" id="messages-box" style="max-height: 450px; overflow-y: auto;">
                 @if (!messages.Any())
                 {
                     <div class="text-center py-5 text-muted">
@@ -34,7 +34,7 @@
                                 <!-- Safe Plain Text Render (XSS Defense) -->
                                 <div class="text-break">@msg.Content</div>
                                 <div class="text-start mt-1" style="font-size: 0.75rem; opacity: 0.85;">
-                                    @msg.SentAt.ToString("hh:mm tt")
+                                    @msg.SentAt.ToString("HH:mm")
                                 </div>
                             </div>
                         </div>
@@ -60,3 +60,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    // تحديث تلقائي رفيق: يجلب الرسائل الجديدة كل 15 ثانية دون مقاطعة الكتابة الجارية
+    (function () {
+        var box = document.getElementById('messages-box');
+        var input = document.querySelector('input[name="Content"]');
+        if (!box) return;
+        box.scrollTop = box.scrollHeight;
+        setInterval(async function () {
+            if (document.hidden) return;
+            if (input && input.value.trim() !== '') return;
+            try {
+                var res = await fetch(window.location.href, { headers: { 'X-Requested-With': 'fetch-refresh' } });
+                if (!res.ok) return;
+                var html = await res.text();
+                var doc = new DOMParser().parseFromString(html, 'text/html');
+                var fresh = doc.getElementById('messages-box');
+                if (fresh && fresh.innerHTML !== box.innerHTML) {
+                    box.innerHTML = fresh.innerHTML;
+                    box.scrollTop = box.scrollHeight;
+                }
+            } catch (e) { /* أفضل جهد — لا يُقاطع المستخدم عند أي خلل شبكي */ }
+        }, 15000);
+    })();
+</script>

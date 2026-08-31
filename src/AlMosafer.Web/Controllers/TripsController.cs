@@ -73,6 +73,83 @@ public class TripsController : Controller
         return View(trips);
     }
 
+    [HttpGet]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var trip = await _tripService.GetTripByIdAsync(id);
+        if (trip == null)
+        {
+            return NotFound();
+        }
+
+        var dto = new UpdateTripDto
+        {
+            TripId = trip.Id,
+            FromCity = trip.FromCity,
+            FromLocation = trip.FromLocation,
+            ToCity = trip.ToCity,
+            TripTime = trip.TripTime,
+            Seats = trip.TotalSeats,
+            PricePerSeat = trip.PricePerSeat,
+            Description = trip.Description,
+            VehicleInfo = trip.VehicleInfo,
+            Status = trip.Status
+        };
+        return View(dto);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Edit(UpdateTripDto dto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(dto);
+        }
+
+        var result = await _tripService.UpdateTripAsync(GetCurrentUserId(), dto);
+        if (!result.Success)
+        {
+            ModelState.AddModelError(string.Empty, result.Message);
+            return View(dto);
+        }
+
+        TempData["SuccessMessage"] = result.Message;
+        return RedirectToAction(nameof(MyTrips));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Cancel(int id)
+    {
+        var result = await _tripService.CancelTripAsync(GetCurrentUserId(), id);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(MyTrips));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Start(int id)
+    {
+        var result = await _tripService.StartTripAsync(GetCurrentUserId(), id);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(MyTrips));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Driver,Admin")]
+    public async Task<IActionResult> Complete(int id)
+    {
+        var result = await _tripService.CompleteTripAsync(GetCurrentUserId(), id);
+        TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+        return RedirectToAction(nameof(MyTrips));
+    }
+
     private int GetCurrentUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier);

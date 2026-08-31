@@ -213,4 +213,116 @@ public class TripAndBookingServiceTest
         Assert.False(ownBookingResult.Success);
         Assert.Contains("لا يمكنك حجز مقعد في رحلة تقوم أنت بقيادتها", ownBookingResult.Message);
     }
+
+
+    private async Task<(int driverId, int tripId)> SeedOpenTrip(AlMosaferDbContext dbContext, string email)
+    {
+        var driver = new User { Name = "سائق تجريبي", Email = email, Role = UserRole.Driver };
+        dbContext.Users.Add(driver);
+        await dbContext.SaveChangesAsync();
+
+        var (_, tripService) = CreateServices(dbContext);
+        var result = await tripService.CreateTripAsync(driver.Id, new CreateTripDto
+        {
+            FromCity = "صنعاء",
+            ToCity = "عدن",
+            TripTime = DateTime.Now.AddDays(2),
+            Seats = 3,
+            PricePerSeat = 12000.00m
+        });
+        return (driver.Id, result.TripId!.Value);
+    }
+
+    [Fact]
+    public async Task StartTrip_OwnerDriver_MarksTripAsStarted()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "owner1@test.com");
+        var (_, tripService) = CreateServices(dbContext);
+
+        var result = await tripService.StartTripAsync(driverId, tripId);
+
+        Assert.True(result.Success);
+        var trip = await dbContext.Trips.FindAsync(tripId);
+        Assert.Equal(TripStatus.Started, trip!.Status);
+    }
+
+    [Fact]
+    public async Task StartTrip_DifferentDriver_ReturnsForbidden()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (_, tripId) = await SeedOpenTrip(dbContext, "owner2@test.com");
+        var stranger = new User { Name = "سائق آخر", Email = "stranger@test.com", Role = UserRole.Driver };
+        dbContext.Users.Add(stranger);
+        await dbContext.SaveChangesAsync();
+        var (_, tripService) = CreateServices(dbContext);
+
+        var result = await tripService.StartTripAsync(stranger.Id, tripId);
+
+        Assert.False(result.Success);
+        var trip = await dbContext.Trips.FindAsync(tripId);
+        Assert.Equal(TripStatus.Open, trip!.Status);
+    }
+
+    [Fact]
+    public async Task StartTrip_AlreadyStarted_ReturnsFailure()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "owner3@test.com");
+        var (_, tripService) = CreateServices(dbContext);
+        await tripService.StartTripAsync(driverId, tripId);
+
+        var second = await tripService.StartTripAsync(driverId, tripId);
+
+        Assert.False(second.Success);
+    }
+
+    [Fact]
+    public async Task CompleteTrip_NotStarted_ReturnsFailure()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "owner4@test.com");
+        var (_, tripService) = CreateServices(dbContext);
+
+        var result = await tripService.CompleteTripAsync(driverId, tripId);
+
+        Assert.False(result.Success);
+        var trip = await dbContext.Trips.FindAsync(tripId);
+        Assert.Equal(TripStatus.Open, trip!.Status);
+    }
+
+    [Fact]
+    public async Task CompleteTrip_AfterStart_MarksTripAsCompleted()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "owner5@test.com");
+        var (_, tripService) = CreateServices(dbContext);
+        await tripService.StartTripAsync(driverId, tripId);
+
+        var result = await tripService.CompleteTripAsync(driverId, tripId);
+
+        Assert.True(result.Success);
+        var trip = await dbContext.Trips.FindAsync(tripId);
+        Assert.Equal(TripStatus.Completed, trip!.Status);
+    }
+
+    [Fact]
+    public async Task CancelTrip_OwnerDriver_MarksTripAsCancelled()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, "owner6@test.com");
+        var (_, tripService) = CreateServices(dbContext);
+
+        var result = await tripService.CancelTripAsync(driverId, tripId);
+
+        Assert.True(result.Success);
+        var trip = await dbContext.Trips.FindAsync(tripId);
+        Assert.Equal(TripStatus.Cancelled, trip!.Status);
+    }
 }

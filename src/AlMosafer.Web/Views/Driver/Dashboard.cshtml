@@ -60,6 +60,11 @@
                 </a>
             </div>
             <div class="col-md-4">
+                <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-outline-primary w-100 py-3 font-weight-bold text-start" style="border-width: 2px;">
+                    🛠️ إدارة رحلاتي (@Model.TotalTrips) — تعديل / بدء / إنهاء
+                </a>
+            </div>
+            <div class="col-md-4">
                 <a asp-controller="Conversations" asp-action="Index" class="btn btn-primary w-100 py-3 font-weight-bold text-start">
                     💬 صندوق رسائل الركاب (@Model.ConversationsCount)
                 </a>
@@ -94,7 +99,7 @@
                             <span class="badge bg-success font-weight-bold">@trip.PricePerSeat.ToString("N0") ريال</span>
                         </div>
                         <div class="card-body p-4 d-flex flex-column">
-                            <p class="mb-1 text-muted">📅 <strong>التاريخ:</strong> @trip.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</p>
+                            <p class="mb-1 text-muted">📅 <strong>التاريخ:</strong> @trip.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
                             <p class="mb-1 text-muted">🪑 <strong>المقاعد الشاغرة:</strong> @trip.AvailableSeats من أصل @trip.TotalSeats</p>
                             <p class="mb-3 text-muted">📍 <strong>التجمع:</strong> @(string.IsNullOrEmpty(trip.FromLocation) ? "حسب الاتفاق" : trip.FromLocation)</p>
 

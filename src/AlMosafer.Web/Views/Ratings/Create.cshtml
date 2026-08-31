@@ -17,7 +17,7 @@
                     <div class="p-3 bg-light rounded border mb-4">
                         <h6 class="font-weight-bold text-primary mb-1">الرحلة: @trip.FromCity ← @trip.ToCity</h6>
                         <p class="mb-1 text-muted"><strong>السائق:</strong> @trip.DriverName (@(string.IsNullOrEmpty(trip.VehicleModel) ? "مركبة سريعة" : trip.VehicleModel))</p>
-                        <small class="text-muted"><strong>تاريخ الرحلة:</strong> @trip.TripTime.ToString("yyyy-MM-dd — hh:mm tt")</small>
+                        <small class="text-muted"><strong>تاريخ الرحلة:</strong> @trip.TripTime.ToString("yyyy-MM-dd — HH:mm")</small>
                     </div>
                 }
 

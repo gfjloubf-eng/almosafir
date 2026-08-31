@@ -12,3 +12,6 @@
 
 **Open questions**:
 - Owner to run phpMyAdmin/live DB verification.
+
+## 2026-08-31 P32
+نفّذت حزمة الصفحات القياسية + دورة حياة الرحلة (Started/Start/Complete) + دردشة ذاتية + تعريب + صفر تحذير nullable + 6 اختبارات جديدة. التفاصيل: docs/PROMPT_32_PAGES_AND_LIFECYCLE_REPORT.md
