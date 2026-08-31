@@ -73,7 +73,7 @@ public class BookingService : IBookingService
 
             // Duplicate Booking Check
             var hasActiveBooking = trip.Bookings
-                .Any(b => b.TravelerId == travelerId && b.Status == BookingStatus.Confirmed);
+                .Any(b => b.TravelerId == travelerId && (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded));
 
             if (hasActiveBooking)
             {
@@ -82,7 +82,7 @@ public class BookingService : IBookingService
 
             // Atomic Seat Availability Calculation
             int bookedSeats = trip.Bookings
-                .Where(b => b.Status == BookingStatus.Confirmed)
+                .Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
                 .Sum(b => b.SeatsBooked);
 
             int availableSeats = trip.Seats - bookedSeats;
@@ -290,4 +290,89 @@ public class BookingService : IBookingService
             BookingTime = b.BookingTime
         });
     }
+    public async Task<TripManifestDto?> GetTripManifestAsync(int driverId, int tripId)
+    {
+        var trip = await _dbContext.Trips.AsNoTracking().FirstOrDefaultAsync(t => t.Id == tripId);
+        if (trip == null)
+        {
+            return null;
+        }
+
+        var driver = await _dbContext.Users.FindAsync(driverId);
+        if (trip.DriverId != driverId && (driver == null || driver.Role != UserRole.Admin))
+        {
+            return null; // حارس الملكية — كشف الركوب لسائق الرحلة أو الإدمن فقط
+        }
+
+        var bookings = await _dbContext.Bookings
+            .AsNoTracking()
+            .Include(b => b.Traveler)
+            .Include(b => b.Payment)
+            .Where(b => b.TripId == tripId && (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
+            .OrderBy(b => b.BookingTime)
+            .ToListAsync();
+
+        var passengers = bookings.Select(b => new ManifestPassengerDto
+        {
+            BookingId = b.Id,
+            TravelerName = b.Traveler != null ? b.Traveler.Name : "مسافر",
+            Phone = b.Traveler != null ? b.Traveler.Phone : null,
+            SeatsBooked = b.SeatsBooked,
+            PaymentStatus = b.Payment?.Status,
+            Amount = b.Payment?.Amount ?? 0m,
+            IsBoarded = b.Status == BookingStatus.Boarded
+        }).ToList();
+
+        return new TripManifestDto
+        {
+            TripId = trip.Id,
+            Route = $"{trip.FromCity} ← {trip.ToCity}",
+            TripTime = trip.TripTime,
+            TotalSeats = trip.Seats,
+            SeatsBookedTotal = passengers.Sum(p => p.SeatsBooked),
+            BoardedCount = passengers.Count(p => p.IsBoarded),
+            PendingBoardCount = passengers.Count(p => !p.IsBoarded),
+            CashDueTotal = passengers.Where(p => p.PaymentStatus == PaymentStatus.Pending).Sum(p => p.Amount),
+            Passengers = passengers
+        };
+    }
+
+    public async Task<(bool Success, string Message)> MarkBoardedAsync(int driverId, int bookingId)
+    {
+        var booking = await _dbContext.Bookings
+            .Include(b => b.Trip)
+            .Include(b => b.Traveler)
+            .FirstOrDefaultAsync(b => b.Id == bookingId);
+        if (booking == null)
+        {
+            return (false, "الحجز غير موجود.");
+        }
+
+        var driver = await _dbContext.Users.FindAsync(driverId);
+        if (booking.Trip.DriverId != driverId && (driver == null || driver.Role != UserRole.Admin))
+        {
+            return (false, "لا تملك الصلاحية لتأكيد صعود هذا الحجز.");
+        }
+
+        if (booking.Status == BookingStatus.Boarded)
+        {
+            return (false, "هذا المسافر مسجل كصاعد بالفعل.");
+        }
+        if (booking.Status != BookingStatus.Confirmed)
+        {
+            return (false, "لا يمكن تأكيد صعود حجز بحالته الحالية (ملغي أو مكتمل).");
+        }
+
+        booking.Status = BookingStatus.Boarded;
+        await _dbContext.SaveChangesAsync();
+
+        await _notificationService.SendNotificationAsync(
+            booking.TravelerId,
+            "تم تسجيل صعودك ✅",
+            $"أهلاً بك على متن رحلة {booking.Trip.FromCity} ← {booking.Trip.ToCity}. نتمنى لك رحلة سعيدة وآمنة!",
+            NotificationType.Booking);
+
+        return (true, $"سُجّل صعود {booking.Traveler?.Name ?? "المسافر"} — أهلاً به على متن الرحلة!");
+    }
+
 }

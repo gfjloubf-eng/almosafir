@@ -10,10 +10,38 @@ namespace AlMosafer.Infrastructure.Services;
 public class TripService : ITripService
 {
     private readonly AlMosaferDbContext _dbContext;
+    private readonly INotificationService? _notificationService;
 
-    public TripService(AlMosaferDbContext dbContext)
+    public TripService(AlMosaferDbContext dbContext, INotificationService? notificationService = null)
     {
         _dbContext = dbContext;
+        _notificationService = notificationService;
+    }
+
+    // إشعارات يوم السفر: تُرسل لكل حاجزي الرحلة (مؤكد/صاعد). تُسكت بأمان في اختبارات لا تحتاج إشعارات
+    private async Task NotifyTripTravelersAsync(int tripId, string title, string message)
+    {
+        if (_notificationService == null)
+        {
+            return;
+        }
+
+        var route = await _dbContext.Trips.AsNoTracking()
+            .Where(t => t.Id == tripId)
+            .Select(t => t.FromCity + " ← " + t.ToCity)
+            .FirstOrDefaultAsync();
+
+        var travelerIds = await _dbContext.Bookings
+            .AsNoTracking()
+            .Where(b => b.TripId == tripId && (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
+            .Select(b => b.TravelerId)
+            .Distinct()
+            .ToListAsync();
+
+        foreach (var travelerId in travelerIds)
+        {
+            await _notificationService.SendNotificationAsync(travelerId, title, $"رحلة {route}: {message}", NotificationType.TripUpdate);
+        }
     }
 
     public async Task<(bool Success, string Message, int? TripId)> CreateTripAsync(int driverId, CreateTripDto dto)
@@ -84,6 +112,8 @@ public class TripService : ITripService
 
         await _dbContext.SaveChangesAsync();
 
+        await NotifyTripTravelersAsync(dto.TripId, "عُدّلت رحلتك ✏️", "قام السائق بتحديث تفاصيل الرحلة (المسار/الموعد/السعر) — راجع صفحة الرحلة قبل الموعد.");
+
         return (true, "تم تحديث بيانات الرحلة بنجاح.");
     }
 
@@ -114,6 +144,8 @@ public class TripService : ITripService
 
         await _dbContext.SaveChangesAsync();
 
+        await NotifyTripTravelersAsync(tripId, "أُلغيت رحلتك ⚠️", "نعتذر — أُلغيت الرحلة. إن كنت دفعت نقداً فلم يُقتطع شيء، ويمكنك البحث عن رحلة بديلة على نفس الخط فوراً.");
+
         return (true, "تم إلغاء الرحلة وكافة الحجوزات المرتبطة بها.");
     }
 
@@ -127,7 +159,7 @@ public class TripService : ITripService
         if (trip == null) return null;
 
         int bookedSeats = trip.Bookings
-            .Where(b => b.Status == BookingStatus.Confirmed)
+            .Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
             .Sum(b => b.SeatsBooked);
 
         int availableSeats = Math.Max(0, trip.Seats - bookedSeats);
@@ -193,7 +225,7 @@ public class TripService : ITripService
         foreach (var trip in tripsList)
         {
             int bookedSeats = trip.Bookings
-                .Where(b => b.Status == BookingStatus.Confirmed)
+                .Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
                 .Sum(b => b.SeatsBooked);
 
             int availableSeats = Math.Max(0, trip.Seats - bookedSeats);
@@ -240,7 +272,7 @@ public class TripService : ITripService
 
         return trips.Select(t =>
         {
-            int bookedSeats = t.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked);
+            int bookedSeats = t.Bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked);
             return new TripDetailsDto
             {
                 Id = t.Id,
@@ -281,7 +313,7 @@ public class TripService : ITripService
         foreach (var trip in tripsList)
         {
             int bookedSeats = trip.Bookings
-                .Where(b => b.Status == BookingStatus.Confirmed)
+                .Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
                 .Sum(b => b.SeatsBooked);
 
             result.Add(new TripDetailsDto
@@ -331,6 +363,7 @@ public class TripService : ITripService
 
         trip.Status = TripStatus.Started;
         await _dbContext.SaveChangesAsync();
+        await NotifyTripTravelersAsync(tripId, "انطلقت رحلتك 🚌", "انطلقت الآن — رحلة سعيدة! لأي سؤال تواصل مع السائق من المحادثة.");
 
         return (true, "تمنياتنا برحلة آمنة! تم تسجيل انطلاق الرحلة ولم يعد الحجز متاحاً لمقاعد جديدة.");
     }
@@ -356,6 +389,7 @@ public class TripService : ITripService
 
         trip.Status = TripStatus.Completed;
         await _dbContext.SaveChangesAsync();
+        await NotifyTripTravelersAsync(tripId, "وصلت رحلتك بسلامة ✅", "وصلت الرحلة واكتملت. لا تنسَ تقييم سائقك — تقييمك يبني الثقة لمجتمعنا ⭐");
 
         return (true, "وصلت الرحلة بسلامة! تم إنهاء الرحلة وتسجيلها مكتملة.");
     }

@@ -618,4 +618,83 @@ public class TripAndBookingServiceTest
         Assert.Empty(dbContext.LineStops);
         Assert.Empty(dbContext.LineSchedules);
     }
+
+
+    private async Task<(int driverId, int tripId, int travelerId, int bookingId)> SeedBookedTrip(AlMosaferDbContext dbContext, string tag, PaymentMethod method = PaymentMethod.MockOnline)
+    {
+        var (driverId, tripId) = await SeedOpenTrip(dbContext, tag + "-d@test.com");
+        var traveler = new User { Name = "مسافر اليوم", Email = tag + "-t@test.com", Phone = "771234567", Role = UserRole.Traveler };
+        dbContext.Users.Add(traveler);
+        await dbContext.SaveChangesAsync();
+        var (bookingService, _) = CreateServices(dbContext);
+        var result = await bookingService.CreateBookingAsync(traveler.Id, new CreateBookingDto
+        {
+            TripId = tripId,
+            SeatsBooked = 2,
+            PaymentMethod = method
+        });
+        return (driverId, tripId, traveler.Id, result.BookingId!.Value);
+    }
+
+    [Fact]
+    public async Task GetTripManifest_OwnerSeesPassengers_StrangerGetsNull()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId, travelerId, bookingId) = await SeedBookedTrip(dbContext, "man1", PaymentMethod.Cash);
+        var (bookingService, _) = CreateServices(dbContext);
+
+        var manifest = await bookingService.GetTripManifestAsync(driverId, tripId);
+
+        Assert.NotNull(manifest);
+        var passenger = Assert.Single(manifest!.Passengers);
+        Assert.Equal("مسافر اليوم", passenger.TravelerName);
+        Assert.Equal("771234567", passenger.Phone);
+        Assert.Equal(2, manifest.SeatsBookedTotal);
+        Assert.True(manifest.CashDueTotal > 0);
+
+        var stranger = new User { Name = "غريب", Email = "man1-x@test.com", Role = UserRole.Driver };
+        dbContext.Users.Add(stranger);
+        await dbContext.SaveChangesAsync();
+        Assert.Null(await bookingService.GetTripManifestAsync(stranger.Id, tripId));
+    }
+
+    [Fact]
+    public async Task MarkBoarded_DriverOwner_MarksBoarded_AndSeatStillOccupied()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId, travelerId, bookingId) = await SeedBookedTrip(dbContext, "brd1");
+        var (bookingService, tripService) = CreateServices(dbContext);
+        var beforeSeats = (await tripService.GetTripByIdAsync(tripId))!.AvailableSeats;
+
+        var result = await bookingService.MarkBoardedAsync(driverId, bookingId);
+
+        Assert.True(result.Success);
+        var booking = await dbContext.Bookings.FindAsync(bookingId);
+        Assert.Equal(BookingStatus.Boarded, booking!.Status);
+
+        // الصعود لا يحرر المقعد — ما زال محجوزاً
+        var afterSeats = (await tripService.GetTripByIdAsync(tripId))!.AvailableSeats;
+        Assert.Equal(beforeSeats, afterSeats);
+
+        // إشعار المسافر وصل
+        var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == travelerId && n.Type == NotificationType.Booking && n.Title.Contains("صعود"));
+        Assert.NotNull(notification);
+    }
+
+    [Fact]
+    public async Task MarkBoarded_StrangerOrDoubleBoard_Fails()
+    {
+        var options = CreateInMemoryOptions();
+        using var dbContext = new AlMosaferDbContext(options);
+        var (driverId, tripId, travelerId, bookingId) = await SeedBookedTrip(dbContext, "brd2");
+        var (bookingService, _) = CreateServices(dbContext);
+
+        Assert.False((await bookingService.MarkBoardedAsync(travelerId, bookingId)).Success);
+
+        Assert.True((await bookingService.MarkBoardedAsync(driverId, bookingId)).Success);
+        var second = await bookingService.MarkBoardedAsync(driverId, bookingId);
+        Assert.False(second.Success);
+    }
 }

@@ -60,12 +60,31 @@
                                 </tr>
                                 <tr>
                                     <th class="bg-light">حالة العملية الدفع:</th>
-                                    <td><span class="badge badge-status badge-open">مدفوع ومؤكد (Paid)</span></td>
+                                    <td>@if (Model.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Paid)
+                                    {
+                                        <span class="badge bg-success">مدفوع ومؤكد ✅</span>
+                                    }
+                                    else if (Model.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">💵 يُدفع نقداً عند الركوب للسائق مباشرة</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">غير مسدد</span>
+                                    }</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+
+                @if (ViewBag.QrCodeDataUri != null)
+                {
+                    <div class="text-center py-3">
+                        <img src="@ViewBag.QrCodeDataUri" alt="QR تذكرة الحجز" style="width:150px;height:150px;" class="rounded border p-1 bg-white" />
+                        <div class="small text-muted mt-1">امسح الرمز لفتح إيصال الحجز — #BK-@Model.BookingId.ToString("D6")</div>
+                    </div>
+                }
 
                 <div class="d-flex justify-content-between align-items-center pt-3 border-top no-print">
                     <a asp-action="MyBookings" class="btn btn-outline-primary font-weight-bold">العودة لكافة حجوزاتي</a>
@@ -75,3 +94,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    @@media print {
+        header, footer, .no-print { display: none !important; }
+        body { background: #fff !important; }
+        .card-almosafer { box-shadow: none !important; border: 1px solid #ccc !important; }
+    }
+</style>

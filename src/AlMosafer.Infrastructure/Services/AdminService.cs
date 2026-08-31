@@ -117,7 +117,7 @@ public class AdminService : IAdminService
 
         return list.Select(t =>
         {
-            var bookedSeatsCount = t.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked);
+            var bookedSeatsCount = t.Bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked);
             var availableSeats = Math.Max(0, t.Seats - bookedSeatsCount);
 
             return new TripDetailsDto

@@ -73,6 +73,7 @@
                             <td>
                                 <div class="d-flex flex-wrap gap-1">
                                     <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">التفاصيل</a>
+                                    <a asp-controller="Bookings" asp-action="Manifest" asp-route-tripId="@trip.Id" class="btn btn-sm btn-outline-dark">👥 كشف الركوب</a>
                                     @if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Open)
                                     {
                                         <a asp-action="Edit" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-secondary">✏️ تعديل</a>

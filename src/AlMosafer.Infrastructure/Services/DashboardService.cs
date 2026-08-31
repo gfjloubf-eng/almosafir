@@ -24,7 +24,7 @@ public class DashboardService : IDashboardService
             .Where(b => b.TravelerId == travelerId);
 
         var totalBookings = await bookingsQuery.CountAsync();
-        var activeBookings = await bookingsQuery.CountAsync(b => b.Status == BookingStatus.Confirmed);
+        var activeBookings = await bookingsQuery.CountAsync(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded));
         var completedBookings = await bookingsQuery.CountAsync(b => b.Status == BookingStatus.Cancelled);
 
         var unreadNotifications = await _dbContext.Notifications
@@ -85,7 +85,7 @@ public class DashboardService : IDashboardService
 
         var totalSeatsBooked = await _dbContext.Bookings
             .AsNoTracking()
-            .Where(b => b.Trip.DriverId == driverId && b.Status == BookingStatus.Confirmed)
+            .Where(b => b.Trip.DriverId == driverId && (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
             .SumAsync(b => (int?)b.SeatsBooked) ?? 0;
 
         var totalEarnings = await _dbContext.Payments
@@ -112,7 +112,7 @@ public class DashboardService : IDashboardService
 
         var recentTrips = recentTripsEntities.Select(t =>
         {
-            var bookedSeatsCount = t.Bookings.Where(b => b.Status == BookingStatus.Confirmed).Sum(b => b.SeatsBooked);
+            var bookedSeatsCount = t.Bookings.Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded)).Sum(b => b.SeatsBooked);
             var availableSeats = Math.Max(0, t.Seats - bookedSeatsCount);
 
             return new TripDetailsDto
