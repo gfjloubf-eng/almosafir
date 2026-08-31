@@ -181,7 +181,7 @@
         <div class="container">
             <div class="row align-items-center gy-3">
                 <div class="col-md-6 text-md-start text-center">
-                    <p class="mb-1 font-weight-bold text-dark">© 2026 - <strong>منصة المسافر AlMosafer Platform</strong></p>
+                    <p class="mb-1 font-weight-bold text-dark">© 2026–2027 <strong>منصة المسافر AlMosafer Platform</strong> — حقوق الطبع محفوظة لدى عمار الموعي</p>
                     <small class="text-muted">هندسة وتصميم المعمارية البرمجية C# & ASP.NET Core Clean Architecture</small>
                 </div>
                 <div class="col-md-6 text-md-end text-center">
@@ -201,7 +201,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @if (User.Identity?.IsAuthenticated == true)
     {
-        @* P40 «النبض الحي»: عميل SignalR مورَّد محلياً + منطق الشارة والتنبيهات الفورية *@
+        @* P40 «النبض الحي»: عميل SignalR مورَّد محلياً + هوية المستخدم + منطق الشارة والتنبيهات الفورية *@
+        <script>window.__uid = @(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");</script>
         <script src="~/lib/signalr/signalr.min.js"></script>
         <script src="~/js/realtime.js" asp-append-version="true"></script>
     }

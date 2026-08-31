@@ -58,8 +58,16 @@ builder.Services.AddScoped<INotificationService>(sp =>
         sp.GetRequiredService<NotificationService>(),
         sp.GetRequiredService<Microsoft.AspNetCore.SignalR.IHubContext<AlMosafer.Web.Hubs.AppHub>>(),
         sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<AlMosafer.Web.Services.RealtimeNotificationServiceDecorator>>()));
+// «النبض الحي» الموجة ٢: MessageService تُسجَّل باسمها ثم يغلّفها مزخرف الدردشة اللحظية —
+//      بثّ conv-{id} + user-{id} بعد كل رسالة محفوظة، بلا أي لمس للخدمة الأصلية أو اختباراتها.
+builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<IMessageService>(sp =>
+    new AlMosafer.Web.Services.RealtimeMessageServiceDecorator(
+        sp.GetRequiredService<MessageService>(),
+        sp.GetRequiredService<AlMosaferDbContext>(),
+        sp.GetRequiredService<Microsoft.AspNetCore.SignalR.IHubContext<AlMosafer.Web.Hubs.AppHub>>(),
+        sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<AlMosafer.Web.Services.RealtimeMessageServiceDecorator>>()));
 builder.Services.AddScoped<IConversationService, ConversationService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<ITripService, TripService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
