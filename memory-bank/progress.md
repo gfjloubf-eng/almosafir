@@ -79,3 +79,7 @@
 ## P46 الفرعي «عين الرادار» (CI 33530375414 ✅) + اكتشاف P38 — 2026-09-01
 - اكتشاف: P38 (استعادة كلمة مرور: ForgotPassword/ResetPassword + EmailService MailKit فاشل-آمن + StrictLimiter + 12 اختباراً) **مُنجَز منذ جلسات سابقة** — محذوف من قائمة الانتظار.
 - عين الرادار: ILogTailService/GetLatestAsync(max,level)؛ LogTailService بسلسلة جذر المحتوى (بعد رفض IHostEnvironment — لا مراجع Hosting في Infrastructure؛ درس: Infrastructure مكتبة قياسية لا AspNet)؛ ذيل بطابور O(max)؛ تسامح JsonException/مشاهدة مشتركة للملف؛ /Admin/Logs بترشيح مستويات + data-paginate=25؛ زر عاشر بلوحة الأدمن + 9 أزرار بأيقونات lucide (صفر إيموجي باللوحة). 5 اختبارات جديدة خضراء.
+
+## P47 «الباب العالمي» (CI 33531475470 ✅) — 2026-09-01
+- طلبه: «ما تراه مناسباً ليكون عليه طلب عالمي». مشحون: OG/Twitter cards بـViewData["Description"] اختياري (الرئيسية حصلت وصفاً مُحكماً) + JSON-LD graph (Organization/WebSite/SearchAction) للرئيسية فقط مع هروب @@ + robots.txt وسitemap.xml كفعلين حيّين مطلقي-الاكتشاف في HomeController + og-cover.jpg 1200×630 + hero-journey.webp (1.03MB→23KB — أخف 98%: حاسم لشبكة 3G).
+- قاعدة الاستبدال الجماعي المستفادة مطبَّقة: فحص سلاسل C# قبل الاقتباس.

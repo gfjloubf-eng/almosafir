@@ -28,6 +28,16 @@ builder.Services.AddControllersWithViews();
 // P40 «النبض الحي»: قناة SignalR الدائمة (جزء من إطار ASP.NET Core — بلا أي حزمة إضافية)
 builder.Services.AddSignalR();
 
+// «بوابة النشر الحر» (P47.5): مزود SQLite اختياري بمتغير البيئة DbProvider=sqlite فقط —
+// يمكّن معاينة/نشراً مجانياً بلمسة واحدة بلا MySQL خارجي. الإنتاج الافتراضي لا يتغير حرفاً واحداً.
+var useSqliteForPreview = string.Equals(builder.Configuration["DbProvider"], "sqlite", StringComparison.OrdinalIgnoreCase);
+if (useSqliteForPreview)
+{
+    builder.Services.AddDbContext<AlMosaferDbContext>(options =>
+        options.UseSqlite(builder.Configuration.GetConnectionString("SqlitePreview") ?? "Data Source=almosafer-preview.db"));
+}
+else
+{
 // Configure MySQL Database Connection via Pomelo EntityFrameworkCore MySql
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -55,6 +65,7 @@ catch
 builder.Services.AddDbContext<AlMosaferDbContext>(options =>
     options.UseMySql(connectionString, serverVersion,
         mySqlOptions => mySqlOptions.EnableRetryOnFailure(3, System.TimeSpan.FromSeconds(3), null)));
+} // نهاية else: مسار MySQL الإنتاجي — بلا تغيير إطلاقاً
 
 // Register Infrastructure Services
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
@@ -140,6 +151,14 @@ try
     using var migrateScope = app.Services.CreateScope();
     var migrateDb = migrateScope.ServiceProvider.GetRequiredService<AlMosaferDbContext>();
 
+    if (useSqliteForPreview)
+    {
+        // مسار المعاينة: المخطط كاملاً من النموذج الحالي مباشرة (هجرات MySQL لا تصلح لـSQLite)
+        migrateDb.Database.EnsureCreated();
+        Console.WriteLine("[AlMosafer] وضع SQLite التجريبي: أُنشئ مخطط القاعدة من النموذج (EnsureCreated).");
+    }
+    else
+    {
     // خطوة الأساس (baseline) — دليلها الميداني من كشف المالك: القاعدة أنشئت قديماً خارج EF
     // (أيام db_setup.sql) فسجل __EFMigrationsHistory فارغ، وMigrate يصطدم بـ«users موجودة»
     // قبل وصوله لهجرات اليوم. المعالجة القياسية: إن وُجد users وسجلٌ يجهله، نوسم الهجرة
@@ -201,6 +220,7 @@ try
     {
         Console.WriteLine($"[Warning] Route-lines probe skipped: {probeEx.Message}");
     }
+    } // نهاية else: مسار MySQL الكامل (baseline + Migrate + probe)
 }
 catch (Exception ex)
 {
