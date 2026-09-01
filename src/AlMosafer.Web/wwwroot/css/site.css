@@ -307,7 +307,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     box-shadow: 0 25px 60px -15px rgba(2, 6, 23, 0.55);
     background:
         linear-gradient(to left, rgba(15, 23, 42, 0.97) 0%, rgba(15, 23, 42, 0.82) 42%, rgba(15, 23, 42, 0.45) 68%, rgba(15, 23, 42, 0.18) 100%),
-        url('/img/hero-journey.png') left center / cover no-repeat,
+        url('/img/hero-journey.webp') left center / cover no-repeat,
         linear-gradient(135deg, #0f172a 0%, #16213a 100%);
 }
 
@@ -536,7 +536,7 @@ footer.footer .footer-whatsapp-link:hover { color: #6ee7b7; }
     .hero-x {
         background:
             linear-gradient(to left, rgba(15, 23, 42, 0.96) 0%, rgba(15, 23, 42, 0.85) 100%),
-            url('/img/hero-journey.png') center top / cover no-repeat,
+            url('/img/hero-journey.webp') center top / cover no-repeat,
             linear-gradient(135deg, #0f172a 0%, #16213a 100%);
     }
 }
@@ -612,7 +612,7 @@ footer.footer .footer-whatsapp-link:hover { color: #6ee7b7; }
     .hero-x {
         background:
             linear-gradient(to left, rgba(15, 23, 42, 0.94) 0%, rgba(15, 23, 42, 0.78) 100%),
-            url('/img/hero-journey.png') 62% center / cover no-repeat,
+            url('/img/hero-journey.webp') 62% center / cover no-repeat,
             linear-gradient(135deg, #0f172a 0%, #16213a 100%);
     }
 }

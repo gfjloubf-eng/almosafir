@@ -38,6 +38,46 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpGet("/robots.txt")]
+    [ResponseCache(Duration = 86400)]
+    public IActionResult Robots()
+    {
+        // P47 «الباب العالمي»: توجيه الزواحف — المناطق الشخصية بعيدة عن الفهرسة + إشارة لخريطة الموقع
+        var baseUri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+        var txt = string.Join('\n',
+            "User-agent: *",
+            "Allow: /",
+            "Disallow: /Admin",
+            "Disallow: /Account/",
+            "Disallow: /Bookings/",
+            "Disallow: /Driver/",
+            "Disallow: /Traveler/",
+            "Disallow: /Conversations",
+            "Disallow: /Notifications",
+            "",
+            $"Sitemap: {baseUri}/sitemap.xml");
+        return Content(txt, "text/plain");
+    }
+
+    [HttpGet("/sitemap.xml")]
+    [ResponseCache(Duration = 3600)]
+    public IActionResult Sitemap()
+    {
+        // P47: خريطة الصفحات العامة فقط — المساحات الشخصية لا تُفهرَس أصلاً
+        var baseUri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+        string[] publicPaths = { "/", "/Trips", "/Lines", "/Trips/InternalLines",
+            "/Account/Login", "/Account/RegisterTraveler", "/Account/RegisterDriver" };
+        var xml = new System.Text.StringBuilder(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+        foreach (var p in publicPaths)
+        {
+            xml.Append("  <url><loc>").Append(baseUri).Append(p)
+               .Append("</loc><changefreq>daily</changefreq></url>\n");
+        }
+        xml.Append("</urlset>");
+        return Content(xml.ToString(), "application/xml");
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
