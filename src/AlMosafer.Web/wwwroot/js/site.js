@@ -100,3 +100,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { threshold: 0.12 });
     revealTargets.forEach(el => observer.observe(el));
 })();
+
+/* P43 الموجة ١: شريط تقدم تنقل علوي — إحساس السرعة حتى قبل استجابة الخادم */
+(function () {
+    var bar = document.getElementById('navProgress');
+    if (!bar) { return; }
+    document.addEventListener('click', function (e) {
+        var link = e.target.closest ? e.target.closest('a[href]') : null;
+        if (!link) { return; }
+        var href = link.getAttribute('href') || '';
+        if (link.target === '_blank' || href.startsWith('#') || href.startsWith('http')) { return; }
+        bar.classList.add('nav-progress-on');
+        bar.style.width = '30%';
+        setTimeout(function () { bar.style.width = '70%'; }, 250);
+    });
+    window.addEventListener('pageshow', function () {
+        bar.classList.remove('nav-progress-on');
+        bar.style.width = '0';
+    });
+})();

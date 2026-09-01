@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="المسافر" />
     <link rel="icon" type="image/svg+xml" href="~/icons/icon.svg" />
+    <link rel="alternate icon" href="~/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="~/icons/icon-512.png" />
     <title>@ViewData["Title"] - منصة المسافر AlMosafer</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
@@ -16,6 +17,7 @@
     <link rel="stylesheet" href="~/AlMosafer.Web.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <div id="navProgress" aria-hidden="true"></div>
     <a href="#main-content" class="visually-hidden-focusable p-2 bg-primary text-white position-absolute">الانتقال المباشر إلى المحتوى الرئيسي</a>
 
     <header>
@@ -140,9 +142,14 @@
                         }
                         else
                         {
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light font-weight-bold">تسجيل الدخول</a>
-                            <a asp-controller="Account" asp-action="RegisterTraveler" class="btn btn-accent font-weight-bold">حساب مسافر</a>
-                            <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald font-weight-bold">حساب سائق</a>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light font-weight-bold" style="border-radius: 999px;">تسجيل الدخول</a>
+                            <div class="dropdown">
+                                <button class="btn btn-accent font-weight-bold dropdown-toggle" type="button" id="joinMenu" data-bs-toggle="dropdown" aria-expanded="false">انضم الآن ✨</button>
+                                <ul class="dropdown-menu dropdown-menu-end text-end shadow" aria-labelledby="joinMenu">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="RegisterTraveler">حساب مسافر 🎒</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="RegisterDriver">حساب سائق 🚗</a></li>
+                                </ul>
+                            </div>
                         }
                     </div>
                 </div>
