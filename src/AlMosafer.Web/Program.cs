@@ -90,8 +90,8 @@ builder.Services.AddScoped<IReportingService, ReportingService>();
 builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 builder.Services.AddScoped<ILineService, LineService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-// P46 الفرعي: عين الرادار — قراءة ذيل السجلات للأدمن
-builder.Services.AddScoped<ILogTailService, LogTailService>();
+// P46 الفرعي: عين الرادار — قراءة ذيل السجلات للأدمن (بلا مرجع Hosting في طبقة البنية)
+builder.Services.AddScoped<ILogTailService>(_ => new LogTailService(builder.Environment.ContentRootPath));
 
 // Configure Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
