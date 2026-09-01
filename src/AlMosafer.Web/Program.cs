@@ -90,6 +90,8 @@ builder.Services.AddScoped<IReportingService, ReportingService>();
 builder.Services.AddScoped<IWatchlistService, WatchlistService>();
 builder.Services.AddScoped<ILineService, LineService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+// P46 الفرعي: عين الرادار — قراءة ذيل السجلات للأدمن
+builder.Services.AddScoped<ILogTailService, LogTailService>();
 
 // Configure Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
