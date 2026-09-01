@@ -20,13 +20,10 @@
 
     function toast(title, message) {
         var el = document.createElement('div');
+        el.className = 'alm-toast';
         el.setAttribute('role', 'status');
-        el.style.cssText =
-            'position:fixed;bottom:1rem;inset-inline-start:1rem;z-index:1080;max-width:22rem;' +
-            'background:#0f172a;color:#f8fafc;border:1px solid #334155;border-radius:.75rem;' +
-            'padding:.75rem 1rem;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.35);font-size:.9rem;';
         var head = document.createElement('div');
-        head.style.cssText = 'font-weight:700;margin-bottom:.15rem;';
+        head.className = 'alm-toast-title';
         head.textContent = '🔔 ' + (title || '');
         var body = document.createElement('div');
         body.textContent = message || '';
@@ -34,7 +31,6 @@
         el.appendChild(body);
         document.body.appendChild(el);
         setTimeout(function () {
-            el.style.transition = 'opacity .5s';
             el.style.opacity = '0';
             setTimeout(function () { el.remove(); }, 600);
         }, 6000);

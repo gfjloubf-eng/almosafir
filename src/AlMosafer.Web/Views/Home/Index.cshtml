@@ -26,13 +26,19 @@
             <div class="card card-search border-0 text-dark p-4 bg-white">
                 <h4 class="font-weight-bold mb-3 text-primary">ابحث عن رحلتك الآن 🔍</h4>
                 <form asp-controller="Trips" asp-action="Index" method="get">
+                    <datalist id="citiesList">
+                        @foreach (var city in (ViewBag.Cities as IReadOnlyList<string> ?? new List<string>()))
+                        {
+                            <option value="@city"></option>
+                        }
+                    </datalist>
                     <div class="mb-3">
                         <label class="form-label font-weight-bold">من مدينة</label>
-                        <input type="text" name="FromCity" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" />
+                        <input type="text" name="FromCity" list="citiesList" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" autocomplete="off" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label font-weight-bold">إلى مدينة</label>
-                        <input type="text" name="ToCity" class="form-control form-control-custom" placeholder="مثال: عدن، إب" />
+                        <input type="text" name="ToCity" list="citiesList" class="form-control form-control-custom" placeholder="مثال: عدن، إب" autocomplete="off" />
                     </div>
                     <div class="mb-4">
                         <label class="form-label font-weight-bold">تاريخ السفر</label>
