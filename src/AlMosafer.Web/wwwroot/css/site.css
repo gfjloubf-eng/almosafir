@@ -666,3 +666,11 @@ h3.font-weight-bold.text-dark::after, h4.font-weight-bold.text-dark::after { con
     inset-inline-start: 0; width: 58px; height: 3px; border-radius: 99px;
     background: linear-gradient(90deg, #0d9488, #14b8a6); opacity: .9; }
 .empty-state-icon .alm-ic, .empty-state-icon svg { width: 3rem; height: 3rem; color: #94a3b8; stroke-width: 1.5; vertical-align: middle; }
+
+/* ═══════════ P45 «جيب المسافر»: زر التثبيت العائم ═══════════ */
+.alm-install-btn { position: fixed; bottom: 1.25rem; inset-inline-start: 1.25rem; z-index: 1060;
+    display: inline-flex; align-items: center; gap: .5rem; padding: .7rem 1.5rem; border-radius: 999px;
+    background: linear-gradient(135deg, #b45309, #f59e0b); color: #fff !important; font-weight: 800; font-size: .95rem;
+    text-decoration: none; box-shadow: 0 14px 34px rgba(180,83,9,.42); transition: transform .18s ease; }
+.alm-install-btn:hover { transform: translateY(-3px); }
+.alm-install-btn .alm-ic, .alm-install-btn svg { width: 1.05em; height: 1.05em; }
