@@ -44,3 +44,7 @@
 - Program.cs: بعد Build()/ForwardedHeaders — `db.Database.Migrate()` داخل try/catch تحذيري (مطابق لنمط بذر الأدمن). يزيل اعتماد dotnet-ef اليدوي نهائياً. السبب الموثق: المالك عالق على أداة ef صامتاً مرتين + كان على فرع v1.2-chat-api قديم (2eb2a76) — انتقل لـmain بـFast-forward من e1e607e (375 ملف/103 ألف سطر) بعد تشخيص git branch --show-current.
 - database/Phase2_RouteLines.sql وRUN-ALMOSAFER.bat أصبحا بديلين احتياطيين فقط (متعايشان idempotent مع Migrate).
 - تغيير سياسة معمارية مُوثّق: «التطبيق لا يهاجر تلقائياً» انتهت بقرار المالك الصريح.
+
+## baseline الشفاء الذاتي (2026-08-31) — الجذر النهائي ✅ (CI 33500883443 أخضر، merge 986fc16)
+- الجذر الموثق من سجل النسخة الجديدة: قاعدة mosafir_db وُلدت أيام PHP (db_setup.sql) ⇒ __EFMigrationsHistory فارغ ⇒ Migrate كان يصطدم بـ«users already exists» قبل Phase2. الإصلاح: Program.cs يفحص users؛ إن وُجد بلا سجل ⇒ CREATE history IF NOT EXISTS + INSERT IGNORE InitialCreate ثم Migrate يكمل Phase2 فقط. مع فحص route_lines صريح وسطر حل جاهز.
+- حادثة بيئية موثقة: استنساخ ضحل جديد (depth=1) فقد سلسلة الفروع محلياً ⇒ pushes رُفضت؛ الحل: fetch صريح للفرع + reset --hard + rebase يفشل في الضحل ⇒ أعدت تطبيق التعديل يدوياً ودفعت. القاعدة المضافة: في هذا الـsandbox تحقق من rev-list --count قبل أي git عملية حساسة.
