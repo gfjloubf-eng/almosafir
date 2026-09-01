@@ -57,3 +57,9 @@
 ## P43 «جولة التلميع» الموجة ١ (2026-09-01) — CI 33517671291
 - plan: docs/P43_UI_FIX_PLAN.md (12 عيباً موثقاً بأدلة → 3 موجات). مشحون: توحيد btn-primary/secondary، زر انضمام، favicon من الشعار، datalist مدن (HomeController +ILineService + ViewBag.Cities؛ جداول الخطوط فارغة نظرياً عند المالك إلى أن يضيفها الأدمن)، navProgress، .alm-toast، قص حافلة الجوال 62%.
 - درس حوكمة sandbox: منصة الحفظ تدفع arena بنفسها بين إجازاتي ⇒ أي push رفض FF → fetch+reset --hard FETCH_HEAD ثم إعادة تطبيق التعديلات (rebase يستحيل في استنساخ ضحل). سجّلته في systemPatterns.
+
+## P43 الموجة ٢ (2026-09-01) — CI ـ
+- Lucide 1.39.0 UMD + flatpickr 4.6.13 + l10n/ar مورَّدة من registry.npmjs.org (بصمات sha256 في README.txt بجانب كل مكتبة).
+- 23 عنواناً h1-h3 بلا إيموجي → data-lucide (createIcons في site.js) + navbar بأيقونات + إخفاء «بحث عن رحلة» عند الرئيسية.
+- flatpickr: input[type=date] → altInput عربي j F Y، إرسال Y-m-d ثابت → صفر مسّ للنماذج/الربط.
+- data-paginate(N) عميلي: 8 tbody + 2 حاويتي بطاقات. درس: استنساخ ضحل — تعافيت بـreset --hard 9066bd8 (main محلياً) مع نسخ احتياطي /tmp.
