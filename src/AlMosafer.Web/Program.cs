@@ -9,6 +9,18 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// P46 «الرادار»: Serilog بدل مسجِّل الإطار — وحدة تحكم قابلة للقراءة + ملفات JSON يومية دوّارة (14 يوماً) تحت logs/
+// المستويات تُقرأ من appsettings (قسم Serilog)؛ الإغلاق النظيف تتكفل به استضافة DI تلقائياً.
+builder.Host.UseSerilog((ctx, lc) => lc
+    .ReadFrom.Configuration(ctx.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(
+        new Serilog.Formatting.Json.JsonFormatter(),
+        Path.Combine("logs", "almosafer-.json"),
+        rollingInterval: Serilog.RollingInterval.Day,
+        retainedFileCountLimit: 14));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
