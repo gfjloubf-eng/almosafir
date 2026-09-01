@@ -161,3 +161,34 @@ document.querySelectorAll('[data-paginate]').forEach(function (box) {
     ((table && table.parentElement) || box.parentElement).appendChild(pager);
     render();
 });
+
+/* ═══════════ P45 «جيب المسافر»: زر تثبيت التطبيق الذكي ═══════════ */
+// لا يظهر إلا عندما يعلن المتصفح أن التثبيت متاح (beforeinstallprompt) ويختفي بعده
+(function () {
+    var deferred = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferred = e;
+        var btn = document.getElementById('almInstallBtn');
+        if (!btn) {
+            btn = document.createElement('a');
+            btn.id = 'almInstallBtn';
+            btn.className = 'alm-install-btn';
+            btn.href = '#';
+            btn.innerHTML = '<i class="alm-ic" data-lucide="download"></i> ثبّت التطبيق';
+            document.body.appendChild(btn);
+            if (window.lucide) lucide.createIcons();
+        }
+        btn.hidden = false;
+        btn.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            if (!deferred) return;
+            deferred.prompt();
+            deferred.userChoice.finally(function () { btn.hidden = true; deferred = null; });
+        });
+    });
+    window.addEventListener('appinstalled', function () {
+        var btn = document.getElementById('almInstallBtn');
+        if (btn) btn.hidden = true;
+    });
+})();
