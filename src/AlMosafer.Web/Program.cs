@@ -124,6 +124,43 @@ try
 {
     using var migrateScope = app.Services.CreateScope();
     var migrateDb = migrateScope.ServiceProvider.GetRequiredService<AlMosaferDbContext>();
+
+    // خطوة الأساس (baseline) — دليلها الميداني من كشف المالك: القاعدة أنشئت قديماً خارج EF
+    // (أيام db_setup.sql) فسجل __EFMigrationsHistory فارغ، وMigrate يصطدم بـ«users موجودة»
+    // قبل وصوله لهجرات اليوم. المعالجة القياسية: إن وُجد users وسجلٌ يجهله، نوسم الهجرة
+    // الأولى كمُطبَّقة (INSERT IGNORE) ثم يكمل Migrate ما بعدها فقط.
+    try
+    {
+        var baselineConnection = migrateDb.Database.GetDbConnection();
+        baselineConnection.Open();
+
+        using (var usersProbe = baselineConnection.CreateCommand())
+        {
+            usersProbe.CommandText = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'users'";
+            var usersTableExists = Convert.ToInt32(usersProbe.ExecuteScalar()) > 0;
+            if (usersTableExists)
+            {
+                using var ensureHistory = baselineConnection.CreateCommand();
+                ensureHistory.CommandText =
+                    "CREATE TABLE IF NOT EXISTS `__EFMigrationsHistory` (`MigrationId` varchar(150) CHARACTER SET utf8mb4 NOT NULL, `ProductVersion` varchar(32) CHARACTER SET utf8mb4 NOT NULL, CONSTRAINT `PK___EFMigrationsHistory` PRIMARY KEY (`MigrationId`)) CHARACTER SET=utf8mb4;";
+                ensureHistory.ExecuteNonQuery();
+
+                using var stampBaseline = baselineConnection.CreateCommand();
+                stampBaseline.CommandText =
+                    "INSERT IGNORE INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`) VALUES ('20260828154624_InitialCreate', '9.0.0');";
+                if (stampBaseline.ExecuteNonQuery() > 0)
+                {
+                    Console.WriteLine("[AlMosafer] قاعدة قديمة بلا سجل هجرات — وُسمت الهجرة الأولى أساساً مُطبَّقاً (baseline).");
+                }
+            }
+        }
+        baselineConnection.Close();
+    }
+    catch (Exception baselineEx)
+    {
+        Console.WriteLine($"[Warning] Baseline stamp skipped: {baselineEx.Message}");
+    }
+
     var pendingMigrations = migrateDb.Database.GetPendingMigrations().ToList();
     if (pendingMigrations.Count > 0)
     {
