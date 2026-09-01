@@ -29,6 +29,11 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.BookingTime)
             .HasColumnName("booking_time");
 
+        // P43 التذكرة الموقعة: رمز سري لكل حجز (null للحجوزات التاريخية قبل الميزة)
+        builder.Property(b => b.TicketSecret)
+            .HasMaxLength(80)
+            .HasColumnName("ticket_secret");
+
         // Relationships
         builder.HasOne(b => b.Trip)
             .WithMany(t => t.Bookings)

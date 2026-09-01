@@ -96,14 +96,15 @@ public class BookingService : IBookingService
                 return (false, $"عذراً، المقاعد المتبقية في هذه الرحلة هي {availableSeats} مقعد فقط.", null);
             }
 
-            // Create Booking Entity
+            // Create Booking Entity — P43 التذكرة الموقّعة: رمز سري عشوائي 32 بايت لكل حجز جديد
             var booking = new Booking
             {
                 TripId = dto.TripId,
                 TravelerId = travelerId,
                 SeatsBooked = dto.SeatsBooked,
                 Status = BookingStatus.Confirmed,
-                BookingTime = DateTime.UtcNow
+                BookingTime = DateTime.UtcNow,
+                TicketSecret = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32))
             };
 
             _dbContext.Bookings.Add(booking);
