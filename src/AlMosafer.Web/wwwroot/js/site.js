@@ -80,3 +80,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 })();
+
+/* P42 «التجديد البصري»: ظهور تدريجي أنيق للأقسام عند التمرير — يحترم تقليل الحركة */
+(function () {
+    const revealTargets = document.querySelectorAll('.rvl');
+    if (revealTargets.length === 0) { return; }
+    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!('IntersectionObserver' in window) || reducedMotion) {
+        revealTargets.forEach(el => el.classList.add('rvl-in'));
+        return;
+    }
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('rvl-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    revealTargets.forEach(el => observer.observe(el));
+})();
