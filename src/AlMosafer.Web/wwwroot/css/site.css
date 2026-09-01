@@ -674,3 +674,24 @@ h3.font-weight-bold.text-dark::after, h4.font-weight-bold.text-dark::after { con
     text-decoration: none; box-shadow: 0 14px 34px rgba(180,83,9,.42); transition: transform .18s ease; }
 .alm-install-btn:hover { transform: translateY(-3px); }
 .alm-install-btn .alm-ic, .alm-install-btn svg { width: 1.05em; height: 1.05em; }
+<<<<<<< HEAD
+
+/* ═══════════ P48 «المعيارية البشرية»: اتفاقيات قياسية ═══════════ */
+/* زر «رجوع» شبحي — الموقع المتفق عليه: أعلى يسار صندوق المحتوى في RTL */
+.btn-ghost { display: inline-flex; align-items: center; gap: .4rem; padding: .45rem 1.15rem; border-radius: 999px;
+    border: 2px solid #e2e8f0; background: #fff; color: #334155; font-weight: 700; font-size: .88rem;
+    text-decoration: none; transition: all .2s ease; }
+.btn-ghost:hover { border-color: #0d9488; color: #0f766e; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(13,148,136,.15); }
+.alm-back { margin-bottom: 1rem; }
+
+/* نجمة الحقول المطلوبة */
+.alm-req { color: #dc2626; font-weight: 800; }
+
+/* حلقة تركيز واضحة للوحة المفاتيح — قابلية وصول قياسية */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+    outline: 3px solid rgba(13,148,136,.55); outline-offset: 2px; border-radius: .45rem; }
+
+/* زر الإرسال أثناء التنفيذ: يبقى بحجمه لا ينكمش فيتشتت المستخدم */
+button[type="submit"]:disabled { cursor: progress; opacity: .85; }
+=======
+>>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6

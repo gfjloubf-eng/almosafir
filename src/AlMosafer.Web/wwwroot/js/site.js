@@ -192,3 +192,44 @@ document.querySelectorAll('[data-paginate]').forEach(function (box) {
         if (btn) btn.hidden = true;
     });
 })();
+
+/* ═══════════ P48 «المعيارية البشرية»: اتفاقيات UX قياسية لكل النظام ═══════════ */
+// 1) حارس الإرسال المزدوج + زر «جارٍ التنفيذ…» لكل نموذج POST — يمنع الحجز المكرر بنقرتين متتاليتين
+// 2) data-confirm: تأكيد موحد للإجراءات الهدامة (الحذف/الإلغاء) بنص عربي صريح
+// 3) نجمة حمراء تلقائية على تسميات الحقول المطلوبة (required) — اتفاقية النماذج العالمية
+document.querySelectorAll('form[method="post"], form[method="POST"]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+        // تأكيد هدام إن طُلب
+        if (form.dataset.confirm && !window.confirm(form.dataset.confirm)) { e.preventDefault(); return; }
+        // لا تعطيل إن فشل تحقق jQuery-validate (النموذج لن يرسل)
+        if (window.jQuery && typeof jQuery(form).valid === 'function' && !jQuery(form).valid()) return;
+        if (form.dataset.busy) { e.preventDefault(); return; } // نقرة ثانية = تجاهل
+        form.dataset.busy = '1';
+        var btn = form.querySelector('button[type="submit"], input[type="submit"]');
+        if (btn && !btn.dataset.noGuard && btn.tagName === 'BUTTON') {
+            btn.disabled = true;
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm ms-1" role="status" aria-hidden="true"></span> جارٍ التنفيذ…';
+        }
+    });
+});
+// العودة من ذاكرة المتصفح (bfcache): إحياء النماذج المعلّقة حتى لا تعلق الأزرار معطلة
+window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    document.querySelectorAll('form[data-busy]').forEach(function (form) {
+        delete form.dataset.busy;
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn && btn.dataset.originalHtml) { btn.disabled = false; btn.innerHTML = btn.dataset.originalHtml; }
+    });
+});
+// نجمة الحقول المطلوبة
+document.querySelectorAll('input[required], select[required], textarea[required]').forEach(function (el) {
+    var label = el.id ? document.querySelector('label[for="' + el.id + '"]')
+                      : el.closest('.mb-3, .col-md-3, .col-md-4, .col-md-6, .col-12')?.querySelector('label');
+    if (label && !label.querySelector('.alm-req')) {
+        var star = document.createElement('span');
+        star.className = 'alm-req';
+        star.textContent = ' *';
+        label.appendChild(star);
+    }
+});

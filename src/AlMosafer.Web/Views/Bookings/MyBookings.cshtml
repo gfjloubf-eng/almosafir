@@ -78,7 +78,11 @@
                                                 </div>
                                                 <div class="modal-footer bg-light">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر</button>
+<<<<<<< HEAD
+                                                    <form asp-action="Cancel" method="post" class="d-inline" data-confirm="إلغاء هذا الحجز نهائياً؟ لا يمكن التراجع عن هذه الخطوة.">
+=======
                                                     <form asp-action="Cancel" method="post" class="d-inline">
+>>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
                                                         @Html.AntiForgeryToken()
                                                         <input type="hidden" name="bookingId" value="@booking.BookingId" />
                                                         <button type="submit" class="btn btn-danger font-weight-bold">نعم، تأكيد الإلغاء</button>
