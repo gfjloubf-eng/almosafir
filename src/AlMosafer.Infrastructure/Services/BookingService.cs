@@ -42,6 +42,12 @@ public class BookingService : IBookingService
 
         // Execute inside an explicit Database Transaction to prevent Concurrency Race Conditions
         var isInMemory = _dbContext.Database.ProviderName?.Contains("InMemory") == true;
+        // إصلاح حرج (P49): عند EnableRetryOnFailure ترفض EF المعاملات اليدوية العارية
+        // «MySqlRetryingExecutionStrategy does not support user-initiated transactions» —
+        // الحل المعياري: تنفيذ الجسم كاملاً داخل استراتيجية التنفيذ نفسها. أمسكه ميدانياً سجل المالك.
+        var strategy = _dbContext.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
         using var transaction = isInMemory ? null : await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
         try
@@ -156,6 +162,7 @@ public class BookingService : IBookingService
             }
             throw;
         }
+        }); // نهاية استراتيجية التنفيذ (P49)
     }
 
     public async Task<(bool Success, string Message)> CancelBookingAsync(int userId, int bookingId)

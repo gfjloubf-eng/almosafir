@@ -9,7 +9,9 @@
     <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <!-- بوابة النشر الحر: SQLite لمزود العرض فقط (DbProvider=sqlite) — لا يُفعَّل في الإنتاج -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.8" />
+    <!-- ترقيع NU1903 العالي: SQLitePCLRaw 2.1.10 به ثغرة — تجاوز صريح لـ2.1.11 -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>

@@ -81,22 +81,14 @@
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-sm btn-outline-success">🚀 بدء الرحلة</button>
                                         </form>
-<<<<<<< HEAD
                                         <form asp-action="Cancel" asp-route-id="@trip.Id" method="post" class="d-inline" data-confirm="تأكيد إلغاء هذه الرحلة نهائياً؟">
-=======
-                                        <form asp-action="Cancel" asp-route-id="@trip.Id" method="post" class="d-inline" data-confirm="تأكيد إلغاء هذه الرحلة نهائياً؟">
->>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-sm btn-outline-danger">إلغاء</button>
                                         </form>
                                     }
                                     else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Started)
                                     {
-<<<<<<< HEAD
                                         <form asp-action="Complete" asp-route-id="@trip.Id" method="post" class="d-inline" data-confirm="هل وصلت الرحلة فعلاً؟ سيتم تسجيلها مكتملة.">
-=======
-                                        <form asp-action="Complete" asp-route-id="@trip.Id" method="post" class="d-inline" data-confirm="هل وصلت الرحلة فعلاً؟ سيتم تسجيلها مكتملة.">
->>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
                                             @Html.AntiForgeryToken()
                                             <button type="submit" class="btn btn-sm btn-success">✅ إنهاء الرحلة</button>
                                         </form>
