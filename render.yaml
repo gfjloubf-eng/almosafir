@@ -1,0 +1,25 @@
+# «بوابة النشر الحر» (P47.5) — مخطط Render بلمسة واحدة للنسخة التجريبية المجانية
+# الخطوات: https://dashboard.render.com → New → Blueprint → اختر هذا المستودع → Apply
+# ملاحظات صادقة:
+#  · الطبقة المجانية: تنام الخدمة بعد 15 دقيقة خمول (أول زيارة توقظها خلال ~30 ثانية) والقرص مؤقت
+#    (تُصفَّر بيانات SQLite عند كل نشر/استيقاظ من نوم عميق) — مناسبة للعرض لا للإنتاج.
+#  · للإنتاج الدائم: فعّل خطة مدفوعة بقرص ثابت، أو أزل DbProvider وأضف ConnectionStrings__DefaultConnection لـMySQL خارجي.
+services:
+  - type: web
+    name: almosafer
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: DbProvider
+        value: sqlite
+      - key: ASPNETCORE_URLS
+        value: "http://0.0.0.0:8080"
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      # كلمة المرور تُولَّد عشوائياً بواسطة Render — تجدها في: الخدمة → Environment بعد النشر
+      - key: AdminSettings__Email
+        value: admin@almosafer.preview
+      - key: AdminSettings__Password
+        generateValue: true
