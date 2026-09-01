@@ -10,11 +10,13 @@ public class TripsController : Controller
 {
     private readonly ITripService _tripService;
     private readonly IWatchlistService _watchlistService;
+    private readonly ILineService _lineService;
 
-    public TripsController(ITripService tripService, IWatchlistService watchlistService)
+    public TripsController(ITripService tripService, IWatchlistService watchlistService, ILineService lineService)
     {
         _tripService = tripService;
         _watchlistService = watchlistService;
+        _lineService = lineService;
     }
 
     [HttpGet]
@@ -22,6 +24,8 @@ public class TripsController : Controller
     {
         var trips = await _tripService.SearchTripsAsync(filter);
         ViewData["Filter"] = filter;
+        // P43 م٣: اقتراحات المدن الحية من شبكة الخطوط المعتمدة (نفس نمط الرئيسية)
+        ViewBag.Cities = await _lineService.GetActiveCitiesAsync();
         return View(trips);
     }
 

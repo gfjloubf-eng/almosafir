@@ -133,16 +133,26 @@
         <p class="text-muted mb-4">الأعلى تقييماً من مجتمعنا عبر كل الرحلات المنجزة</p>
         <div class="row g-3 justify-content-center">
             @{
-                var medals = new[] { "🥇", "🥈", "🥉", "🎖️" };
-                var rank = 0;
+                var podRank = 0;
             }
             @foreach (var d in topDrivers)
             {
+                podRank++;
+                var avName = (d.DriverName ?? "م").Trim();
+                var words = avName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var initials = new string(words.Take(2).Select(w => w[0]).ToArray());
+                var hue = Math.Abs(avName.Sum(ch => (int)ch)) % 360;
+                var hue2 = (hue + 45) % 360;
+                var rankCls = podRank <= 3 ? $"alm-rank-{podRank}" : string.Empty;
                 <div class="col-6 col-md-3">
-                    <div class="card-almosafer card-almosafer-hover p-4 h-100">
-                        <div class="medal-badge mb-2">@medals[Math.Min(rank++, 3)]</div>
-                        <h6 class="font-weight-bold text-dark mb-1">@d.DriverName</h6>
-                        <div class="text-warning font-weight-bold">⭐ @d.AverageRating.ToString("0.0") / 5</div>
+                    <div class="card-almosafer card-almosafer-hover p-4 h-100 podium-card">
+                        <span class="alm-rank @rankCls" title="الترتيب @podRank">@podRank</span>
+                        <div class="alm-avatar mx-auto mb-3" style="background: linear-gradient(135deg, hsl(@(hue), 72%, 45%), hsl(@(hue2), 72%, 38%));">@initials</div>
+                        <h6 class="font-weight-bold text-dark mb-1">
+                            @d.DriverName
+                            <span class="alm-verified" title="سائق موثّق من الإدارة"><i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></span>
+                        </h6>
+                        <div class="alm-stars"><i class="alm-ic" data-lucide="star" aria-hidden="true"></i> @d.AverageRating.ToString("0.0") <span class="text-muted font-weight-normal">/ 5</span></div>
                         <small class="text-muted">@d.TripsCount رحلة · @d.BookingsCount حجز</small>
                     </div>
                 </div>
@@ -156,7 +166,7 @@
     <h3 class="font-weight-bold mb-3">جاهز للبدء في رحلتك القادمة؟ <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
     <p class="mb-4 mx-auto" style="max-width: 40rem; color: #cbd5e1;">سواء كنت مسافراً تبحث عن وسيلة نقل مريحة وأمينة، أو سائقاً ترغب في نشر رحلاتك ومشاركة التكلفة.</p>
     <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold"><i class="alm-ic" data-lucide="search" aria-hidden="true"></i> تصفح الرحلات المتاحة</a>
         @if (User.Identity?.IsAuthenticated != true)
         {
             <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald btn-lg font-weight-bold">تسجيل كـ سائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></a>
