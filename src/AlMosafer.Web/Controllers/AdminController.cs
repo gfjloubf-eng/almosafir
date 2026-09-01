@@ -14,13 +14,24 @@ public class AdminController : Controller
     private readonly IAdminService _adminService;
     private readonly IReportingService _reportingService;
     private readonly ILineService _lineService;
+    private readonly ILogTailService _logTailService;
 
-    public AdminController(IDashboardService dashboardService, IAdminService adminService, IReportingService reportingService, ILineService lineService)
+    public AdminController(IDashboardService dashboardService, IAdminService adminService, IReportingService reportingService, ILineService lineService, ILogTailService logTailService)
     {
         _dashboardService = dashboardService;
         _adminService = adminService;
         _reportingService = reportingService;
         _lineService = lineService;
+        _logTailService = logTailService;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Logs(string? level = null)
+    {
+        // P46 الفرعي «عين الرادار»: ذيل Serilog أمام الأدمن مباشرة — بلا وصول للخادم
+        var entries = await _logTailService.GetLatestAsync(200, level);
+        ViewBag.SelectedLevel = level;
+        return View(entries);
     }
 
     [HttpGet]

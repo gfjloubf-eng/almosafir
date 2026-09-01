@@ -70,3 +70,8 @@
 - إيقاع داخلي: ::after شريط هاتفي تحت كل h3/h4.font-weight-bold.text-dark (20 صفحة دفعة واحدة بلا فتحها).
 - Trips/Index: datalist مدن مشتركة عبر ViewBag.Cities (TripsController +ILineService — بلا إنشاء مباشر في الاختبارات ✓) + أيقونات filter card/إفراغ.
 - درس Razor: عبارات var داخل حلقة @foreach قانونية (سياق كتلة كود)؛ حُرِّفت لحظياً بـif(true) غير مغلق ثم اُسترجعت فوراً — CI هي الحكم.
+
+## P45 «جيب المسافر» (CI 33528835021 ✅) + P46 «الرادار» (CI 33529238464 ✅) — 2026-09-01
+- SW v2: statics كاش-أولاً (+/img/)، precache يشمل lucide/flatpickr/favicon؛ صفحات عامة فقط (/, /Lines, /Trips/InternalLines) بـSWR + سقف 30؛ الشخصية شبكة-أولاً→offline.html. offline.html بهوية جديدة (SVG wifi-off). زر تثبيت عائم قبلbeforeinstallprompt. manifest +categories.
+- Serilog.AspNetCore 9.0.0: Console + File JSON يومي 14 يوماً logs/ (مهملة أصلاً)؛ المستويات في appsettings. رسب CI أولاً (33529062846) بغياب using Serilog؛ أُصلح فوراً. درس: الامتدادات بحتاج using حرفي حتى مع ImplicitUsings.
+- الخارطة المتبقية بلا حجب خارجي: استعادة كلمة مرور (SMTP غائبة لكن «فاشل-آمن» ممكن P38) — الباقي كله محجوب بمفاتيح/هجرات يقررها المالك.
