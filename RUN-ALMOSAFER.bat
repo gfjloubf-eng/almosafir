@@ -8,7 +8,9 @@ echo    RUN-ALMOSAFER — سكربت التشغيل الموحد للمنصة
 echo ====================================================
 echo.
 
-rem خطوة 0: سحب آخر الكود (بأفضل جهد — لا يوقف السكربت عند فشله)
+rem خطوة 0: اقتل أي نسخة قديمة شغالة تقفل الملفات ثم اسحب آخر الكود
+rem (لقطة موثقة: عملية AlMosafer.Web الشبحية خدمت المالك كوداً قديماً وقفلت البناء)
+taskkill /F /IM AlMosafer.Web.exe >nul 2>&1
 git pull --ff-only >nul 2>&1
 
 set "MYSQL=C:\xampp\mysql\bin\mysql.exe"
