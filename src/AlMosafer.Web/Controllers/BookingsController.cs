@@ -11,9 +11,11 @@ namespace AlMosafer.Web.Controllers;
 public class BookingsController : Controller
 {
     private readonly IBookingService _bookingService;
+    private readonly ITicketSignatureService _ticketSignature;
 
-    public BookingsController(IBookingService bookingService)
+    public BookingsController(IBookingService bookingService, ITicketSignatureService ticketSignature)
     {
+        _ticketSignature = ticketSignature;
         _bookingService = bookingService;
     }
 
@@ -63,10 +65,15 @@ public class BookingsController : Controller
             return Forbid();
         }
 
-        // تذكرة QR تعريفية: تُحمِل رابط الإيصال (محروس بحساب المسافر) — التوقيع ضد التزوير مرحلة لاحقة (يحتاج عمود رمز)
-        var receiptUrl = Url.Action(nameof(Receipt), "Bookings", new { id }, Request.Scheme) ?? string.Empty;
+        // P43 التذكرة الموقّعة: QR يحمل رابط تحقق موقّعاً (HMAC بالرمز السري) — بلا الرمز من القاعدة لا تُزوَّر.
+        // الحجوزات الأقدم من الميزة تسقط إلى رابط الإيصال القديم وتُعرَش بصدق «غير موقّعة» عند المسح.
+        var signature = await _ticketSignature.CreateSignatureAsync(id);
+        var scanTarget = signature is not null
+            ? Url.Action("Verify", "Tickets", new { id, sig = signature }, Request.Scheme) ?? string.Empty
+            : Url.Action(nameof(Receipt), "Bookings", new { id }, Request.Scheme) ?? string.Empty;
+        ViewBag.TicketSigned = signature is not null;
         using var qrGenerator = new QRCodeGenerator();
-        using var qrData = qrGenerator.CreateQrCode(receiptUrl, QRCodeGenerator.ECCLevel.Q);
+        using var qrData = qrGenerator.CreateQrCode(scanTarget, QRCodeGenerator.ECCLevel.Q);
         var qrCode = new PngByteQRCode(qrData);
         ViewBag.QrCodeDataUri = "data:image/png;base64," + Convert.ToBase64String(qrCode.GetGraphic(6));
 

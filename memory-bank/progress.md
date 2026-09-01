@@ -88,3 +88,8 @@
 - طلبه: «تقدر تنشره؟ وتعطينا الرابط». الحقيقة: صندوق العمل بلا .NET ونطاقات Microsoft محجوبة (dot.net/dotnet.microsoft.com/builds.dotnet.microsoft.com كلها EOF) → استضافة محلية مستحيلة اليوم.
 - المشحون بديلاً: مزود SQLite مُبوَّب بيئة DbProvider=sqlite (registration + EnsureCreated-Skip لميكانيكا MySQL؛ الإنتاج حرفه بحرفه) + حزمة EF.Sqlite 9.0.0 + render.yaml (خطة free، docker، healthCheckPath=/، autoDeploy، AdminSettings__Password بـgenerateValue) + DEPLOY_ONE_CLICK.md (5 دقائق إلى https://almosafer.onrender.com؛ حدود: نوم 15د + قرص مؤقت).
 - درس عدّ الأقواس: السلاسل الحرفية "${" تلوّث العدّ الخام — جرّد السلاسل أولاً.
+
+## P47.7 بذرة العرض التقديمي (CI 33533838303 ✅) — 2026-09-01
+- قال: «انسى الاستضافة — Render غير متاح في اليمن ومكلفة». الاستضافة مُعلَّقة رسمياً (render.yaml يبقى خامل).
+- DemoDataSeeder (Web/Services) ببوابة DemoSeed=true: 3 سائقين/2 مسافرين (@demo.almosafer + Demo@12345 للمحلي فقط)، 6 خطوط يمنية بمواقف+مواعيد (صنعاء/عدن/تعز/إب/الحديدة/ذمار)، 6 رحلات بينية مستقبلية، حجوزات Cash + تقييمات أفضل-جهد. آمنة التكرار عبر فحص وجود خطوط. CreateTripDto بلا ToLocation — النزول يُدمج بالوصف.
+- أمره المحلي: set DbProvider=sqlite + set DemoSeed=true + dotnet run.
