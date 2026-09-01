@@ -46,7 +46,8 @@ public class BookingService : IBookingService
         // «MySqlRetryingExecutionStrategy does not support user-initiated transactions» —
         // الحل المعياري: تنفيذ الجسم كاملاً داخل استراتيجية التنفيذ نفسها. أمسكه ميدانياً سجل المالك.
         var strategy = _dbContext.Database.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
+        // التحميل الزائد: بلا وسيط نوع صريح يختار المترجم ExecuteAsync(Func<Task>) فتُرفض عوائد اللمّدا (CS8031)
+        return await strategy.ExecuteAsync<(bool Success, string Message, int? BookingId)>(async () =>
         {
         using var transaction = isInMemory ? null : await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
 
