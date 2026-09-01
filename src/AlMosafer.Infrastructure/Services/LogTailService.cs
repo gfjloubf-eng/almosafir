@@ -1,7 +1,6 @@
 using System.Text.Json;
 using AlMosafer.Application.DTOs.Reports;
 using AlMosafer.Application.Interfaces;
-using Microsoft.Extensions.Hosting;
 
 namespace AlMosafer.Infrastructure.Services;
 
@@ -15,9 +14,10 @@ public class LogTailService : ILogTailService
     private const int ExceptionPreviewLimit = 400;
     private readonly string _logsDir;
 
-    public LogTailService(IHostEnvironment env)
+    /// <param name="contentRootPath">جذر محتوى التطبيق؛ تُقرأ السجلات من logs/ تحته</param>
+    public LogTailService(string contentRootPath)
     {
-        _logsDir = Path.Combine(env.ContentRootPath, "logs");
+        _logsDir = Path.Combine(contentRootPath, "logs");
     }
 
     public Task<IReadOnlyList<LogEntryDto>> GetLatestAsync(int max = 200, string? level = null)

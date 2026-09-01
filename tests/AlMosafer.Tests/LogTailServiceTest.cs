@@ -1,6 +1,4 @@
 using AlMosafer.Infrastructure.Services;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace AlMosafer.Tests;
@@ -8,15 +6,7 @@ namespace AlMosafer.Tests;
 /// <summary>اختبارات «عين الرادار»: قراءة ذيل سجلات Serilog بأمان وتسامح.</summary>
 public class LogTailServiceTest
 {
-    private sealed class FakeEnv : IHostEnvironment
-    {
-        public string EnvironmentName { get; set; } = "Test";
-        public string ApplicationName { get; set; } = "AlMosafer.Tests";
-        public string ContentRootPath { get; set; } = string.Empty;
-        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
-    }
-
-    private static LogTailService At(string root) => new(new FakeEnv { ContentRootPath = root });
+    private static LogTailService At(string contentRoot) => new(contentRoot);
 
     [Fact]
     public async Task Missing_Logs_Directory_Returns_Empty_Without_Throwing()
