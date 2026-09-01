@@ -646,3 +646,23 @@ h1 .alm-ic, h2 .alm-ic, .section-title .alm-ic { width: 1em; height: 1em; vertic
     border-color: transparent; color: #fff; }
 .flatpickr-day:hover:not(.selected) { background: #f0fdfa; border-color: transparent; }
 .flatpickr-weekday { color: #0f766e; font-weight: 700; }
+
+/* ═══════════ P43 «جولة التلميع» — الموجة ٣: منصة المتصدرين + إيقاع العناوين ═══════════ */
+.podium-card { position: relative; overflow: hidden; }
+.alm-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 1.4rem; letter-spacing: .5px;
+    border: 3px solid #fff; box-shadow: 0 10px 22px rgba(15,23,42,.20), inset 0 1px 0 rgba(255,255,255,.35); }
+.alm-rank { position: absolute; top: .8rem; inset-inline-start: .8rem; width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .85rem;
+    background: #eef2f7; color: #64748b; }
+.alm-rank-1 { background: linear-gradient(135deg,#fbbf24,#d97706); color: #fff; box-shadow: 0 4px 14px rgba(217,119,6,.45); }
+.alm-rank-2 { background: linear-gradient(135deg,#e2e8f0,#94a3b8); color: #fff; box-shadow: 0 4px 14px rgba(148,163,184,.45); }
+.alm-rank-3 { background: linear-gradient(135deg,#fb923c,#9a3412); color: #fff; box-shadow: 0 4px 14px rgba(154,52,18,.4); }
+.alm-verified .alm-ic, .alm-verified svg { width: 1.05em; height: 1.05em; color: #0d9488; vertical-align: -0.18em; }
+.alm-stars { color: #f59e0b; font-weight: 800; display: inline-flex; align-items: center; gap: .3rem; }
+.alm-stars svg { fill: #f59e0b; stroke: #d97706; width: 1.05em; height: 1.05em; }
+h3.font-weight-bold.text-dark, h4.font-weight-bold.text-dark { position: relative; padding-bottom: .55rem; }
+h3.font-weight-bold.text-dark::after, h4.font-weight-bold.text-dark::after { content: ""; position: absolute; bottom: 0;
+    inset-inline-start: 0; width: 58px; height: 3px; border-radius: 99px;
+    background: linear-gradient(90deg, #0d9488, #14b8a6); opacity: .9; }
+.empty-state-icon .alm-ic, .empty-state-icon svg { width: 3rem; height: 3rem; color: #94a3b8; stroke-width: 1.5; vertical-align: middle; }

@@ -15,23 +15,32 @@
         <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
     }
 
+    @{
+        var cities = ViewBag.Cities as IReadOnlyList<string> ?? new List<string>();
+    }
+    <datalist id="citiesListTrips">
+        @foreach (var c in cities)
+        {
+            <option value="@c"></option>
+        }
+    </datalist>
     <div class="card-almosafer p-4 mb-4 text-white" style="background-color: var(--color-primary);">
-        <h4 class="font-weight-bold mb-3">ابحث عن رحلتك بين المدن 🚗</h4>
+        <h4 class="font-weight-bold mb-3"><i class="alm-ic" data-lucide="car" aria-hidden="true"></i> ابحث عن رحلتك بين المدن</h4>
         <form method="get" asp-action="Index" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label text-light font-weight-bold">من مدينة</label>
-                <input type="text" name="FromCity" value="@filter.FromCity" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" />
+                <input type="text" name="FromCity" value="@filter.FromCity" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" list="citiesListTrips" autocomplete="off" />
             </div>
             <div class="col-md-3">
                 <label class="form-label text-light font-weight-bold">إلى مدينة</label>
-                <input type="text" name="ToCity" value="@filter.ToCity" class="form-control form-control-custom" placeholder="مثال: عدن، إب" />
+                <input type="text" name="ToCity" value="@filter.ToCity" class="form-control form-control-custom" placeholder="مثال: عدن، إب" list="citiesListTrips" autocomplete="off" />
             </div>
             <div class="col-md-3">
                 <label class="form-label text-light font-weight-bold">تاريخ السفر</label>
                 <input type="date" name="Date" value="@(filter.Date?.ToString("yyyy-MM-dd"))" class="form-control form-control-custom" />
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button type="submit" class="btn btn-accent w-100 font-weight-bold">بحث الرحلات 🔍</button>
+                <button type="submit" class="btn btn-accent w-100 font-weight-bold"><i class="alm-ic" data-lucide="search" aria-hidden="true"></i> بحث الرحلات</button>
             </div>
         </form>
     </div>
@@ -44,7 +53,7 @@
     @if (!Model.Any())
     {
         <div class="empty-state-card">
-            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="search" aria-hidden="true"></i></div>
             <h4 class="font-weight-bold text-dark mb-2">لم نجد رحلات مطابقة لشروط بحثك</h4>
             <p class="text-muted mb-4">جرّب تغيير مدينة الوصول أو البحث بتاريخ آخر لعرض المزيد من الرحلات اليومية.</p>
             <a asp-action="Index" class="btn btn-outline-primary font-weight-bold">عرض جميع الرحلات</a>
