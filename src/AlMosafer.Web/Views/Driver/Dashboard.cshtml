@@ -1,0 +1,122 @@
+@model AlMosafer.Application.DTOs.Dashboard.DriverDashboardDto
+@{
+    ViewData["Title"] = "لوحة السائق — Driver Dashboard";
+}
+
+<div class="py-4">
+    <!-- Header / Context -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">لوحة تحكم السائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
+            <p class="text-muted mb-0">إدارة رحلاتك، متابعة حجز المقاعد، ومراقبة التنبيهات والرسائل الواردة</p>
+        </div>
+        <span class="badge bg-success fs-6 px-3 py-2">Role: Driver</span>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-success h-100">
+                <h6 class="text-muted font-weight-bold mb-2">إجمالي رحلاتي</h6>
+                <h2 class="font-weight-bold text-success mb-2">@Model.TotalTrips</h2>
+                <small class="text-muted">الرحلات المنشورة</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-primary h-100">
+                <h6 class="text-muted font-weight-bold mb-2">الرحلات النشطة</h6>
+                <h2 class="font-weight-bold text-primary mb-2">@Model.ActiveTrips</h2>
+                <small class="text-muted">رحلات مفتوحة للحجز</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-warning h-100">
+                <h6 class="text-muted font-weight-bold mb-2">المقاعد المحجوزة</h6>
+                <h2 class="font-weight-bold text-warning mb-2">@Model.TotalSeatsBooked</h2>
+                <small class="text-muted">مقاعد مؤكدة الحجز</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card-almosafer p-4 shadow-sm border-start border-4 border-info h-100">
+                <h6 class="text-muted font-weight-bold mb-2">إجمالي الأرباح</h6>
+                <h2 class="font-weight-bold text-info mb-2">@Model.TotalEarnings.ToString("N0") <span class="fs-6">ريال</span></h2>
+                <small class="text-muted">المعاملات المالية المؤكدة</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card-almosafer p-4 mb-5">
+        <h5 class="font-weight-bold text-primary mb-3">إجراءات وإدارة السائق 🚀</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a asp-controller="Trips" asp-action="Create" class="btn btn-emerald w-100 py-3 font-weight-bold text-start">
+                    + نشر رحلة جديدة بين المدن
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-accent w-100 py-3 font-weight-bold text-start">
+                    <i class="alm-ic" data-lucide="car" aria-hidden="true"></i> عرض وإدارة رحلاتي المضافة
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-outline-primary w-100 py-3 font-weight-bold text-start" style="border-width: 2px;">
+                    🛠️ إدارة رحلاتي (@Model.TotalTrips) — تعديل / بدء / إنهاء
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a asp-controller="Conversations" asp-action="Index" class="btn btn-primary w-100 py-3 font-weight-bold text-start">
+                    💬 صندوق رسائل الركاب (@Model.ConversationsCount)
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Trips Activity -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="font-weight-bold text-dark mb-0">آخر الرحلات المنشورة <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h4>
+        <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-sm btn-outline-success font-weight-bold">عرض الكل</a>
+    </div>
+
+    @if (!Model.RecentTrips.Any())
+    {
+        <div class="empty-state-card mb-4">
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="car" aria-hidden="true"></i></div>
+            <h4 class="font-weight-bold text-dark mb-2">لم تقم بنشر أي رحلات بعد</h4>
+            <p class="text-muted mb-4">ابدأ بنشر رحلتك الأولى بين المدن واستقبل حجوزات الركاب فوراً.</p>
+            <a asp-controller="Trips" asp-action="Create" class="btn btn-emerald btn-lg font-weight-bold">+ نشر رحلة جديدة 🚀</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-4">
+            @foreach (var trip in Model.RecentTrips)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card-almosafer shadow-sm h-100 d-flex flex-column">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold fs-5">@trip.FromCity ← @trip.ToCity</span>
+                            <span class="badge bg-success font-weight-bold">@trip.PricePerSeat.ToString("N0") ريال</span>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <p class="mb-1 text-muted">📅 <strong>التاريخ:</strong> @trip.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
+                            <p class="mb-1 text-muted">🪑 <strong>المقاعد الشاغرة:</strong> @trip.AvailableSeats من أصل @trip.TotalSeats</p>
+                            <p class="mb-3 text-muted">📍 <strong>التجمع:</strong> @(string.IsNullOrEmpty(trip.FromLocation) ? "حسب الاتفاق" : trip.FromLocation)</p>
+
+                            <div class="mt-auto pt-3 border-top text-end">
+                                <a asp-controller="Trips" asp-action="Details" asp-route-id="@trip.Id" class="btn btn-accent btn-sm font-weight-bold">عرض التفاصيل والحجوزات 🔍</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="alert alert-success d-flex align-items-center mb-0 shadow-sm" role="alert">
+        <span class="me-2 fs-4">✅</span>
+        <div>
+            <strong>لوحة السائق المحمية:</strong> جميع المؤشرات والبيانات المعروضة حقيقية ومجلبة مباشرة من قاعدة البيانات.
+        </div>
+    </div>
+</div>

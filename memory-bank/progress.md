@@ -20,3 +20,81 @@
 - Authentication and session security flaws (being fixed).
 - Missing messaging modules (being fixed).
 - Dynamic search filter crashes (being fixed).
+
+## P40 «النبض الحي» (2026-08-31) — مُسلَّم ✅ (CI 33445047592 أخضر)
+- SignalR: Hubs/AppHub.cs ([Authorize], مجموعات user-{id}) + RealtimeNotificationServiceDecorator (يلتف حول NotificationService بلا تعديله — بث بعد حفظ القاعدة، فشل البث لا يُسقط الحفظ) + تسجيل DI مصنع في Program.cs + MapHub("/hubs/app") + AddSignalR.
+- عميل: wwwroot/lib/signalr/signalr.min.js (v8.0.7 رسمي من npm registry — jsdelivr/unpkg/cdnjs محجوبة؛ SHA-256 موثق في README.txt بجانبه) + js/realtime.js (reconnect تلقائي + toast + شارة) + قائمة Layout مشروطة بالتسجيل + NotificationsController.Count.
+- manifest: أربعة shortcuts للتثبيت. تقرير: docs/PROMPT_40_REALTIME_REPORT.md.
+- عملية: ملف workflow تسرّب مرة (drift قديم بمحفزات arena) — استُرجع وأُعيد الالتزام --amend؛ القاعدة قائمة: لا تلمس ci-cd.yml أبداً.
+- main HEAD: دمج 9c59c816. fix5 (EnableRetryOnFailure) CI 33443864157 أخضر مؤكد.
+
+## «النبض الحي» الموجة ٢ + ختم الحقوق (2026-08-31) — مُسلَّم ✅ (CI 33445982815 أخضر)
+- RealtimeMessageServiceDecorator :IMessageService (يلتف MessageService؛ يقرأ طرفي المحادثة AsNoTracking؛ بث conv-{id}+user-{recipient}؛ فشل البث آمِن).
+- AppHub.JoinConversation(int) بفحص عضوية DB (IDOR مرفوض صامتاً). realtime.js: حدث ReceiveMessage + CustomEvent almosafer:chat-refresh + almosafer:realtime-join (إعادة انضمام بعد reconnect) + window.__uid من Layout.
+- Details.cshtml: data-conversation-id + refresh() مستخرجة؛ polling 15ث شبكة أمان فقط.
+- Footer Layout: «© 2026–2027 منصة المسافر — حقوق الطبع محفوظة لدى عمار الموعي» (طلبه حرفياً؛ ملاحظة: قسم «معلومات المنظومة» وقسم SupportTeam بالاسم الكامل عمار عادل المصوعي/712275038 من يد المالك في 74bab19).
+- خارطة: ترويسة قرار المالك «تنفيذ هذا الشهر» + البند 2 مُعلَّم ✅. main: merge 46d5d8d7. تقرير: docs/PROMPT_41_LIVE_CHAT_REPORT.md.
+
+## إصلاح عرضي (2026-08-31) — رابط الإعدادات الدائم ✅ (CI 33446550690)
+- Navbar: رابط «⚙️ الإعدادات» مباشر بجانب الإشعارات (خارج userMenu — كان المالك لا «يستطيع الضغط» عليه للوصول لبطاقة الأسماء).
+- تشخيص «شبكة الخطوط غير متصلة» عند المالك: صفحات /Lines وأخواتها تقرأ RouteLines (هجرة Phase2) — على الأرجح لم تُطبَّق لديه (dotnet ef توقف صامتاً). أُرشد: تثبيت dotnet-ef ثم database update حتى سطر النجاح. لم أُضف تخفيفاً صامتاً (إخفاء عطب إعداد = غير أمين).
+- ملاحظة صحة: greps أظهرت صحة runtime كاملة سابقاً على جداول Phase1 فقط — لذا الصفحات الأخرى عملت والخطوط لا.
+
+## التهجير التلقائي عند الإقلاع (2026-08-31) — بصلاحية المالك ✅ (CI 33449708813)
+- Program.cs: بعد Build()/ForwardedHeaders — `db.Database.Migrate()` داخل try/catch تحذيري (مطابق لنمط بذر الأدمن). يزيل اعتماد dotnet-ef اليدوي نهائياً. السبب الموثق: المالك عالق على أداة ef صامتاً مرتين + كان على فرع v1.2-chat-api قديم (2eb2a76) — انتقل لـmain بـFast-forward من e1e607e (375 ملف/103 ألف سطر) بعد تشخيص git branch --show-current.
+- database/Phase2_RouteLines.sql وRUN-ALMOSAFER.bat أصبحا بديلين احتياطيين فقط (متعايشان idempotent مع Migrate).
+- تغيير سياسة معمارية مُوثّق: «التطبيق لا يهاجر تلقائياً» انتهت بقرار المالك الصريح.
+
+## baseline الشفاء الذاتي (2026-08-31) — الجذر النهائي ✅ (CI 33500883443 أخضر، merge 986fc16)
+- الجذر الموثق من سجل النسخة الجديدة: قاعدة mosafir_db وُلدت أيام PHP (db_setup.sql) ⇒ __EFMigrationsHistory فارغ ⇒ Migrate كان يصطدم بـ«users already exists» قبل Phase2. الإصلاح: Program.cs يفحص users؛ إن وُجد بلا سجل ⇒ CREATE history IF NOT EXISTS + INSERT IGNORE InitialCreate ثم Migrate يكمل Phase2 فقط. مع فحص route_lines صريح وسطر حل جاهز.
+- حادثة بيئية موثقة: استنساخ ضحل جديد (depth=1) فقد سلسلة الفروع محلياً ⇒ pushes رُفضت؛ الحل: fetch صريح للفرع + reset --hard + rebase يفشل في الضحل ⇒ أعدت تطبيق التعديل يدوياً ودفعت. القاعدة المضافة: في هذا الـsandbox تحقق من rev-list --count قبل أي git عملية حساسة.
+
+## P42 «التجديد البصري» (2026-09-01) — CI 33503232178
+- طبقة CSS 2026 فوق التوكنات القائمة + صورة بطل hero-journey.png أصيلة (مولّدة، بلا نص) + إعادة بناء Home/Index (نفس form/asp-actions) + .rvl بـIO محترم للحركة + تذييل ليلي.
+- صفر عدادات مختلقة؛ صفر C#؛ Razor تتحقق CI. وتقرير docs/PROMPT_42_VISUAL_RENEWAL_REPORT.md.
+- دمجيات تاليتان: 4f4ff27 — أخضر. سؤال مفتوح على المالك: تعميم الهوية على الصفحات الداخلية أم بند الخارطة التالي؟
+
+## P43 «جولة التلميع» الموجة ١ (2026-09-01) — CI 33517671291
+- plan: docs/P43_UI_FIX_PLAN.md (12 عيباً موثقاً بأدلة → 3 موجات). مشحون: توحيد btn-primary/secondary، زر انضمام، favicon من الشعار، datalist مدن (HomeController +ILineService + ViewBag.Cities؛ جداول الخطوط فارغة نظرياً عند المالك إلى أن يضيفها الأدمن)، navProgress، .alm-toast، قص حافلة الجوال 62%.
+- درس حوكمة sandbox: منصة الحفظ تدفع arena بنفسها بين إجازاتي ⇒ أي push رفض FF → fetch+reset --hard FETCH_HEAD ثم إعادة تطبيق التعديلات (rebase يستحيل في استنساخ ضحل). سجّلته في systemPatterns.
+
+## P43 الموجة ٢ (2026-09-01) — CI 33526333067 ✅
+- Lucide 1.39.0 UMD + flatpickr 4.6.13 + l10n/ar مورَّدة من registry.npmjs.org (بصمات sha256 في README.txt بجانب كل مكتبة).
+- 23 عنواناً h1-h3 بلا إيموجي → data-lucide (createIcons في site.js) + navbar بأيقونات + إخفاء «بحث عن رحلة» عند الرئيسية.
+- flatpickr: input[type=date] → altInput عربي j F Y، إرسال Y-m-d ثابت → صفر مسّ للنماذج/الربط.
+- data-paginate(N) عميلي: 8 tbody + 2 حاويتي بطاقات. درس: استنساخ ضحل — تعافيت بـreset --hard 9066bd8 (main محلياً) مع نسخ احتياطي /tmp.
+- حادثة مُصلَحة: استبدال الإيموجي أصاب ViewData["Title"] (سلسلة C#) في 3 ملفات → «; expected» (CI 33525923275)؛ الإصلاح 9c83d54 بنزع الوسم من العنوان وإبقائه في h3. قاعدة جديدة: بحث الاستبدال الجماعي يجب أن يستبعد سلاسل Razor المقتبسة لا خصائص HTML فقط.
+
+## P43 الموجة ٣ (2026-09-01) — CI 33528025724 ✅ — جولة التلميع مكتملة
+- متصدرون: دوائر أحرف أولى بـHSL مشتق من مجموع نقاط الأحرف (مستقر عبر العمليات، باستثناء عشوائية GetHashCode) + وسام ترتيب معدني (1/2/3 ذهبي/فضي/برونزي) + شارة موثّق + نجمة SVG ممتلئة.
+- إيقاع داخلي: ::after شريط هاتفي تحت كل h3/h4.font-weight-bold.text-dark (20 صفحة دفعة واحدة بلا فتحها).
+- Trips/Index: datalist مدن مشتركة عبر ViewBag.Cities (TripsController +ILineService — بلا إنشاء مباشر في الاختبارات ✓) + أيقونات filter card/إفراغ.
+- درس Razor: عبارات var داخل حلقة @foreach قانونية (سياق كتلة كود)؛ حُرِّفت لحظياً بـif(true) غير مغلق ثم اُسترجعت فوراً — CI هي الحكم.
+
+## P45 «جيب المسافر» (CI 33528835021 ✅) + P46 «الرادار» (CI 33529238464 ✅) — 2026-09-01
+- SW v2: statics كاش-أولاً (+/img/)، precache يشمل lucide/flatpickr/favicon؛ صفحات عامة فقط (/, /Lines, /Trips/InternalLines) بـSWR + سقف 30؛ الشخصية شبكة-أولاً→offline.html. offline.html بهوية جديدة (SVG wifi-off). زر تثبيت عائم قبلbeforeinstallprompt. manifest +categories.
+- Serilog.AspNetCore 9.0.0: Console + File JSON يومي 14 يوماً logs/ (مهملة أصلاً)؛ المستويات في appsettings. رسب CI أولاً (33529062846) بغياب using Serilog؛ أُصلح فوراً. درس: الامتدادات بحتاج using حرفي حتى مع ImplicitUsings.
+- الخارطة المتبقية بلا حجب خارجي: استعادة كلمة مرور (SMTP غائبة لكن «فاشل-آمن» ممكن P38) — الباقي كله محجوب بمفاتيح/هجرات يقررها المالك.
+
+## P46 الفرعي «عين الرادار» (CI 33530375414 ✅) + اكتشاف P38 — 2026-09-01
+- اكتشاف: P38 (استعادة كلمة مرور: ForgotPassword/ResetPassword + EmailService MailKit فاشل-آمن + StrictLimiter + 12 اختباراً) **مُنجَز منذ جلسات سابقة** — محذوف من قائمة الانتظار.
+- عين الرادار: ILogTailService/GetLatestAsync(max,level)؛ LogTailService بسلسلة جذر المحتوى (بعد رفض IHostEnvironment — لا مراجع Hosting في Infrastructure؛ درس: Infrastructure مكتبة قياسية لا AspNet)؛ ذيل بطابور O(max)؛ تسامح JsonException/مشاهدة مشتركة للملف؛ /Admin/Logs بترشيح مستويات + data-paginate=25؛ زر عاشر بلوحة الأدمن + 9 أزرار بأيقونات lucide (صفر إيموجي باللوحة). 5 اختبارات جديدة خضراء.
+
+## P47 «الباب العالمي» (CI 33531475470 ✅) — 2026-09-01
+- طلبه: «ما تراه مناسباً ليكون عليه طلب عالمي». مشحون: OG/Twitter cards بـViewData["Description"] اختياري (الرئيسية حصلت وصفاً مُحكماً) + JSON-LD graph (Organization/WebSite/SearchAction) للرئيسية فقط مع هروب @@ + robots.txt وسitemap.xml كفعلين حيّين مطلقي-الاكتشاف في HomeController + og-cover.jpg 1200×630 + hero-journey.webp (1.03MB→23KB — أخف 98%: حاسم لشبكة 3G).
+- قاعدة الاستبدال الجماعي المستفادة مطبَّقة: فحص سلاسل C# قبل الاقتباس.
+
+## «بوابة النشر الحر» P47.5 (CI 33532732446 ✅) — 2026-09-01
+- طلبه: «تقدر تنشره؟ وتعطينا الرابط». الحقيقة: صندوق العمل بلا .NET ونطاقات Microsoft محجوبة (dot.net/dotnet.microsoft.com/builds.dotnet.microsoft.com كلها EOF) → استضافة محلية مستحيلة اليوم.
+- المشحون بديلاً: مزود SQLite مُبوَّب بيئة DbProvider=sqlite (registration + EnsureCreated-Skip لميكانيكا MySQL؛ الإنتاج حرفه بحرفه) + حزمة EF.Sqlite 9.0.0 + render.yaml (خطة free، docker، healthCheckPath=/، autoDeploy، AdminSettings__Password بـgenerateValue) + DEPLOY_ONE_CLICK.md (5 دقائق إلى https://almosafer.onrender.com؛ حدود: نوم 15د + قرص مؤقت).
+- درس عدّ الأقواس: السلاسل الحرفية "${" تلوّث العدّ الخام — جرّد السلاسل أولاً.
+
+## P47.7 بذرة العرض التقديمي (CI 33533838303 ✅) — 2026-09-01
+- قال: «انسى الاستضافة — Render غير متاح في اليمن ومكلفة». الاستضافة مُعلَّقة رسمياً (render.yaml يبقى خامل).
+- DemoDataSeeder (Web/Services) ببوابة DemoSeed=true: 3 سائقين/2 مسافرين (@demo.almosafer + Demo@12345 للمحلي فقط)، 6 خطوط يمنية بمواقف+مواعيد (صنعاء/عدن/تعز/إب/الحديدة/ذمار)، 6 رحلات بينية مستقبلية، حجوزات Cash + تقييمات أفضل-جهد. آمنة التكرار عبر فحص وجود خطوط. CreateTripDto بلا ToLocation — النزول يُدمج بالوصف.
+- أمره المحلي: set DbProvider=sqlite + set DemoSeed=true + dotnet run.
+
+## P43 التذكرة الموقّعة (CI 33534890569 ✅) — 2026-09-01 — أول هجرة سكيمة بصلاحيته
+- مُنحت صلاحية الهجرة صراحة («اعطيك الصلاحيات» بعد عرض خيار التذكرة). مشحون: Booking.TicketSecret (هجرة 20260901090000 يدوية الكتابة بلا dotnet-ef + Snapshot محدّث)؛ BookingService يولّد 256بت hex لكل حجز جديد؛ TicketSignatureService (HMAC-SHA256 v1-{base64url}، FixedTimeEquals، base64url url-آمن)؛ /Tickets/Verify للسائق/الأدمن بأربع حالات؛ QR الإيصال يحمل توقيعاً لا سراً؛ الحجوزات القديمة تَظهر «غير موقّعة» بصدق؛ مسح مرفوض يُدوَّن في الرادار. 7 اختبارات نقية.
+- User.Name (وليس FullName). GetBookingByIdAsync يعيد DTO — لذا التوقيع عبر خدمة مستقلة لا عبر DTO الإيصال.
+- المتبقي بصلاحياته فقط: SMS keys، مفاتيح محفظة، سيرفر إنتاج. الخارطة تكاد تُستنفد.

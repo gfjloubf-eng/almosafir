@@ -1,0 +1,88 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Bookings.BookingDetailsDto>
+@{
+    ViewData["Title"] = "مراقبة حجوزات المنظومة — نظام المسافر";
+    var statusFilter = ViewData["StatusFilter"] as AlMosafer.Domain.Enums.BookingStatus?;
+}
+
+<a href="/Admin/Dashboard" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى لوحة الإدارة</a>
+
+<div class="py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">مراقبة حجوزات المنظومة <i class="alm-ic" data-lucide="luggage" aria-hidden="true"></i></h3>
+            <p class="text-muted mb-0">عرض وحصر حجوزات الركاب المسجلة وحالة تأكيدها وإلغائها</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card-almosafer p-4 mb-4">
+        <form method="get" asp-action="Bookings" class="row g-3">
+            <div class="col-md-8 col-lg-6">
+                <select name="status" class="form-select form-select-custom">
+                    <option value="">كافة الحالات (جميع الحجوزات)</option>
+                    <option value="Confirmed" selected="@(statusFilter == AlMosafer.Domain.Enums.BookingStatus.Confirmed)">مؤكد (Confirmed)</option>
+                    <option value="Cancelled" selected="@(statusFilter == AlMosafer.Domain.Enums.BookingStatus.Cancelled)">ملغى (Cancelled)</option>
+                </select>
+            </div>
+            <div class="col-md-4 col-lg-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 font-weight-bold">تصفية 🔍</button>
+                <a asp-action="Bookings" class="btn btn-outline-secondary font-weight-bold">إعادة</a>
+            </div>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="luggage" aria-hidden="true"></i></div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد حجوزات مسجلة بهذه الحالة</h4>
+            <p class="text-muted mb-0">لم يتم تسجيل حجوزات في النظام تطابق هذا الخيار بعد.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th># Booking</th>
+                            <th>المسافر</th>
+                            <th>السائق</th>
+                            <th>الخط</th>
+                            <th>المقاعد</th>
+                            <th>الإجمالي</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody data-paginate="12">
+                        @foreach (var b in Model)
+                        {
+                            <tr>
+                                <td><strong>#BK-@b.BookingId.ToString("D6")</strong></td>
+                                <td class="font-weight-bold text-dark">@b.TravelerName</td>
+                                <td>@b.DriverName</td>
+                                <td>@b.FromCity ← @b.ToCity</td>
+                                <td>@b.SeatsBooked مقعد</td>
+                                <td class="text-success font-weight-bold">@b.TotalAmount.ToString("N0") ريال</td>
+                                <td>
+                                    @if (b.Status == AlMosafer.Domain.Enums.BookingStatus.Confirmed)
+                                    {
+                                        <span class="badge bg-success">مؤكد (Confirmed)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">ملغى (Cancelled)</span>
+                                    }
+                                </td>
+                                <td>@b.BookingTime.ToString("yyyy-MM-dd — HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

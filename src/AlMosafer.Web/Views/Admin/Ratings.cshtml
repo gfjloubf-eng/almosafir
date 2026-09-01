@@ -1,0 +1,61 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Ratings.RatingDetailsDto>
+@{
+    ViewData["Title"] = "مراقبة تقييمات السائقين والركاب — نظام المسافر";
+}
+
+<a href="/Admin/Dashboard" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى لوحة الإدارة</a>
+
+<div class="py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">مراقبة تقييمات ومراجعات المنظومة <i class="alm-ic" data-lucide="star" aria-hidden="true"></i></h3>
+            <p class="text-muted mb-0">عرض وحصر التقييمات الصادرة من الركاب للسائقين وتقييم الخدمات</p>
+        </div>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="star" aria-hidden="true"></i></div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد تقييمات مسجلة بعد</h4>
+            <p class="text-muted mb-0">لم يقم الركاب بتقييم السائقين والرحلات في النظام حتى الآن.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 text-end">
+                    <thead class="bg-light">
+                        <tr>
+                            <th># ID</th>
+                            <th>المسافر</th>
+                            <th>السائق المتلقي</th>
+                            <th>الرحلة</th>
+                            <th>النجوم</th>
+                            <th>المراجعة / التعليق</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody data-paginate="12">
+                        @foreach (var r in Model)
+                        {
+                            <tr>
+                                <td><strong>#RAT-@r.Id.ToString("D4")</strong></td>
+                                <td class="font-weight-bold text-dark">@r.TravelerName</td>
+                                <td>@r.DriverName</td>
+                                <td>@r.FromCity ← @r.ToCity</td>
+                                <td class="text-warning font-weight-bold">
+                                    ★ @r.Value / 5
+                                </td>
+                                <td>@(string.IsNullOrEmpty(r.Comment) ? "لا يوجد تعليق" : r.Comment)</td>
+                                <td>@r.CreatedAt.ToString("yyyy-MM-dd — HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,32 @@
+/* Chat UI styles — integrates with existing design system */
+:root{--accent:#007bff;--bg:#f8f9fa;--bubble-other:#ffffff;--bubble-me:#dcf8c6}
+html[dir="rtl"]{direction:rtl}
+body.chat-page{font-family:inherit;background:var(--bg);}
+.chat-container{display:flex;height:calc(100vh - 80px);gap:1rem;padding:1rem}
+.sidebar{width:320px;background:#fff;border:1px solid #e6e6e6;border-radius:8px;overflow:auto}
+.sidebar .conv{padding:12px;border-bottom:1px solid #f1f1f1;cursor:pointer;display:flex;align-items:center;justify-content:space-between}
+.sidebar .conv .meta{display:flex;flex-direction:column;align-items:flex-start}
+.sidebar .conv .meta .name{font-weight:600}
+.sidebar .conv .unread{background:var(--accent);color:#fff;padding:4px 8px;border-radius:12px;font-size:12px}
+.main{flex:1;display:flex;flex-direction:column;background:#fff;border:1px solid #e6e6e6;border-radius:8px;overflow:hidden}
+.header{padding:12px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:8px}
+.header .back{display:none}
+.messages{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.message-row{display:flex;max-width:75%;}
+.message-row.me{margin-left:auto;justify-content:flex-end}
+.message-row.other{margin-right:auto;justify-content:flex-start}
+.bubble{padding:10px 14px;border-radius:18px;box-shadow:0 1px 0 rgba(0,0,0,0.06);}
+.message-row.me .bubble{background:var(--bubble-me)}
+.message-row.other .bubble{background:var(--bubble-other)}
+.time{font-size:11px;color:#666;margin-top:6px}
+.composer{padding:12px;border-top:1px solid #eee;display:flex;gap:8px}
+.composer textarea{flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;resize:none}
+.composer button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:6px}
+/* Responsive */
+@media(max-width:768px){
+  .chat-container{padding:0}
+  .sidebar{width:100%;height:100vh;position:relative;border-radius:0}
+  .main{width:100%;height:100vh;border-radius:0}
+  .header .back{display:inline-block}
+  .sidebar.hidden{display:none}
+}

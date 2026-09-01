@@ -1,0 +1,54 @@
+@model IReadOnlyList<AlMosafer.Application.DTOs.Watchlist.RouteWatchDto>
+@{
+    ViewData["Title"] = "خطوطي المراقبة ⭐";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-7">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom text-center py-3">
+                <h4 class="font-weight-bold mb-1">خطوطي المراقبة ⭐</h4>
+                <small class="text-light">سننبهك بإشعار فوري أول ما ينزل سائق رحلة جديدة على أي خط تتابعه</small>
+            </div>
+            <div class="card-body p-4">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success font-weight-bold">@TempData["SuccessMessage"]</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
+                }
+
+                @if (!Model.Any())
+                {
+                    <div class="empty-state-card">
+                        <h5 class="font-weight-bold text-dark mb-2">لا تراقب أي خط حتى الآن</h5>
+                        <p class="text-muted mb-3">من صفحة الرحلات اضغط ⭐ على أي بطاقة لمتابعة خطها، وستصلك الإشعارات هنا برنامجاً.</p>
+                        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent font-weight-bold">تصفح الرحلات 🔍</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var route in Model)
+                        {
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded border">
+                                <span class="font-weight-bold text-dark fs-5">@route.FromCity ← @route.ToCity</span>
+                                <div class="d-flex gap-2">
+                                    <a asp-controller="Trips" asp-action="Index" asp-route-FromCity="@route.FromCity" asp-route-ToCity="@route.ToCity" class="btn btn-sm btn-primary font-weight-bold">البحث الآن 🔍</a>
+                                    <form asp-action="Unwatch" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="fromCity" value="@route.FromCity" />
+                                        <input type="hidden" name="toCity" value="@route.ToCity" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">إيقاف المراقبة</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

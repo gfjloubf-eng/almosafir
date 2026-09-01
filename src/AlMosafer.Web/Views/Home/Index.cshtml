@@ -1,0 +1,177 @@
+@{
+    ViewData["Title"] = "الرئيسية — منصة المسافر للتنقل بين المدن اليمنية";
+    // P47 «الباب العالمي»: وصف مُحكَم للرئيسية يظهر في نتائج البحث وبطاقات المشاركة
+    ViewData["Description"] = "منصة المسافر: احجز رحلات مشتركة بين صنعاء وعدن وتعز وبقية المدن اليمنية، أو تنقّل بخطوط داخلية معتمدة — دفع نقدي عند الركوب، كشف ركوب رقمي، وسائقون مقيَّمون من المجتمع.";
+}
+
+<!-- قسم البطل: هوية 2026 — رحلة ليلية بهوية المنصة + بطاقة بحث زجاجية -->
+<section class="hero-x p-4 p-md-5 mb-5 text-white" aria-label="واجهة الاستقبال">
+    <div class="row align-items-center gy-4 position-relative">
+        <div class="col-lg-7">
+            <span class="eyebrow-chip mb-3"><i class="alm-ic" data-lucide="car" aria-hidden="true"></i> سافر بأمان وراحة</span>
+            <h1 class="display-5 hero-title mb-3">حجز رحلات بين المدن <span class="text-gradient">بكل سهولة وأمان</span></h1>
+            <p class="lead hero-lead mb-4">منصة المسافر تتيح لك البحث عن الرحلات اليومية بين مختلف المدن والتواصل المباشر مع السائقين وتأكيد حجز مقعدك بضغطة زر مع إصدار إيصال حجز إلكتروني مؤكد.</p>
+            <div class="d-flex flex-wrap gap-3">
+                <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">استكشاف الرحلات المتاحة 🔍</a>
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-controller="Account" asp-action="RegisterTraveler" class="btn btn-outline-light btn-lg font-weight-bold" style="border-radius: 999px;">انضم كـ مسافر جديد 🚀</a>
+                }
+            </div>
+            <ul class="trust-points">
+                <li>دفع نقدي عند الركوب</li>
+                <li>إيصال إلكتروني مؤكد</li>
+                <li>تواصل مباشر مع السائق</li>
+            </ul>
+        </div>
+        <div class="col-lg-5">
+            <div class="card card-search border-0 text-dark p-4 bg-white">
+                <h4 class="font-weight-bold mb-3 text-primary">ابحث عن رحلتك الآن 🔍</h4>
+                <form asp-controller="Trips" asp-action="Index" method="get">
+                    <datalist id="citiesList">
+                        @foreach (var city in (ViewBag.Cities as IReadOnlyList<string> ?? new List<string>()))
+                        {
+                            <option value="@city"></option>
+                        }
+                    </datalist>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">من مدينة</label>
+                        <input type="text" name="FromCity" list="citiesList" class="form-control form-control-custom" placeholder="مثال: صنعاء، تعز" autocomplete="off" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">إلى مدينة</label>
+                        <input type="text" name="ToCity" list="citiesList" class="form-control form-control-custom" placeholder="مثال: عدن، إب" autocomplete="off" />
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label font-weight-bold">تاريخ السفر</label>
+                        <input type="date" name="Date" class="form-control form-control-custom" />
+                    </div>
+                    <button type="submit" class="btn btn-accent w-100 btn-lg font-weight-bold">عرض الرحلات 🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- كيف تعمل المنصة -->
+<section class="mb-5 rvl" aria-label="خطوات الاستخدام">
+    <div class="text-center mb-4">
+        <span class="eyebrow-text">أربع خطوات فقط</span>
+        <h3 class="section-title display-6 mb-2">كيف تعمل منصة المسافر؟</h3>
+        <p class="text-muted">خطوات بسيطة واضحة: من البحث حتى صعود المركبة وأنت مطمئن</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card-almosafer step-card p-4 text-center h-100">
+                <div class="step-circle one">1</div>
+                <h6 class="font-weight-bold text-dark mb-2">البحث عن رحلة</h6>
+                <p class="text-muted small mb-0">حدد مدينة الانطلاق والوصول وتاريخ السفر لتصفح الرحلات المتاحة.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-almosafer step-card p-4 text-center h-100">
+                <div class="step-circle two">2</div>
+                <h6 class="font-weight-bold text-dark mb-2">اختيار الرحلة والمقاعد</h6>
+                <p class="text-muted small mb-0">اطّلع على بيانات السائق، نوع المركبة، عدد المقاعد الشاغرة وسعر المقعد.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-almosafer step-card p-4 text-center h-100">
+                <div class="step-circle three">3</div>
+                <h6 class="font-weight-bold text-dark mb-2">تأكيد الحجز الذرّي</h6>
+                <p class="text-muted small mb-0">أكد حجز مقاعدك بنقرة واحدة مع حماية صريحة ضد الحجز المزدوج.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card-almosafer step-card p-4 text-center h-100">
+                <div class="step-circle four">4</div>
+                <h6 class="font-weight-bold text-dark mb-2">إصدار الإيصال والتواصل</h6>
+                <p class="text-muted small mb-0">احصل على إيصال الحجز الإلكتروني المؤكد وتواصل مباشرة مع السائق.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- لماذا المسافر — قيمنا الفعلية -->
+<section class="mb-5 rvl" aria-label="مميزات المنصة">
+    <div class="text-center mb-4">
+        <span class="eyebrow-text">لماذا المسافر؟</span>
+        <h3 class="section-title display-6 mb-2">مصممة لطريقك اليمني</h3>
+        <p class="text-muted">ثقة تُبنى بالتفاصيل: كل بطاقة هنا التزام حقيقي في النظام</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card-almosafer card-almosafer-hover p-4 text-center h-100">
+                <div class="icon-chip blue">🛡️</div>
+                <h5 class="font-weight-bold text-dark mb-2">سائقون معتمدون</h5>
+                <p class="text-muted mb-0">جميع السائقين مسجلون ببيانات المركبة ورقم اللوحة لضمان أقصى درجات الأمان والسلامة في كل رحلة.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-almosafer card-almosafer-hover p-4 text-center h-100">
+                <div class="icon-chip green">🪑</div>
+                <h5 class="font-weight-bold text-dark mb-2">حجز مقاعد فوري</h5>
+                <p class="text-muted mb-0">اختر عدد المقاعد المطلوب واطلع على الأماكن المتاحة لحظياً مع تأكيد الحجز الفوري بدون انتظار.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card-almosafer card-almosafer-hover p-4 text-center h-100">
+                <div class="icon-chip amber">🧾</div>
+                <h5 class="font-weight-bold text-dark mb-2">إيصال حجز مؤكد</h5>
+                <p class="text-muted mb-0">احصل على إيصال حجز إلكتروني رسمي يحتوي على كافة تفاصيل الرحلة وبيانات الاتصال المباشر بالسائق.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+@{
+    var topDrivers = ViewBag.TopDrivers as IEnumerable<AlMosafer.Application.DTOs.Reports.DriverPerformanceDto> ?? Enumerable.Empty<AlMosafer.Application.DTOs.Reports.DriverPerformanceDto>();
+}
+@if (topDrivers.Any())
+{
+    <section class="my-5 text-center rvl" aria-label="نخبة السائقين">
+        <span class="eyebrow-text">شكراً يصنع فارقاً</span>
+        <h3 class="section-title display-6 mb-1"><i class="alm-ic" data-lucide="trophy" aria-hidden="true"></i> ركائز المسافر — نخبة السائقين</h3>
+        <p class="text-muted mb-4">الأعلى تقييماً من مجتمعنا عبر كل الرحلات المنجزة</p>
+        <div class="row g-3 justify-content-center">
+            @{
+                var podRank = 0;
+            }
+            @foreach (var d in topDrivers)
+            {
+                podRank++;
+                var avName = (d.DriverName ?? "م").Trim();
+                var words = avName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var initials = new string(words.Take(2).Select(w => w[0]).ToArray());
+                var hue = Math.Abs(avName.Sum(ch => (int)ch)) % 360;
+                var hue2 = (hue + 45) % 360;
+                var rankCls = podRank <= 3 ? $"alm-rank-{podRank}" : string.Empty;
+                <div class="col-6 col-md-3">
+                    <div class="card-almosafer card-almosafer-hover p-4 h-100 podium-card">
+                        <span class="alm-rank @rankCls" title="الترتيب @podRank">@podRank</span>
+                        <div class="alm-avatar mx-auto mb-3" style="background: linear-gradient(135deg, hsl(@(hue), 72%, 45%), hsl(@(hue2), 72%, 38%));">@initials</div>
+                        <h6 class="font-weight-bold text-dark mb-1">
+                            @d.DriverName
+                            <span class="alm-verified" title="سائق موثّق من الإدارة"><i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></span>
+                        </h6>
+                        <div class="alm-stars"><i class="alm-ic" data-lucide="star" aria-hidden="true"></i> @d.AverageRating.ToString("0.0") <span class="text-muted font-weight-normal">/ 5</span></div>
+                        <small class="text-muted">@d.TripsCount رحلة · @d.BookingsCount حجز</small>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+<!-- دعوة الختام -->
+<section class="cta-final p-4 p-md-5 text-center rvl" aria-label="دعوة أخيرة">
+    <h3 class="font-weight-bold mb-3">جاهز للبدء في رحلتك القادمة؟ <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
+    <p class="mb-4 mx-auto" style="max-width: 40rem; color: #cbd5e1;">سواء كنت مسافراً تبحث عن وسيلة نقل مريحة وأمينة، أو سائقاً ترغب في نشر رحلاتك ومشاركة التكلفة.</p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold"><i class="alm-ic" data-lucide="search" aria-hidden="true"></i> تصفح الرحلات المتاحة</a>
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald btn-lg font-weight-bold">تسجيل كـ سائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></a>
+        }
+    </div>
+</section>

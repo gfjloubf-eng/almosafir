@@ -1,0 +1,106 @@
+@model AlMosafer.Application.DTOs.Bookings.BookingDetailsDto
+@{
+    ViewData["Title"] = $"إيصال الحجز المؤكد #{Model.BookingId}";
+}
+
+<a href="/Bookings/MyBookings" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى حجوزاتي</a>
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-7">
+        <div class="card-almosafer shadow-lg border-0 overflow-hidden">
+            <!-- Receipt Header Banner -->
+            <div class="bg-success text-white text-center p-4">
+                <div class="display-3 mb-1">✅</div>
+                <h3 class="font-weight-bold mb-1">إيصال حجز مؤكد (Official Receipt)</h3>
+                <p class="mb-0 fs-5">رقم الحجز: <strong>#BK-@Model.BookingId.ToString("D6")</strong></p>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <small class="text-muted d-block font-weight-bold">خط سير الرحلة</small>
+                        <strong class="fs-4 text-primary">@Model.FromCity ← @Model.ToCity</strong>
+                    </div>
+                    <div class="col-6 text-end">
+                        <small class="text-muted d-block font-weight-bold">تاريخ ووقت السفر</small>
+                        <strong class="fs-6 text-dark">@Model.TripTime.ToString("yyyy-MM-dd — HH:mm")</strong>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Driver Contact Information -->
+                <div class="mb-4">
+                    <h6 class="text-accent font-weight-bold mb-2">بيانات السائق والتواصل المباشر:</h6>
+                    <div class="p-3 bg-light rounded border">
+                        <p class="mb-1">👤 <strong>اسم السائق:</strong> @Model.DriverName</p>
+                        <p class="mb-0">📱 <strong>هاتف التواصل:</strong> <a href="tel:@Model.DriverPhone" class="font-weight-bold text-success text-decoration-none">@Model.DriverPhone</a></p>
+                    </div>
+                </div>
+
+                <!-- Booking Payment Details -->
+                <div class="mb-4">
+                    <h6 class="text-accent font-weight-bold mb-2">تفاصيل الحجز والمعاملة المالية:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="bg-light">اسم المسافر:</th>
+                                    <td>@Model.TravelerName (@(string.IsNullOrEmpty(Model.TravelerPhone) ? "غير محدد" : Model.TravelerPhone))</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">عدد المقاعد المحجوزة:</th>
+                                    <td><strong>@Model.SeatsBooked مقعد</strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">سعر المقعد الواحد:</th>
+                                    <td>@Model.PricePerSeat.ToString("N0") ريال</td>
+                                </tr>
+                                <tr class="table-success">
+                                    <th class="fs-5">الإجمالي المدفوع:</th>
+                                    <td class="fs-5 font-weight-bold text-success">@Model.TotalAmount.ToString("N0") ريال يمني</td>
+                                </tr>
+                                <tr>
+                                    <th class="bg-light">حالة العملية الدفع:</th>
+                                    <td>@if (Model.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Paid)
+                                    {
+                                        <span class="badge bg-success">مدفوع ومؤكد ✅</span>
+                                    }
+                                    else if (Model.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark">💵 يُدفع نقداً عند الركوب للسائق مباشرة</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">غير مسدد</span>
+                                    }</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                @if (ViewBag.QrCodeDataUri != null)
+                {
+                    <div class="text-center py-3">
+                        <img src="@ViewBag.QrCodeDataUri" alt="QR تذكرة الحجز" style="width:150px;height:150px;" class="rounded border p-1 bg-white" />
+                        <div class="small text-muted mt-1">امسح الرمز لفتح إيصال الحجز — #BK-@Model.BookingId.ToString("D6")</div>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top no-print">
+                    <a asp-action="MyBookings" class="btn btn-outline-primary font-weight-bold">العودة لكافة حجوزاتي</a>
+                    <button onclick="window.print();" class="btn btn-primary font-weight-bold">طباعة الإيصال 🖨️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        header, footer, .no-print { display: none !important; }
+        body { background: #fff !important; }
+        .card-almosafer { box-shadow: none !important; border: 1px solid #ccc !important; }
+    }
+</style>

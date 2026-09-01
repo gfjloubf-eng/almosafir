@@ -1,0 +1,97 @@
+@model AlMosafer.Application.DTOs.Auth.RegisterDriverDto
+@{
+    ViewData["Title"] = "تسجيل حساب سائق جديد";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-7">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom text-center py-3 bg-success">
+                <h4 class="font-weight-bold mb-1">انضم كـ سائق معتمد 🚗</h4>
+                <small class="text-light">أنشئ حسابك وانشر رحلاتك بين المدن لزيادة دخلك اليومي</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="RegisterDriver" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Section 1: Driver Personal Info -->
+                    <div class="form-section-title">1. البيانات الشخصية والاتصال</div>
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label font-weight-bold">الاسم الكامل *</label>
+                        <input asp-for="FullName" class="form-control form-control-custom" placeholder="أدخل اسمك الرباعي" autofocus />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label font-weight-bold">رقم الهاتف التواصل *</label>
+                            <input asp-for="Phone" class="form-control form-control-custom" placeholder="77XXXXXXX" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label font-weight-bold">المدينة الرئيسي / السكن</label>
+                            <input asp-for="City" class="form-control form-control-custom" placeholder="مثال: صنعاء" />
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Vehicle Details -->
+                    <div class="form-section-title mt-4">2. بيانات المركبة والترخيص</div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PlateNumber" class="form-label font-weight-bold">رقم لوحة السيارة *</label>
+                            <input asp-for="PlateNumber" class="form-control form-control-custom" placeholder="مثال: 12345-اليمن" />
+                            <span asp-validation-for="PlateNumber" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="VehicleModel" class="form-label font-weight-bold">موديل ونوع السيارة *</label>
+                            <input asp-for="VehicleModel" class="form-control form-control-custom" placeholder="مثال: Toyota Hilux 2022" />
+                            <span asp-validation-for="VehicleModel" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VehicleYear" class="form-label font-weight-bold">سنة الصنع</label>
+                        <input asp-for="VehicleYear" type="number" min="1995" max="2027" class="form-control form-control-custom" placeholder="2020" />
+                    </div>
+
+                    <!-- Section 3: Account Credentials -->
+                    <div class="form-section-title mt-4">3. بيانات الحساب والدخول</div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label font-weight-bold">البريد الإلكتروني *</label>
+                        <input asp-for="Email" type="email" class="form-control form-control-custom" placeholder="driver@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label font-weight-bold">كلمة المرور *</label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" id="driverPassword" class="form-control form-control-custom" placeholder="6 أحرف على الأقل" />
+                            <button type="button" class="btn btn-outline-secondary btn-toggle-password" data-target="driverPassword" aria-label="إظهار كلمة المرور">👁️ إظهار</button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label font-weight-bold">تأكيد كلمة المرور *</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control form-control-custom" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-emerald btn-lg w-100 font-weight-bold mb-3">تسجيل كـ سائق معتمد 🚀</button>
+
+                    <div class="text-center">
+                        <span class="text-muted">لديك حساب بالفعل؟</span>
+                        <a asp-action="Login" class="font-weight-bold text-success">تسجيل الدخول هنا</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

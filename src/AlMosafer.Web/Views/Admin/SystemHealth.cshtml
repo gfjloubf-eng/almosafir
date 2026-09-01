@@ -1,0 +1,69 @@
+@model AlMosafer.Application.DTOs.Dashboard.AdminSystemHealthDto
+@{
+    ViewData["Title"] = "حالة وصحة المنظومة البرمجية — System Health";
+}
+
+<a href="/Admin/Dashboard" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى لوحة الإدارة</a>
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-8">
+        <div class="card-almosafer shadow-lg border-0 overflow-hidden">
+            <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary mb-1">الرقابة الفنية والتشغيلية</span>
+                    <h3 class="mb-0 font-weight-bold">حالة وصحة المنظومة البرمجية <i class="alm-ic" data-lucide="monitor-check" aria-hidden="true"></i></h3>
+                </div>
+                @if (Model.IsDatabaseConnected)
+                {
+                    <span class="badge bg-success fs-6">Operational (Healthy)</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6">Warning / Disconnected</span>
+                }
+            </div>
+            <div class="card-body p-4">
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border h-100">
+                            <h6 class="text-primary font-weight-bold mb-2">🗄️ قاعدة البيانات (Database)</h6>
+                            <p class="mb-1 text-dark"><strong>المزود:</strong> @Model.DatabaseProvider</p>
+                            <p class="mb-0">
+                                <strong>الحالة الاتصالية:</strong>
+                                @if (Model.IsDatabaseConnected)
+                                {
+                                    <span class="text-success font-weight-bold">متصل بذكاء ونشط (Connected) ✅</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger font-weight-bold">غير متصل ❌</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border h-100">
+                            <h6 class="text-primary font-weight-bold mb-2">⚙️ إطار التشغيل والبيئة</h6>
+                            <p class="mb-1 text-dark"><strong>البيئة النشطة:</strong> @Model.EnvironmentName</p>
+                            <p class="mb-0 text-dark"><strong>الإصدار البرمجي:</strong> @Model.RuntimeVersion</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Team Information (Preserved as strictly required) -->
+                <div class="p-3 bg-light rounded border mb-4">
+                    <h6 class="text-accent font-weight-bold mb-2">👨‍<i class="alm-ic" data-lucide="monitor-check" aria-hidden="true"></i> مسؤول فريق الدعم الفني المعتمد</h6>
+                    <p class="mb-1 text-dark"><strong>اسم المسؤول:</strong> @Model.SupportManagerName</p>
+                    <p class="mb-1 text-dark"><strong>رقم التواصل الفوري:</strong> @Model.SupportManagerPhone</p>
+                    <p class="mb-0 text-dark"><strong>رابط واتساب المباشر:</strong> <a href="https://wa.me/967712275038" target="_blank" class="text-success font-weight-bold">https://wa.me/967712275038</a></p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
+                    <small class="text-muted">تاريخ الفحص الفني: @Model.CheckedAt.ToString("yyyy-MM-dd — HH:mm")</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

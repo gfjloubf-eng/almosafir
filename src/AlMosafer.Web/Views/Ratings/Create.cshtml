@@ -1,0 +1,98 @@
+@model AlMosafer.Application.DTOs.Ratings.CreateRatingDto
+@{
+    ViewData["Title"] = "تقييم الرحلة — نظام المسافر";
+    var trip = ViewData["TripDetails"] as AlMosafer.Application.DTOs.Trips.TripDetailsDto;
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom p-4 text-center">
+                <h4 class="font-weight-bold mb-1">تقييم تجربة الرحلة ⭐️</h4>
+                <small class="text-light">شارك تقييمك لمساعدة المسافرين الآخرين وتحسين جودة الخدمة</small>
+            </div>
+            <div class="card-body p-4">
+                @if (trip != null)
+                {
+                    <div class="p-3 bg-light rounded border mb-4">
+                        <h6 class="font-weight-bold text-primary mb-1">الرحلة: @trip.FromCity ← @trip.ToCity</h6>
+                        <p class="mb-1 text-muted"><strong>السائق:</strong> @trip.DriverName (@(string.IsNullOrEmpty(trip.VehicleModel) ? "مركبة سريعة" : trip.VehicleModel))</p>
+                        <small class="text-muted"><strong>تاريخ الرحلة:</strong> @trip.TripTime.ToString("yyyy-MM-dd — HH:mm")</small>
+                    </div>
+                }
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="TripId" />
+
+                    <!-- Star Selection Grid -->
+                    <div class="mb-4 text-center">
+                        <label class="form-label font-weight-bold text-dark d-block mb-3 fs-5">كيف كانت تجربتك مع السائق؟ *</label>
+                        
+                        <div class="d-flex justify-content-center gap-2 mb-2" id="starContainer">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                int starValue = i;
+                                <input type="radio" asp-for="Value" value="@starValue" id="star_@starValue" class="btn-check rating-star-input" />
+                                <label for="star_@starValue" class="btn btn-outline-warning btn-star px-3 py-2 fs-4" data-value="@starValue">
+                                    ★ @starValue
+                                </label>
+                            }
+                        </div>
+                        <span asp-validation-for="Value" class="text-danger small"></span>
+                        
+                        <!-- HCI Text Feedback -->
+                        <div id="starFeedbackText" class="fw-bold text-success mt-2 fs-6">
+                            تجربة ممتازة ⭐️⭐️⭐️⭐️⭐️
+                        </div>
+                    </div>
+
+                    <!-- Optional Review Text -->
+                    <div class="mb-4">
+                        <label asp-for="Comment" class="form-label font-weight-bold">مراجعة وتعليق نصي (اختياري)</label>
+                        <textarea asp-for="Comment" rows="4" class="form-control form-control-custom" placeholder="اكتب انطباعك عن التزام السائق بالمواعيد، القيادة الآمنة، ونظافة المركبة..."></textarea>
+                        <span asp-validation-for="Comment" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <a asp-controller="Traveler" asp-action="MyBookings" class="btn btn-outline-secondary font-weight-bold">إلغاء والعودة</a>
+                        <button type="submit" class="btn btn-emerald btn-lg font-weight-bold">إرسال التقييم 🚀</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const starInputs = document.querySelectorAll('.rating-star-input');
+            const feedbackText = document.getElementById('starFeedbackText');
+
+            const feedbackMessages = {
+                1: 'تجربة تحتاج إلى تحسين 😞',
+                2: 'تجربة مقبولة 😐',
+                3: 'تجربة جيدة 🙂',
+                4: 'تجربة جيدة جداً 😊',
+                5: 'تجربة ممتازة ⭐️⭐️⭐️⭐️⭐️'
+            };
+
+            starInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    const val = parseInt(this.value, 10);
+                    if (feedbackMessages[val]) {
+                        feedbackText.textContent = feedbackMessages[val];
+                    }
+                });
+            });
+        });
+    </script>
+}

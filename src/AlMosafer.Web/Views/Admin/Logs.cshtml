@@ -1,0 +1,85 @@
+@model IReadOnlyList<AlMosafer.Application.DTOs.Reports.LogEntryDto>
+@{
+    ViewData["Title"] = "الرادار — ذيل سجلات المنظومة";
+    string? selected = ViewBag.SelectedLevel as string;
+    var levels = new[]
+    {
+        ((string?)null, "الكل"),
+        ((string?)"Error", "أخطاء"),
+        ((string?)"Warning", "تحذيرات"),
+        ((string?)"Information", "معلومات"),
+        ((string?)"Debug", "تقصّي"),
+        ((string?)"Text", "خام"),
+    };
+    string BadgeFor(string lv) => lv switch
+    {
+        "Fatal" or "Error" => "bg-danger",
+        "Warning" => "bg-warning text-dark",
+        "Information" => "bg-primary",
+        "Debug" or "Verbose" => "bg-secondary",
+        _ => "bg-light text-dark border"
+    };
+}
+
+<a href="/Admin/Dashboard" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى لوحة الإدارة</a>
+
+<div class="py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div>
+            <span class="eyebrow-text">الرقابة التشغيلية</span>
+            <h3 class="font-weight-bold text-dark mb-0">الرادار — ذيل سجلات المنظومة <i class="alm-ic" data-lucide="activity" aria-hidden="true"></i></h3>
+        </div>
+        <small class="text-muted">آخر 200 حدث من أحدث ملف يومي · تُنشأ بواسطة Serilog تحت <code>logs/</code></small>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="ترشيح المستوى">
+        @foreach (var (val, label) in levels)
+        {
+            var active = string.Equals(selected, val, StringComparison.OrdinalIgnoreCase) || (selected is null && val is null);
+            <a asp-action="Logs" asp-route-level="@val"
+               class="btn btn-sm @(active ? "btn-primary" : "btn-outline-secondary") font-weight-bold">@label</a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="activity" aria-hidden="true"></i></div>
+            <h4 class="font-weight-bold text-dark mb-2">لا أحداث مطابقة بعد</h4>
+            <p class="text-muted mb-0">ابدأ النظام وتجوّل قليلاً — ستظهر الأحداث هنا أولاً بأول.@(selected is not null ? " جرّب مستوى آخر من الأزرار أعلاه." : "")</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-almosafer shadow-sm border-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 170px;">الوقت</th>
+                            <th style="width: 110px;">المستوى</th>
+                            <th>الحدث</th>
+                        </tr>
+                    </thead>
+                    <tbody data-paginate="25">
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td><small class="text-muted" dir="ltr">@(e.Timestamp?.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss") ?? "—")</small></td>
+                                <td><span class="badge @BadgeFor(e.Level)">@e.Level</span></td>
+                                <td>
+                                    <div class="font-weight-bold text-dark" style="white-space: pre-wrap;">@e.Message</div>
+                                    @if (!string.IsNullOrWhiteSpace(e.Exception))
+                                    {
+                                        <pre class="bg-light border rounded p-2 mt-1 mb-0 small text-danger" dir="ltr" style="white-space: pre-wrap;">@e.Exception</pre>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <small class="text-muted d-block mt-2">حدّث الصفحة لجلب أحدث الأحداث — تعمداً بلا تحديث لحظي حتى تبقى القراءة هادئة.</small>
+    }
+</div>

@@ -1,0 +1,175 @@
+@model AlMosafer.Application.DTOs.Trips.TripDetailsDto
+@{
+    ViewData["Title"] = $"تفاصيل الرحلة {Model.FromCity} إلى {Model.ToCity}";
+}
+
+<a href="/Trips" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى نتائج البحث</a>
+
+<div class="row justify-content-center py-3">
+    <div class="col-md-9 col-lg-8">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge bg-primary mb-1">رحلة بين المدن</span>
+                    <h3 class="mb-0 font-weight-bold">@Model.FromCity ← @Model.ToCity</h3>
+                </div>
+                <span class="badge badge-status badge-open fs-6">@Model.Status</span>
+            </div>
+            <div class="card-body p-4">
+                @{
+                    var shareUrl = Url.Action("Details", "Trips", new { id = Model.Id }, Context.Request.Scheme) ?? string.Empty;
+                    var shareText = Uri.EscapeDataString($"🚗 رحلة مشتركة: {Model.FromCity} ← {Model.ToCity} | يوم {Model.TripTime:yyyy-MM-dd} الساعة {Model.TripTime:HH:mm} | المقعد {Model.PricePerSeat:N0} ريال — {shareUrl}");
+                }
+                <div class="d-flex gap-2 mb-3 flex-wrap">
+                    <a href="https://wa.me/?text=@shareText" target="_blank" rel="noopener" class="btn btn-sm text-white font-weight-bold" style="background-color:#25D366;">
+                        📲 شارك الرحلة عبر واتساب
+                    </a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="Watchlist" asp-action="Watch" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="fromCity" value="@Model.FromCity" />
+                            <input type="hidden" name="toCity" value="@Model.ToCity" />
+                            <input type="hidden" name="returnUrl" value="@Url.Action("Details", new { id = Model.Id })" />
+                            <button type="submit" class="btn btn-sm btn-outline-warning font-weight-bold">⭐ راقب هذا الخط</button>
+                        </form>
+                    }
+                </div>
+
+                <!-- Trip Summary Section -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <h6 class="text-accent font-weight-bold mb-2">بيانات السائق والسيارة 👤</h6>
+                            <h5 class="mb-1 font-weight-bold text-dark">@Model.DriverName</h5>
+                            <p class="mb-1 text-muted">📱 <strong>هاتف التواصل:</strong> @(string.IsNullOrEmpty(Model.DriverPhone) ? "مخفي لحين الحجز" : Model.DriverPhone)</p>
+                            <p class="mb-1 text-muted">🚗 <strong>نوع المركبة:</strong> @Model.VehicleModel (@Model.PlateNumber)</p>
+                            <div>
+                                <a asp-controller="Ratings" asp-action="DriverSummary" asp-route-driverId="@Model.DriverId" class="text-warning font-weight-bold text-decoration-none">
+                                    ⭐ تقييم السائق: @(Model.DriverRating > 0 ? Model.DriverRating.ToString("0.0") + " / 5.0" : "لا توجد تقييمات بعد") (عرض المراجعات 💬)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded border">
+                            <h6 class="text-accent font-weight-bold mb-2">مواعيد التجمع والأسعار 📅</h6>
+                            <p class="mb-1 text-dark">📅 <strong>تاريخ السفر:</strong> @Model.TripTime.ToString("yyyy-MM-dd")</p>
+                            <p class="mb-1 text-dark">⏰ <strong>وقت الانطلاق:</strong> @Model.TripTime.ToString("HH:mm")</p>
+                            <p class="mb-1 text-dark">📍 <strong>نقطة التجمع:</strong> @(string.IsNullOrEmpty(Model.FromLocation) ? "حسب الاتفاق مع السائق" : Model.FromLocation)</p>
+                            <h4 class="text-success font-weight-bold mt-2">@Model.PricePerSeat.ToString("N0") ريال / مقعد</h4>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Description))
+                {
+                    <div class="p-3 bg-white border rounded mb-4">
+                        <h6 class="font-weight-bold text-dark">ملاحظات وتعليمات السائق للمسافرين:</h6>
+                        <p class="mb-0 text-muted">@Model.Description</p>
+                    </div>
+                }
+
+                <!-- Booking Action Box -->
+                <div class="card-almosafer p-4 bg-light border-accent">
+                    <h5 class="font-weight-bold text-primary mb-3">حجز المقاعد والخصائص 🎫</h5>
+
+                    @if (Model.AvailableSeats <= 0)
+                    {
+                        <div class="alert alert-danger mb-0 text-center font-weight-bold">
+                            عذراً، هذه الرحلة مكتملة المقاعد بالكامل (Full).
+                        </div>
+                    }
+                    else if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label font-weight-bold">اختر عدد المقاعد المطلوبة:</label>
+                                <select id="seatsSelect" data-price-per-seat="@Model.PricePerSeat" class="form-select form-select-custom form-select-lg">
+                                    @for (int i = 1; i <= Model.AvailableSeats; i++)
+                                    {
+                                        <option value="@i">@i مقعد</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label font-weight-bold text-muted">إجمالي مبلغ الحجز:</label>
+                                <div id="totalAmountDisplay" class="fs-4 font-weight-bold text-success">-- ريال يمني</div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button type="button" class="btn btn-emerald btn-lg w-100 font-weight-bold" data-bs-toggle="modal" data-bs-target="#confirmBookingModal">
+                                    مراجعة وتأكيد الحجز الفوري 💳
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Modal -->
+                        <div class="modal fade" id="confirmBookingModal" tabindex="-1" aria-labelledby="confirmBookingModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content text-end">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title font-weight-bold" id="confirmBookingModalLabel">مراجعة بيانات الحجز 🧾</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                                    </div>
+                                    <form asp-controller="Bookings" asp-action="Create" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="TripId" value="@Model.Id" />
+                                        <input type="hidden" name="SeatsBooked" id="modalSeatsBookedInput" value="1" />
+
+                                        <div class="modal-body p-4">
+                                            <div class="p-3 bg-light rounded border mb-3">
+                                                <p class="mb-1"><strong>الرحلة:</strong> @Model.FromCity ← @Model.ToCity</p>
+                                                <p class="mb-1"><strong>موعد الانطلاق:</strong> @Model.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
+                                                <p class="mb-0"><strong>السائق:</strong> @Model.DriverName</p>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>سعر المقعد: <strong>@Model.PricePerSeat.ToString("N0") ريال</strong></span>
+                                                <span class="fs-5 text-success font-weight-bold">التأكيد الفوري</span>
+                                            </div>
+                                            <div class="mt-3 pt-3 border-top">
+                                                <label class="form-label font-weight-bold text-dark d-block mb-2">طريقة الدفع:</label>
+                                                <div class="form-check mb-1">
+                                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="pmMock" value="MockOnline" checked />
+                                                    <label class="form-check-label" for="pmMock">💳 دفع تجريبي فوري <small class="text-muted">(محاكاة — لا يوجد خصم حقيقي)</small></label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="PaymentMethod" id="pmCash" value="Cash" />
+                                                    <label class="form-check-label" for="pmCash">💵 نقداً عند الركوب — تدفع للسائق مباشرة عند اللقاء</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer bg-light">
+                                            <button type="button" class="btn btn-outline-secondary font-weight-bold" data-bs-dismiss="modal">تعديل الاختيار</button>
+                                            <button type="submit" class="btn btn-emerald font-weight-bold">تأكيد الحجز الآن 🚀</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-2">
+                            <p class="mb-2 text-muted">يجب تسجيل الدخول كمسافر لتتمكن من حجز هذه الرحلة.</p>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-accent font-weight-bold">تسجيل الدخول للحجز</a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const seatsSelect = document.getElementById('seatsSelect');
+            const modalInput = document.getElementById('modalSeatsBookedInput');
+            if (seatsSelect && modalInput) {
+                seatsSelect.addEventListener('change', function () {
+                    modalInput.value = this.value;
+                });
+            }
+        });
+    </script>
+}

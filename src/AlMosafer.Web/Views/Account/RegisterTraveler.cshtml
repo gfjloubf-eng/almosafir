@@ -1,0 +1,77 @@
+@model AlMosafer.Application.DTOs.Auth.RegisterTravelerDto
+@{
+    ViewData["Title"] = "تسجيل حساب مسافر جديد";
+}
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom text-center py-3">
+                <h4 class="font-weight-bold mb-1">انضم كـ مسافر جديد 🧳</h4>
+                <small class="text-light">أنشئ حسابك لبدء حجز مقاعدك والتنقل بين المدن بكل سهولة</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="RegisterTraveler" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Section 1: Personal Info -->
+                    <div class="form-section-title">1. البيانات الشخصية والاتصال</div>
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label font-weight-bold">الاسم الكامل *</label>
+                        <input asp-for="FullName" class="form-control form-control-custom" placeholder="أدخل اسمك الرباعي" autofocus />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label font-weight-bold">رقم الهاتف</label>
+                            <input asp-for="Phone" class="form-control form-control-custom" placeholder="77XXXXXXX" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label font-weight-bold">المدينة / السكن</label>
+                            <input asp-for="City" class="form-control form-control-custom" placeholder="مثال: تعز" />
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Account Credentials -->
+                    <div class="form-section-title mt-4">2. بيانات الحساب والدخول</div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label font-weight-bold">البريد الإلكتروني *</label>
+                        <input asp-for="Email" type="email" class="form-control form-control-custom" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label font-weight-bold">كلمة المرور *</label>
+                        <div class="input-group">
+                            <input asp-for="Password" type="password" id="travelerPassword" class="form-control form-control-custom" placeholder="6 أحرف على الأقل" />
+                            <button type="button" class="btn btn-outline-secondary btn-toggle-password" data-target="travelerPassword" aria-label="إظهار كلمة المرور">👁️ إظهار</button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label font-weight-bold">تأكيد كلمة المرور *</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control form-control-custom" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-accent btn-lg w-100 font-weight-bold mb-3">إنشاء حساب مسافر 🚀</button>
+
+                    <div class="text-center">
+                        <span class="text-muted">لديك حساب بالفعل؟</span>
+                        <a asp-action="Login" class="font-weight-bold text-accent">تسجيل الدخول هنا</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

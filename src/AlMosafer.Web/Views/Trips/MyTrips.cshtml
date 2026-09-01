@@ -1,0 +1,104 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Trips.TripDetailsDto>
+@{
+    ViewData["Title"] = "رحلاتي المضافة — السائق";
+}
+
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="font-weight-bold text-dark mb-0">قائمة رحلاتي كـ سائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
+        <a asp-action="Create" class="btn btn-success font-weight-bold">+ نشر رحلة جديدة</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success font-weight-bold">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <h5>لم تقم بنشر أي رحلات حتى الآن.</h5>
+            <p class="mb-3">اضغط على زر نشر رحلة جديدة لإتاحة مقاعدك للمسافرين.</p>
+            <a asp-action="Create" class="btn btn-success">نشر رحلة الآن</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive bg-white rounded shadow-sm p-3">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>خط السير</th>
+                        <th>موعد السفر</th>
+                        <th>المقاعد (المتبقي/الكلي)</th>
+                        <th>سعر المقعد</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody data-paginate="12">
+                    @foreach (var trip in Model)
+                    {
+                        <tr>
+                            <td><strong>#@trip.Id</strong></td>
+                            <td class="font-weight-bold text-primary">@trip.FromCity ← @trip.ToCity</td>
+                            <td>@trip.TripTime.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <span class="badge bg-secondary">@trip.AvailableSeats / @trip.TotalSeats</span>
+                            </td>
+                            <td class="text-success font-weight-bold">@trip.PricePerSeat.ToString("N0") ريال</td>
+                            <td>
+                                @if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Open)
+                                {
+                                    <span class="badge bg-success">نشطة ومتاحة</span>
+                                }
+                                else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Started)
+                                {
+                                    <span class="badge bg-info text-dark">🚌 انطلقت — في الطريق</span>
+                                }
+                                else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Completed)
+                                {
+                                    <span class="badge bg-secondary">✅ مكتملة</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@trip.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <a asp-action="Details" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-primary">التفاصيل</a>
+                                    <a asp-controller="Bookings" asp-action="Manifest" asp-route-tripId="@trip.Id" class="btn btn-sm btn-outline-dark">👥 كشف الركوب</a>
+                                    @if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Open)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@trip.Id" class="btn btn-sm btn-outline-secondary">✏️ تعديل</a>
+                                        <form asp-action="Start" asp-route-id="@trip.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-success">🚀 بدء الرحلة</button>
+                                        </form>
+                                        <form asp-action="Cancel" asp-route-id="@trip.Id" method="post" class="d-inline" data-confirm="تأكيد إلغاء هذه الرحلة نهائياً؟">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">إلغاء</button>
+                                        </form>
+                                    }
+                                    else if (trip.Status == AlMosafer.Domain.Enums.TripStatus.Started)
+                                    {
+                                        <form asp-action="Complete" asp-route-id="@trip.Id" method="post" class="d-inline" data-confirm="هل وصلت الرحلة فعلاً؟ سيتم تسجيلها مكتملة.">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success">✅ إنهاء الرحلة</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

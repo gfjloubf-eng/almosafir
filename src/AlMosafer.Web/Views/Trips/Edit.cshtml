@@ -1,0 +1,88 @@
+@model AlMosafer.Application.DTOs.Trips.UpdateTripDto
+@{
+    ViewData["Title"] = $"تعديل الرحلة #{Model.TripId} — السائق";
+}
+
+<a href="/Trips/MyTrips" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى رحلاتي</a>
+
+<div class="row justify-content-center py-4">
+    <div class="col-md-9 col-lg-7">
+        <div class="card-almosafer shadow-lg border-0">
+            <div class="card-header-custom text-center py-3 bg-primary">
+                <h4 class="font-weight-bold mb-1">تعديل الرحلة #@Model.TripId ✏️</h4>
+                <small class="text-light">حدّث بيانات المسار أو الموعد أو السعر — سيلاحظ المسافرون التغيير فوراً</small>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div asp-validation-summary="All" class="mb-0"></div>
+                    </div>
+                }
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="TripId" />
+                    <input type="hidden" asp-for="Status" />
+
+                    <!-- Section 1: Route Info -->
+                    <div class="form-section-title">1. مسار الرحلة والانطلاق</div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="FromCity" class="form-label font-weight-bold">مدينة الانطلاق *</label>
+                            <input asp-for="FromCity" class="form-control form-control-custom" placeholder="مثال: صنعاء" autofocus />
+                            <span asp-validation-for="FromCity" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ToCity" class="form-label font-weight-bold">مدينة الوصول *</label>
+                            <input asp-for="ToCity" class="form-control form-control-custom" placeholder="مثال: عدن" />
+                            <span asp-validation-for="ToCity" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FromLocation" class="form-label font-weight-bold">نقطة التجمع وتحديد الموقع</label>
+                        <input asp-for="FromLocation" class="form-control form-control-custom" placeholder="مثال: فرزة باب اليمن، جولة المصباحي" />
+                    </div>
+
+                    <!-- Section 2: Schedule & Pricing -->
+                    <div class="form-section-title mt-4">2. التوقيت والمقاعد والأسعار</div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-12">
+                            <label asp-for="TripTime" class="form-label font-weight-bold">تاريخ ووقت الانطلاق *</label>
+                            <input asp-for="TripTime" type="datetime-local" class="form-control form-control-custom" />
+                            <span asp-validation-for="TripTime" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Seats" class="form-label font-weight-bold">عدد المقاعد المتاحة للركاب *</label>
+                            <input asp-for="Seats" type="number" min="1" max="10" class="form-control form-control-custom" />
+                            <span asp-validation-for="Seats" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PricePerSeat" class="form-label font-weight-bold">سعر المقعد الواحد (ريال) *</label>
+                            <input asp-for="PricePerSeat" type="number" step="500" class="form-control form-control-custom" />
+                            <span asp-validation-for="PricePerSeat" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Additional Notes -->
+                    <div class="form-section-title mt-4">3. ملاحظات وتعليمات للمسافرين</div>
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label font-weight-bold">تعليمات الأمتعة ومواعيد الحركة</label>
+                        <textarea asp-for="Description" class="form-control form-control-custom" rows="3" placeholder="أدخل أي ملاحظات حول حجم الحقائب المسموح بها أو التوقف للتناول وجبة الغداء..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 font-weight-bold">حفظ التعديلات ✅</button>
+                    <a asp-action="MyTrips" class="btn btn-outline-secondary w-100 mt-2 font-weight-bold">إلغاء والعودة لرحلاتي</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

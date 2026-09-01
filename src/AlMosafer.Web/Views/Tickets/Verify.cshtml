@@ -1,0 +1,79 @@
+@model AlMosafer.Application.DTOs.Bookings.TicketVerificationDto
+@{
+    ViewData["Title"] = "تحقق التذكرة";
+    string StatusLabel(string? s) => s switch
+    {
+        "Pending" => "بانتظار التأكيد",
+        "Confirmed" => "مؤكد",
+        "Boarded" => "صعد الراكب ✔",
+        "Cancelled" => "ملغي",
+        _ => s ?? "—"
+    };
+}
+
+<a href="#" onclick="history.back(); return false;" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع</a>
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="text-center mb-3">
+            <span class="eyebrow-text">بوابة الصعود</span>
+            <h3 class="font-weight-bold text-dark mb-1">التحقق من التذكرة <i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></h3>
+        </div>
+
+        @if (!Model.Found)
+        {
+            <div class="card-almosafer shadow-lg border-0 text-center p-5">
+                <div class="empty-state-icon text-danger"><i class="alm-ic" data-lucide="search" aria-hidden="true"></i></div>
+                <h4 class="font-weight-bold text-danger mb-2">تذكرة غير موجودة</h4>
+                <p class="text-muted mb-0">لا يوجد حجز بهذا الرقم في المنظومة. لا تسمح بالصعود، ووثّق المحاولة إن تكررت.</p>
+            </div>
+        }
+        else if (!Model.Signed)
+        {
+            <div class="card-almosafer shadow-lg border-0 text-center p-5">
+                <div class="empty-state-icon text-warning"><i class="alm-ic" data-lucide="bell" aria-hidden="true"></i></div>
+                <h4 class="font-weight-bold text-dark mb-2">تذكرة قديمة — غير موقّعة</h4>
+                <p class="text-muted">حجز سابق لنظام التوقيع الرقمي. الحجز نفسه موجود وصحيح، لكن القيم الكريبتوغرافية غير متاحة — تحقق يدوياً من الاسم والمسار ثم سجّل الصعود من الكشف.</p>
+                <hr />
+                <dl class="row text-start mb-0">
+                    <dt class="col-4 text-muted">المسافر</dt><dd class="col-8 font-weight-bold">@Model.TravelerName</dd>
+                    <dt class="col-4 text-muted">المسار</dt><dd class="col-8 font-weight-bold">@Model.Route</dd>
+                    <dt class="col-4 text-muted">المقاعد</dt><dd class="col-8 font-weight-bold">@Model.Seats</dd>
+                    <dt class="col-4 text-muted">الحالة</dt><dd class="col-8 font-weight-bold">@StatusLabel(Model.Status)</dd>
+                    @if (Model.TripTime is not null)
+                    {
+                        <dt class="col-4 text-muted">الموعد</dt><dd class="col-8 font-weight-bold">@Model.TripTime.Value.ToString("yyyy-MM-dd hh:mm tt")</dd>
+                    }
+                </dl>
+            </div>
+        }
+        else if (!Model.Valid)
+        {
+            <div class="card-almosafer shadow-lg border-0 text-center p-5" style="border-top: 6px solid #dc2626 !important;">
+                <div class="empty-state-icon text-danger"><i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></div>
+                <h2 class="font-weight-bold text-danger mb-2">تذكرة مرفوضة</h2>
+                <p class="text-muted mb-3">التوقيع الرقمي <strong>غير مطابق</strong> لرمز الحجز — احتمال تزوير أو نسخ معدّلة. <strong>لا تسمح بالصعود</strong> وأبلغ الإدارة؛ سُجّلت المحاولة في الرادار.</p>
+                <span class="badge bg-danger px-3 py-2">الحجز موجود لكن التوقيع فاسد</span>
+            </div>
+        }
+        else
+        {
+            <div class="card-almosafer shadow-lg border-0 text-center p-5" style="border-top: 6px solid #0d9488 !important;">
+                <div class="empty-state-icon text-success"><i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i></div>
+                <h2 class="font-weight-bold text-success mb-2">تذكرة أصلية موقّعة</h2>
+                <p class="text-muted">التوقيع الرقمي مطابق لرمز الحجز — التذكرة أصلية غير مزوّرة.</p>
+                <hr />
+                <dl class="row text-start mb-3">
+                    <dt class="col-4 text-muted">المسافر</dt><dd class="col-8 font-weight-bold">@Model.TravelerName</dd>
+                    <dt class="col-4 text-muted">المسار</dt><dd class="col-8 font-weight-bold">@Model.Route</dd>
+                    <dt class="col-4 text-muted">المقاعد</dt><dd class="col-8 font-weight-bold">@Model.Seats</dd>
+                    <dt class="col-4 text-muted">الحالة</dt><dd class="col-8 font-weight-bold">@StatusLabel(Model.Status)</dd>
+                    @if (Model.TripTime is not null)
+                    {
+                        <dt class="col-4 text-muted">الموعد</dt><dd class="col-8 font-weight-bold">@Model.TripTime.Value.ToString("yyyy-MM-dd hh:mm tt")</dd>
+                    }
+                </dl>
+                <small class="text-muted">قارن الاسم بهوية الراكب ثم سجّل الصعود من كشف الرحلة. التحقق لا يُبدّل حالة الحجز بنفسه.</small>
+            </div>
+        }
+    </div>
+</div>

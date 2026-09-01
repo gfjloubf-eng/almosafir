@@ -1,0 +1,98 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Bookings.BookingDetailsDto>
+@{
+    ViewData["Title"] = "حجوزاتي — منصة المسافر";
+}
+
+<div class="py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="font-weight-bold text-dark mb-1">قائمة حجوزاتي المسجلة <i class="alm-ic" data-lucide="luggage" aria-hidden="true"></i></h3>
+            <p class="text-muted mb-0">تابع حالة حجوزاتك، طباعة الإيصالات، تقييم الرحلات أو التواصل مع السائقين</p>
+        </div>
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent font-weight-bold">+ حجز رحلة جديدة</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state-card">
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="luggage" aria-hidden="true"></i></div>
+            <h4 class="font-weight-bold text-dark mb-2">لا توجد لديك حجوزات مسجلة حالياً</h4>
+            <p class="text-muted mb-4">ابدأ بالبحث عن رحلتك بين المدن اليمنية وحجز مقعدك بكل سهولة وأمان.</p>
+            <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4" data-paginate="9">
+            @foreach (var booking in Model)
+            {
+                <div class="col-md-6">
+                    <div class="card-almosafer shadow-sm h-100 d-flex flex-column">
+                        <div class="card-header-custom d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold">حجز رقم #BK-@booking.BookingId.ToString("D6")</span>
+                            @if (booking.Status == AlMosafer.Domain.Enums.BookingStatus.Boarded)
+                            {
+                                <span class="badge bg-info text-dark">✅ على متن الرحلة</span>
+                            }
+                            else if (booking.Status == AlMosafer.Domain.Enums.BookingStatus.Confirmed)
+                            {
+                                <span class="badge badge-status badge-open">مؤكد (Confirmed)</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-status badge-full">@booking.Status</span>
+                            }
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <h4 class="font-weight-bold text-primary mb-2">@booking.FromCity ← @booking.ToCity</h4>
+                            <p class="text-muted mb-1">📅 <strong>تاريخ ووقت السفر:</strong> @booking.TripTime.ToString("yyyy-MM-dd — HH:mm")</p>
+                            <p class="text-muted mb-1">👤 <strong>اسم السائق:</strong> @booking.DriverName (@(string.IsNullOrEmpty(booking.DriverPhone) ? "غير محدد" : booking.DriverPhone))</p>
+                            <p class="text-muted mb-3">🪑 <strong>عدد المقاعد:</strong> @booking.SeatsBooked مقعد | 💳 <strong>إجمالي الإيصال:</strong> <strong class="text-success fs-5">@booking.TotalAmount.ToString("N0") ريال</strong></p>
+
+                            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Receipt" asp-route-id="@booking.BookingId" class="btn btn-outline-primary btn-sm font-weight-bold">عرض الإيصال 🧾</a>
+                                    
+                                    @if (booking.Status == AlMosafer.Domain.Enums.BookingStatus.Confirmed)
+                                    {
+                                        <a asp-controller="Ratings" asp-action="Create" asp-route-tripId="@booking.TripId" class="btn btn-warning btn-sm font-weight-bold">تقييم الرحلة ⭐️</a>
+                                    }
+                                </div>
+
+                                @if (booking.Status == AlMosafer.Domain.Enums.BookingStatus.Confirmed)
+                                {
+                                    <button type="button" class="btn btn-outline-danger btn-sm font-weight-bold" data-bs-toggle="modal" data-bs-target="#cancelModal-@booking.BookingId">
+                                        إلغاء الحجز ❌
+                                    </button>
+
+                                    <!-- Cancel Modal -->
+                                    <div class="modal fade" id="cancelModal-@booking.BookingId" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content text-end">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title font-weight-bold">تأكيد إلغاء الحجز ⚠️</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    هل أنت تأكد من رغبتك في إلغاء حجزك لرحلة <strong>@booking.FromCity ← @booking.ToCity</strong>؟
+                                                </div>
+                                                <div class="modal-footer bg-light">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء الأمر</button>
+                                                    <form asp-action="Cancel" method="post" class="d-inline" data-confirm="إلغاء هذا الحجز نهائياً؟ لا يمكن التراجع عن هذه الخطوة.">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                                        <button type="submit" class="btn btn-danger font-weight-bold">نعم، تأكيد الإلغاء</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

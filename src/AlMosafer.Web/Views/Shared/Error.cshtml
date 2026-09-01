@@ -1,0 +1,15 @@
+@model AlMosafer.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "خطأ — منصة المسافر";
+}
+
+<div class="text-center py-5">
+    <div class="display-1 text-danger mb-3">⚠️ 500</div>
+    <h1 class="display-6 font-weight-bold text-dark mb-3">حدث خطأ غير متوقع</h1>
+    <p class="lead text-muted mb-4">نعتذر عن هذا الخلل المؤقت. يرجى المحاولة مرة أخرى أو العودة للصفحة الرئيسية.</p>
+
+    <div class="d-flex justify-content-center gap-3">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">العودة للرئيسية</a>
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-outline-secondary btn-lg font-weight-bold">البحث عن رحلة</a>
+    </div>
+</div>

@@ -1,0 +1,96 @@
+@model AlMosafer.Application.DTOs.Bookings.TripManifestDto
+@{
+    ViewData["Title"] = $"كشف الركوب — {Model.Route}";
+}
+
+<a href="/Trips/MyTrips" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى رحلاتي</a>
+
+<div class="py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div>
+            <h4 class="font-weight-bold text-dark mb-1">👥 كشف ركوب الرحلة</h4>
+            <span class="text-muted">@Model.Route — @Model.TripTime.ToString("yyyy-MM-dd — HH:mm")</span>
+        </div>
+        <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-outline-primary btn-sm font-weight-bold">العودة لرحلاتي</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success font-weight-bold">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger font-weight-bold">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="row g-3 mb-4 text-center">
+        <div class="col-6 col-md-3">
+            <div class="card-almosafer p-3"><h3 class="font-weight-bold text-primary mb-0">@Model.SeatsBookedTotal / @Model.TotalSeats</h3><small class="text-muted">مقاعد محجوزة</small></div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card-almosafer p-3"><h3 class="font-weight-bold text-success mb-0">@Model.BoardedCount <i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i></h3><small class="text-muted">صعدوا فعلاً</small></div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card-almosafer p-3"><h3 class="font-weight-bold text-warning mb-0">@Model.PendingBoardCount ⏳</h3><small class="text-muted">بانتظار الصعود</small></div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card-almosafer p-3"><h3 class="font-weight-bold text-danger mb-0">@Model.CashDueTotal.ToString("N0")</h3><small class="text-muted">ريال نقدية تُجمع عند الركوب</small></div>
+        </div>
+    </div>
+
+    @if (!Model.Passengers.Any())
+    {
+        <div class="alert alert-info text-center py-4 mb-0">لا حجوزات نشطة على هذه الرحلة بعد.</div>
+    }
+    else
+    {
+        <div class="table-responsive bg-white rounded shadow-sm p-3">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr><th>#</th><th>المسافر</th><th>الهاتف</th><th>المقاعد</th><th>الدفع</th><th>الصعود</th></tr>
+                </thead>
+                <tbody>
+                    @{ var n = 1; }
+                    @foreach (var p in Model.Passengers)
+                    {
+                        <tr>
+                            <td><strong>@(n++)</strong></td>
+                            <td class="font-weight-bold">@p.TravelerName <small class="text-muted">#BK-@p.BookingId.ToString("D6")</small></td>
+                            <td>@(string.IsNullOrEmpty(p.Phone) ? "—" : p.Phone)</td>
+                            <td><span class="badge bg-secondary">@p.SeatsBooked</span></td>
+                            <td>
+                                @if (p.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Paid)
+                                {
+                                    <span class="badge bg-success">مدفوع <i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i></span>
+                                }
+                                else if (p.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Pending)
+                                {
+                                    <span class="badge bg-warning text-dark">💵 نقداً: @p.Amount.ToString("N0") ريال</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">غير مسدد</span>
+                                }
+                            </td>
+                            <td>
+                                @if (p.IsBoarded)
+                                {
+                                    <span class="badge bg-info text-dark"><i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i> صعد</span>
+                                }
+                                else
+                                {
+                                    <form asp-action="Board" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="bookingId" value="@p.BookingId" />
+                                        <input type="hidden" name="tripId" value="@Model.TripId" />
+                                        <button type="submit" class="btn btn-sm btn-success font-weight-bold" onclick="return confirm('تأكيد صعود @p.TravelerName إلى الرحلة؟');">تأكيد الصعود 🚪</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
