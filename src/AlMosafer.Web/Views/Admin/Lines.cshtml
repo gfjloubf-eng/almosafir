@@ -74,7 +74,7 @@
 <<<<<<< HEAD
                                     <form asp-action="DeleteLine" method="post" class="d-inline" data-confirm="حذف الخط مع مواقفه وجداوله نهائياً — متأكد؟">
 =======
-                                    <form asp-action="DeleteLine" method="post" class="d-inline" onsubmit="return confirm('حذف الخط مع مواقفه وجداوله نهائياً — متأكد؟');">
+                                    <form asp-action="DeleteLine" method="post" class="d-inline" data-confirm="حذف الخط مع مواقفه وجداوله نهائياً — متأكد؟">
 >>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="lineId" value="@line.Id" />
