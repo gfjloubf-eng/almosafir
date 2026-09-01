@@ -119,16 +119,42 @@ app.UseForwardedHeaders();
 // بصلاحية المالك (2026-08-31): تطبيق هجرات EF تلقائياً عند الإقلاع —
 // يستحدث أي جداول ناقصة (مثل Phase2 RouteLines) دون dotnet-ef أو خطوات يدوية.
 // Migrate() ذكي: لا يمس شيئاً إن كانت القاعدة محدّثة؛ وإن كان MySQL مطفأً نسجل تحذيراً ونكمل (مثله مثل بذر الأدمن).
+// وتعزيز (نفس اليوم): تحقق صريح من وجود route_lines + سطر الحل الجاهز إن غابت — حلٌّ أكيد لا صامت.
 try
 {
     using var migrateScope = app.Services.CreateScope();
     var migrateDb = migrateScope.ServiceProvider.GetRequiredService<AlMosaferDbContext>();
+    var pendingMigrations = migrateDb.Database.GetPendingMigrations().ToList();
+    if (pendingMigrations.Count > 0)
+    {
+        Console.WriteLine($"[AlMosafer] Applying {pendingMigrations.Count} pending migration(s): {string.Join(", ", pendingMigrations)}");
+    }
     migrateDb.Database.Migrate();
     Console.WriteLine("[AlMosafer] Database migrations applied (or already up to date).");
+
+    // فحص أكيد: هل جدول الخطوط موجود فعلاً على القرص؟
+    try
+    {
+        var probeConnection = migrateDb.Database.GetDbConnection();
+        probeConnection.Open();
+        using var probeCommand = probeConnection.CreateCommand();
+        probeCommand.CommandText = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'route_lines'";
+        var routeLinesExists = Convert.ToInt32(probeCommand.ExecuteScalar()) > 0;
+        probeConnection.Close();
+        Console.WriteLine(routeLinesExists
+            ? "[AlMosafer] ✅ جدول route_lines موجود — صفحة شبكة الخطوط ستعمل."
+            : "[AlMosafer] ❌ route_lines غير موجود! الحل: C:\\xampp\\mysql\\bin\\mysql.exe -u root mosafir_db < database\\Phase2_RouteLines.sql");
+    }
+    catch (Exception probeEx)
+    {
+        Console.WriteLine($"[Warning] Route-lines probe skipped: {probeEx.Message}");
+    }
 }
 catch (Exception ex)
 {
     Console.WriteLine($"[Warning] DB migrate skipped: {ex.Message}");
+    Console.WriteLine("[AlMosafer] ❌ الهجرات لم تُطبَّق! تأكد أن MySQL شغال (زر Start أخضر في XAMPP) ثم أعد التشغيل؛" +
+        " أو نفّذ: C:\\xampp\\mysql\\bin\\mysql.exe -u root mosafir_db < database\\Phase2_RouteLines.sql");
 }
 
 // Seed Default Admin Account Securely on Startup
