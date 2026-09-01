@@ -75,3 +75,7 @@
 - SW v2: statics كاش-أولاً (+/img/)، precache يشمل lucide/flatpickr/favicon؛ صفحات عامة فقط (/, /Lines, /Trips/InternalLines) بـSWR + سقف 30؛ الشخصية شبكة-أولاً→offline.html. offline.html بهوية جديدة (SVG wifi-off). زر تثبيت عائم قبلbeforeinstallprompt. manifest +categories.
 - Serilog.AspNetCore 9.0.0: Console + File JSON يومي 14 يوماً logs/ (مهملة أصلاً)؛ المستويات في appsettings. رسب CI أولاً (33529062846) بغياب using Serilog؛ أُصلح فوراً. درس: الامتدادات بحتاج using حرفي حتى مع ImplicitUsings.
 - الخارطة المتبقية بلا حجب خارجي: استعادة كلمة مرور (SMTP غائبة لكن «فاشل-آمن» ممكن P38) — الباقي كله محجوب بمفاتيح/هجرات يقررها المالك.
+
+## P46 الفرعي «عين الرادار» (CI 33530375414 ✅) + اكتشاف P38 — 2026-09-01
+- اكتشاف: P38 (استعادة كلمة مرور: ForgotPassword/ResetPassword + EmailService MailKit فاشل-آمن + StrictLimiter + 12 اختباراً) **مُنجَز منذ جلسات سابقة** — محذوف من قائمة الانتظار.
+- عين الرادار: ILogTailService/GetLatestAsync(max,level)؛ LogTailService بسلسلة جذر المحتوى (بعد رفض IHostEnvironment — لا مراجع Hosting في Infrastructure؛ درس: Infrastructure مكتبة قياسية لا AspNet)؛ ذيل بطابور O(max)؛ تسامح JsonException/مشاهدة مشتركة للملف؛ /Admin/Logs بترشيح مستويات + data-paginate=25؛ زر عاشر بلوحة الأدمن + 9 أزرار بأيقونات lucide (صفر إيموجي باللوحة). 5 اختبارات جديدة خضراء.

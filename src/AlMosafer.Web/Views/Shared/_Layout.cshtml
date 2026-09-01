@@ -12,10 +12,48 @@
     <link rel="alternate icon" href="~/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="~/icons/icon-512.png" />
     <title>@ViewData["Title"] - منصة المسافر AlMosafer</title>
+    @{
+        // P47 «الباب العالمي»: بطاقات مشاركة وبحث موحّدة لكل صفحة — قابلة للتخصيص عبر ViewData
+        var ogTitle = (ViewData["Title"] as string) ?? "منصة المسافر — سفر ومواصلات";
+        var ogDesc = (ViewData["Description"] as string) ?? "رحلات مشتركة بين المدن اليمنية وخطوط مواصلات داخلية معتمدة: احجز مقعدك، ادفع نقداً عند الركوب، واستلم كشف ركوب رقمياً موثوقاً.";
+        var baseUri = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.PathBase}";
+        var ogUrl = baseUri + Context.Request.Path;
+    }
+    <meta name="description" content="@ogDesc" />
+    <link rel="canonical" href="@ogUrl" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="منصة المسافر" />
+    <meta property="og:locale" content="ar_YE" />
+    <meta property="og:title" content="@ogTitle" />
+    <meta property="og:description" content="@ogDesc" />
+    <meta property="og:url" content="@ogUrl" />
+    <meta property="og:image" content="@(baseUri)/img/og-cover.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@ogTitle" />
+    <meta name="twitter:description" content="@ogDesc" />
+    <meta name="twitter:image" content="@(baseUri)/img/og-cover.jpg" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="~/lib/flatpickr/flatpickr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AlMosafer.Web.styles.css" asp-append-version="true" />
+    @* P47: بيانات مهيكلة لمحركات البحث — رئيسية الموقع فقط (Rich Results) *@
+    @if (string.Equals(ViewContext.RouteData.Values["controller"] as string, "Home", System.StringComparison.OrdinalIgnoreCase)
+      && string.Equals(ViewContext.RouteData.Values["action"] as string, "Index", System.StringComparison.OrdinalIgnoreCase))
+    {
+        <script type="application/ld+json">
+        {
+          "@@context": "https://schema.org",
+          "@@graph": [
+            { "@@type": "Organization", "name": "منصة المسافر", "url": "@(baseUri)/",
+              "logo": "@(baseUri)/icons/icon-512.png", "description": "@ogDesc" },
+            { "@@type": "WebSite", "name": "منصة المسافر", "url": "@(baseUri)/", "inLanguage": "ar",
+              "potentialAction": { "@@type": "SearchAction",
+                "target": { "@@type": "EntryPoint", "urlTemplate": "@(baseUri)/Trips?FromCity={from_city}" },
+                "query-input": "required name=from_city" } }
+          ]
+        }
+        </script>
+    }
 </head>
 <body>
     <div id="navProgress" aria-hidden="true"></div>
