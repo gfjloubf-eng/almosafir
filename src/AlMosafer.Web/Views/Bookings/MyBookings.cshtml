@@ -6,7 +6,7 @@
 <div class="py-3">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="font-weight-bold text-dark mb-1">قائمة حجوزاتي المسجلة 🧳</h3>
+            <h3 class="font-weight-bold text-dark mb-1">قائمة حجوزاتي المسجلة <i class="alm-ic" data-lucide="luggage" aria-hidden="true"></i></h3>
             <p class="text-muted mb-0">تابع حالة حجوزاتك، طباعة الإيصالات، تقييم الرحلات أو التواصل مع السائقين</p>
         </div>
         <a asp-controller="Trips" asp-action="Index" class="btn btn-accent font-weight-bold">+ حجز رحلة جديدة</a>
@@ -15,7 +15,7 @@
     @if (!Model.Any())
     {
         <div class="empty-state-card">
-            <div class="empty-state-icon">🧳</div>
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="luggage" aria-hidden="true"></i></div>
             <h4 class="font-weight-bold text-dark mb-2">لا توجد لديك حجوزات مسجلة حالياً</h4>
             <p class="text-muted mb-4">ابدأ بالبحث عن رحلتك بين المدن اليمنية وحجز مقعدك بكل سهولة وأمان.</p>
             <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
@@ -23,7 +23,7 @@
     }
     else
     {
-        <div class="row g-4">
+        <div class="row g-4" data-paginate="9">
             @foreach (var booking in Model)
             {
                 <div class="col-md-6">

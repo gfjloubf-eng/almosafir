@@ -53,3 +53,7 @@
 - طبقة CSS 2026 فوق التوكنات القائمة + صورة بطل hero-journey.png أصيلة (مولّدة، بلا نص) + إعادة بناء Home/Index (نفس form/asp-actions) + .rvl بـIO محترم للحركة + تذييل ليلي.
 - صفر عدادات مختلقة؛ صفر C#؛ Razor تتحقق CI. وتقرير docs/PROMPT_42_VISUAL_RENEWAL_REPORT.md.
 - دمجيات تاليتان: 4f4ff27 — أخضر. سؤال مفتوح على المالك: تعميم الهوية على الصفحات الداخلية أم بند الخارطة التالي؟
+
+## P43 «جولة التلميع» الموجة ١ (2026-09-01) — CI 33517671291
+- plan: docs/P43_UI_FIX_PLAN.md (12 عيباً موثقاً بأدلة → 3 موجات). مشحون: توحيد btn-primary/secondary، زر انضمام، favicon من الشعار، datalist مدن (HomeController +ILineService + ViewBag.Cities؛ جداول الخطوط فارغة نظرياً عند المالك إلى أن يضيفها الأدمن)، navProgress، .alm-toast، قص حافلة الجوال 62%.
+- درس حوكمة sandbox: منصة الحفظ تدفع arena بنفسها بين إجازاتي ⇒ أي push رفض FF → fetch+reset --hard FETCH_HEAD ثم إعادة تطبيق التعديلات (rebase يستحيل في استنساخ ضحل). سجّلته في systemPatterns.

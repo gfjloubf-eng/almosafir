@@ -6,7 +6,7 @@
 <section class="hero-x p-4 p-md-5 mb-5 text-white" aria-label="واجهة الاستقبال">
     <div class="row align-items-center gy-4 position-relative">
         <div class="col-lg-7">
-            <span class="eyebrow-chip mb-3">🚗 سافر بأمان وراحة</span>
+            <span class="eyebrow-chip mb-3"><i class="alm-ic" data-lucide="car" aria-hidden="true"></i> سافر بأمان وراحة</span>
             <h1 class="display-5 hero-title mb-3">حجز رحلات بين المدن <span class="text-gradient">بكل سهولة وأمان</span></h1>
             <p class="lead hero-lead mb-4">منصة المسافر تتيح لك البحث عن الرحلات اليومية بين مختلف المدن والتواصل المباشر مع السائقين وتأكيد حجز مقعدك بضغطة زر مع إصدار إيصال حجز إلكتروني مؤكد.</p>
             <div class="d-flex flex-wrap gap-3">
@@ -129,7 +129,7 @@
 {
     <section class="my-5 text-center rvl" aria-label="نخبة السائقين">
         <span class="eyebrow-text">شكراً يصنع فارقاً</span>
-        <h3 class="section-title display-6 mb-1">🏆 ركائز المسافر — نخبة السائقين</h3>
+        <h3 class="section-title display-6 mb-1"><i class="alm-ic" data-lucide="trophy" aria-hidden="true"></i> ركائز المسافر — نخبة السائقين</h3>
         <p class="text-muted mb-4">الأعلى تقييماً من مجتمعنا عبر كل الرحلات المنجزة</p>
         <div class="row g-3 justify-content-center">
             @{
@@ -153,13 +153,13 @@
 
 <!-- دعوة الختام -->
 <section class="cta-final p-4 p-md-5 text-center rvl" aria-label="دعوة أخيرة">
-    <h3 class="font-weight-bold mb-3">جاهز للبدء في رحلتك القادمة؟ 🚗</h3>
+    <h3 class="font-weight-bold mb-3">جاهز للبدء في رحلتك القادمة؟ <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
     <p class="mb-4 mx-auto" style="max-width: 40rem; color: #cbd5e1;">سواء كنت مسافراً تبحث عن وسيلة نقل مريحة وأمينة، أو سائقاً ترغب في نشر رحلاتك ومشاركة التكلفة.</p>
     <div class="d-flex justify-content-center gap-3 flex-wrap">
         <a asp-controller="Trips" asp-action="Index" class="btn btn-accent btn-lg font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
         @if (User.Identity?.IsAuthenticated != true)
         {
-            <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald btn-lg font-weight-bold">تسجيل كـ سائق 🚗</a>
+            <a asp-controller="Account" asp-action="RegisterDriver" class="btn btn-emerald btn-lg font-weight-bold">تسجيل كـ سائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></a>
         }
     </div>
 </section>

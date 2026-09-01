@@ -13,6 +13,7 @@
     <link rel="apple-touch-icon" href="~/icons/icon-512.png" />
     <title>@ViewData["Title"] - منصة المسافر AlMosafer</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="~/lib/flatpickr/flatpickr.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AlMosafer.Web.styles.css" asp-append-version="true" />
 </head>
@@ -33,17 +34,25 @@
                 </button>
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        @{
+                            // P43 الموجة ٢: إخفاء «البحث عن رحلة» عند الرئيسية لأن بطلها يتضمن البحث نفسه
+                            var isHomeLanding = string.Equals(ViewContext.RouteData.Values["controller"] as string, "Home", System.StringComparison.OrdinalIgnoreCase)
+                                             && string.Equals(ViewContext.RouteData.Values["action"] as string, "Index", System.StringComparison.OrdinalIgnoreCase);
+                        }
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">الرئيسية 🏠</a>
+                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index"><i class="alm-ic" data-lucide="house" aria-hidden="true"></i> الرئيسية</a>
+                        </li>
+                        @if (!isHomeLanding)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="Index"><i class="alm-ic" data-lucide="search" aria-hidden="true"></i> البحث عن رحلة</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="InternalLines"><i class="alm-ic" data-lucide="bus" aria-hidden="true"></i> المواصلات الداخلية</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="Index">البحث عن رحلة 🔍</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Trips" asp-action="InternalLines">المواصلات الداخلية 🚌</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Lines" asp-action="Index">شبكة الخطوط 🛣️</a>
+                            <a class="nav-link nav-link-custom" asp-controller="Lines" asp-action="Index"><i class="alm-ic" data-lucide="route" aria-hidden="true"></i> شبكة الخطوط</a>
                         </li>
 
                         @if (User.Identity?.IsAuthenticated == true)
@@ -209,6 +218,9 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/lucide/lucide.min.js"></script>
+    <script src="~/lib/flatpickr/flatpickr.min.js"></script>
+    <script src="~/lib/flatpickr/flatpickr.ar.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @if (User.Identity?.IsAuthenticated == true)
     {

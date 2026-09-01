@@ -616,3 +616,33 @@ footer.footer .footer-whatsapp-link:hover { color: #6ee7b7; }
             linear-gradient(135deg, #0f172a 0%, #16213a 100%);
     }
 }
+
+/* ═══════════ P43 «جولة التلميع» — الموجة ٢: أيقونات SVG + ترقيم + تاريخ عربي ═══════════ */
+/* أيقونة موحّدة تتوارث حجم الخط ولونه أينما كانت */
+.alm-ic { width: 1.1em; height: 1.1em; vertical-align: -0.15em; stroke-width: 2.2; flex-shrink: 0; }
+h1 .alm-ic, h2 .alm-ic, .section-title .alm-ic { width: 1em; height: 1em; vertical-align: -0.08em; }
+.nav-link-custom .alm-ic { width: 1em; height: 1em; vertical-align: -0.12em; }
+.btn .alm-ic, .btn-almosafer .alm-ic { width: 1.05em; height: 1.05em; vertical-align: -0.15em; }
+
+/* ترقيم القوائم الحي (data-paginate) */
+.alm-pager { display: flex; align-items: center; justify-content: center; gap: .85rem; margin: 1.5rem 0 .5rem; flex-wrap: wrap; }
+.alm-pg-btn { border: 2px solid #e2e8f0; background: #fff; border-radius: 999px; padding: .45rem 1.25rem;
+    font-weight: 700; font-size: .92rem; color: #0f172a; transition: all .22s ease; cursor: pointer; }
+.alm-pg-btn:hover:not(:disabled) { border-color: #0d9488; color: #0f766e; transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(13,148,136,.18); }
+.alm-pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+.alm-pg-info { color: #64748b; font-weight: 600; font-size: .9rem; white-space: nowrap; }
+
+/* flatpickr بروح الهوية: عربي RTL بألوان المنصة */
+.flatpickr-calendar { direction: rtl; font-family: inherit; border-radius: 1.1rem; overflow: hidden;
+    border: 1px solid rgba(15,23,42,.08); box-shadow: 0 28px 64px rgba(15,23,42,.24); }
+.flatpickr-months { padding-top: .35rem; }
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year { font-weight: 800; }
+.flatpickr-day { border-radius: .65rem; font-weight: 600; }
+.flatpickr-day.today { border-color: #0d9488; }
+.flatpickr-day.selected, .flatpickr-day.selected:hover,
+.flatpickr-day.startRange, .flatpickr-day.endRange { background: linear-gradient(135deg,#0d9488,#14b8a6);
+    border-color: transparent; color: #fff; }
+.flatpickr-day:hover:not(.selected) { background: #f0fdfa; border-color: transparent; }
+.flatpickr-weekday { color: #0f766e; font-weight: 700; }
