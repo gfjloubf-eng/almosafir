@@ -1,6 +1,6 @@
 @model IEnumerable<AlMosafer.Application.DTOs.Lines.LineSummaryDto>
 @{
-    ViewData["Title"] = "شبكة الخطوط الرسمية <i class="alm-ic" data-lucide="route" aria-hidden="true"></i>";
+    ViewData["Title"] = "شبكة الخطوط الرسمية";
     var cities = ViewBag.Cities as IReadOnlyList<string> ?? new List<string>();
     var selected = ViewBag.SelectedCity as string;
 }
