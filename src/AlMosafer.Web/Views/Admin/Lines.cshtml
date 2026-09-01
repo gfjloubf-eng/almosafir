@@ -3,11 +3,8 @@
     ViewData["Title"] = "إدارة شبكة الخطوط";
 }
 
-<<<<<<< HEAD
 <a href="/Admin/Dashboard" class="btn-ghost alm-back"><i class="alm-ic" data-lucide="arrow-right" aria-hidden="true"></i> رجوع إلى لوحة الإدارة</a>
 
-=======
->>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
 <div class="py-4">
     <h3 class="font-weight-bold text-dark mb-4"><i class="alm-ic" data-lucide="route" aria-hidden="true"></i> إدارة شبكة الخطوط الرسمية</h3>
 
@@ -71,11 +68,7 @@
                                             @(line.Name.EndsWith("(موقوف)") ? "تفعيل" : "إيقاف مؤقت")
                                         </button>
                                     </form>
-<<<<<<< HEAD
                                     <form asp-action="DeleteLine" method="post" class="d-inline" data-confirm="حذف الخط مع مواقفه وجداوله نهائياً — متأكد؟">
-=======
-                                    <form asp-action="DeleteLine" method="post" class="d-inline" data-confirm="حذف الخط مع مواقفه وجداوله نهائياً — متأكد؟">
->>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="lineId" value="@line.Id" />
                                         <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>

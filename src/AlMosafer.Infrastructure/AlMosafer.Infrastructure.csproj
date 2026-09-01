@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.8.0" />
+    <PackageReference Include="MailKit" Version="4.14.0" />
     <ProjectReference Include="..\AlMosafer.Application\AlMosafer.Application.csproj" />
     <ProjectReference Include="..\AlMosafer.Domain\AlMosafer.Domain.csproj" />
   </ItemGroup>

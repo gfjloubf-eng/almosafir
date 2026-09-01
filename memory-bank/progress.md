@@ -98,7 +98,3 @@
 - مُنحت صلاحية الهجرة صراحة («اعطيك الصلاحيات» بعد عرض خيار التذكرة). مشحون: Booking.TicketSecret (هجرة 20260901090000 يدوية الكتابة بلا dotnet-ef + Snapshot محدّث)؛ BookingService يولّد 256بت hex لكل حجز جديد؛ TicketSignatureService (HMAC-SHA256 v1-{base64url}، FixedTimeEquals، base64url url-آمن)؛ /Tickets/Verify للسائق/الأدمن بأربع حالات؛ QR الإيصال يحمل توقيعاً لا سراً؛ الحجوزات القديمة تَظهر «غير موقّعة» بصدق؛ مسح مرفوض يُدوَّن في الرادار. 7 اختبارات نقية.
 - User.Name (وليس FullName). GetBookingByIdAsync يعيد DTO — لذا التوقيع عبر خدمة مستقلة لا عبر DTO الإيصال.
 - المتبقي بصلاحياته فقط: SMS keys، مفاتيح محفظة، سيرفر إنتاج. الخارطة تكاد تُستنفد.
-
-## P48 «المعيارية البشرية» — 2026-09-01
-- حارس إرسال مزدوج (22 نموذج POST) + data-confirm موحد (سدّ إلغاء-بلا-تأكيد في MyBookings) + نجمة required تلقائية + focus-visible + 21 زر رجوع شبحي + إنعاش bfcache.
-- حادثة درفت متكررة: push رُفض بلا سبب ظاهر (المنصة تدفع ذاكرة أثناء العمل)؛ الحل النظيف: fetch+merge صريح مع checkout نسختي لملفين متضاربين (site.js/progress.md) + استبعاد workflow. والأهم: **دمج merges-API قد لا يُشعِل CI أحياناً (d0f3809 بلا run)** — أعد المحاولة بدفعة أخرى، وتحقق بـcheck-runs لا run list.
