@@ -48,3 +48,7 @@
 ## baseline الشفاء الذاتي (2026-08-31) — الجذر النهائي ✅ (CI 33500883443 أخضر، merge 986fc16)
 - الجذر الموثق من سجل النسخة الجديدة: قاعدة mosafir_db وُلدت أيام PHP (db_setup.sql) ⇒ __EFMigrationsHistory فارغ ⇒ Migrate كان يصطدم بـ«users already exists» قبل Phase2. الإصلاح: Program.cs يفحص users؛ إن وُجد بلا سجل ⇒ CREATE history IF NOT EXISTS + INSERT IGNORE InitialCreate ثم Migrate يكمل Phase2 فقط. مع فحص route_lines صريح وسطر حل جاهز.
 - حادثة بيئية موثقة: استنساخ ضحل جديد (depth=1) فقد سلسلة الفروع محلياً ⇒ pushes رُفضت؛ الحل: fetch صريح للفرع + reset --hard + rebase يفشل في الضحل ⇒ أعدت تطبيق التعديل يدوياً ودفعت. القاعدة المضافة: في هذا الـsandbox تحقق من rev-list --count قبل أي git عملية حساسة.
+
+## P42 «التجديد البصري» (2026-09-01) — CI 33503232178
+- طبقة CSS 2026 فوق التوكنات القائمة + صورة بطل hero-journey.png أصيلة (مولّدة، بلا نص) + إعادة بناء Home/Index (نفس form/asp-actions) + .rvl بـIO محترم للحركة + تذييل ليلي.
+- صفر عدادات مختلقة؛ صفر C#؛ Razor تتحقق CI. وتقرير docs/PROMPT_42_VISUAL_RENEWAL_REPORT.md.
