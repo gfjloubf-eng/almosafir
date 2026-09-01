@@ -83,3 +83,8 @@
 ## P47 «الباب العالمي» (CI 33531475470 ✅) — 2026-09-01
 - طلبه: «ما تراه مناسباً ليكون عليه طلب عالمي». مشحون: OG/Twitter cards بـViewData["Description"] اختياري (الرئيسية حصلت وصفاً مُحكماً) + JSON-LD graph (Organization/WebSite/SearchAction) للرئيسية فقط مع هروب @@ + robots.txt وسitemap.xml كفعلين حيّين مطلقي-الاكتشاف في HomeController + og-cover.jpg 1200×630 + hero-journey.webp (1.03MB→23KB — أخف 98%: حاسم لشبكة 3G).
 - قاعدة الاستبدال الجماعي المستفادة مطبَّقة: فحص سلاسل C# قبل الاقتباس.
+
+## «بوابة النشر الحر» P47.5 (CI 33532732446 ✅) — 2026-09-01
+- طلبه: «تقدر تنشره؟ وتعطينا الرابط». الحقيقة: صندوق العمل بلا .NET ونطاقات Microsoft محجوبة (dot.net/dotnet.microsoft.com/builds.dotnet.microsoft.com كلها EOF) → استضافة محلية مستحيلة اليوم.
+- المشحون بديلاً: مزود SQLite مُبوَّب بيئة DbProvider=sqlite (registration + EnsureCreated-Skip لميكانيكا MySQL؛ الإنتاج حرفه بحرفه) + حزمة EF.Sqlite 9.0.0 + render.yaml (خطة free، docker، healthCheckPath=/، autoDeploy، AdminSettings__Password بـgenerateValue) + DEPLOY_ONE_CLICK.md (5 دقائق إلى https://almosafer.onrender.com؛ حدود: نوم 15د + قرص مؤقت).
+- درس عدّ الأقواس: السلاسل الحرفية "${" تلوّث العدّ الخام — جرّد السلاسل أولاً.

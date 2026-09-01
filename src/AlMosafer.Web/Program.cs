@@ -257,6 +257,19 @@ catch (Exception ex)
     Console.WriteLine($"[Warning] DB Seed skipped: {ex.Message}");
 }
 
+// بذرة العرض التقديمي (P47.7): حصراً عند DemoSeed=true — ملء محلي اختياري بلا أثر على الإنتاج
+if (string.Equals(builder.Configuration["DemoSeed"], "true", StringComparison.OrdinalIgnoreCase))
+{
+    try
+    {
+        await AlMosafer.Web.Services.DemoDataSeeder.SeedAsync(app.Services);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Warning] DemoSeed skipped: {ex.Message}");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
