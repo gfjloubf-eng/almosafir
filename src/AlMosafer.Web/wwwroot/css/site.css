@@ -674,6 +674,7 @@ h3.font-weight-bold.text-dark::after, h4.font-weight-bold.text-dark::after { con
     text-decoration: none; box-shadow: 0 14px 34px rgba(180,83,9,.42); transition: transform .18s ease; }
 .alm-install-btn:hover { transform: translateY(-3px); }
 .alm-install-btn .alm-ic, .alm-install-btn svg { width: 1.05em; height: 1.05em; }
+<<<<<<< HEAD
 
 /* ═══════════ P48 «المعيارية البشرية»: اتفاقيات قياسية ═══════════ */
 /* زر «رجوع» شبحي — الموقع المتفق عليه: أعلى يسار صندوق المحتوى في RTL */
@@ -692,3 +693,5 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* زر الإرسال أثناء التنفيذ: يبقى بحجمه لا ينكمش فيتشتت المستخدم */
 button[type="submit"]:disabled { cursor: progress; opacity: .85; }
+=======
+>>>>>>> ec8a982f74cbad5b98ecf3a78adaf2ee18c725d6
