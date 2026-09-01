@@ -5,7 +5,7 @@
 
 <div class="py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="font-weight-bold text-dark mb-0">قائمة رحلاتي كـ سائق 🚗</h3>
+        <h3 class="font-weight-bold text-dark mb-0">قائمة رحلاتي كـ سائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
         <a asp-action="Create" class="btn btn-success font-weight-bold">+ نشر رحلة جديدة</a>
     </div>
 
@@ -41,7 +41,7 @@
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody data-paginate="12">
                     @foreach (var trip in Model)
                     {
                         <tr>

@@ -7,7 +7,7 @@
     <!-- Header / Context -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h3 class="font-weight-bold text-dark mb-1">لوحة الإدارة والمراقبة الشاملة 🛡️</h3>
+            <h3 class="font-weight-bold text-dark mb-1">لوحة الإدارة والمراقبة الشاملة <i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></h3>
             <p class="text-muted mb-0">مراقبة أداء منصة المسافر والتحكم بمؤشرات المستخدمين والرحلات والعمليات</p>
         </div>
         <span class="badge bg-danger fs-6 px-3 py-2">Role: System Admin</span>
@@ -47,7 +47,7 @@
 
     <!-- Admin Operations & Control Navigation -->
     <div class="card-almosafer p-4 mb-4">
-        <h5 class="font-weight-bold text-primary mb-3">أقسام التحكّم والمراقبة الإدارية 🛡️</h5>
+        <h5 class="font-weight-bold text-primary mb-3">أقسام التحكّم والمراقبة الإدارية <i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></h5>
         <div class="row g-3">
             <div class="col-md-4 col-lg-3">
                 <a asp-action="Users" class="btn btn-outline-primary w-100 py-3 font-weight-bold text-start">
@@ -98,7 +98,7 @@
     </div>
 
     <div class="alert alert-danger d-flex align-items-center mb-0 shadow-sm" role="alert">
-        <span class="me-2 fs-4">🛡️</span>
+        <span class="me-2 fs-4"><i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i></span>
         <div>
             <strong>لوحة الإدارة المحمية:</strong> هذه الشاشة مخصصة صراحة لمديري النظام تحت صلاحيات <code>[Authorize(Roles = "Admin")]</code> وتستعرض الإحصائيات الفعليه لقاعدة البيانات دون أي تلاعب.
         </div>

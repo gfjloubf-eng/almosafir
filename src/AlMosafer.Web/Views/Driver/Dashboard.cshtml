@@ -7,7 +7,7 @@
     <!-- Header / Context -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h3 class="font-weight-bold text-dark mb-1">لوحة تحكم السائق 🚗</h3>
+            <h3 class="font-weight-bold text-dark mb-1">لوحة تحكم السائق <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h3>
             <p class="text-muted mb-0">إدارة رحلاتك، متابعة حجز المقاعد، ومراقبة التنبيهات والرسائل الواردة</p>
         </div>
         <span class="badge bg-success fs-6 px-3 py-2">Role: Driver</span>
@@ -56,7 +56,7 @@
             </div>
             <div class="col-md-4">
                 <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-accent w-100 py-3 font-weight-bold text-start">
-                    🚗 عرض وإدارة رحلاتي المضافة
+                    <i class="alm-ic" data-lucide="car" aria-hidden="true"></i> عرض وإدارة رحلاتي المضافة
                 </a>
             </div>
             <div class="col-md-4">
@@ -74,14 +74,14 @@
 
     <!-- Recent Trips Activity -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="font-weight-bold text-dark mb-0">آخر الرحلات المنشورة 🚗</h4>
+        <h4 class="font-weight-bold text-dark mb-0">آخر الرحلات المنشورة <i class="alm-ic" data-lucide="car" aria-hidden="true"></i></h4>
         <a asp-controller="Trips" asp-action="MyTrips" class="btn btn-sm btn-outline-success font-weight-bold">عرض الكل</a>
     </div>
 
     @if (!Model.RecentTrips.Any())
     {
         <div class="empty-state-card mb-4">
-            <div class="empty-state-icon">🚗</div>
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="car" aria-hidden="true"></i></div>
             <h4 class="font-weight-bold text-dark mb-2">لم تقم بنشر أي رحلات بعد</h4>
             <p class="text-muted mb-4">ابدأ بنشر رحلتك الأولى بين المدن واستقبل حجوزات الركاب فوراً.</p>
             <a asp-controller="Trips" asp-action="Create" class="btn btn-emerald btn-lg font-weight-bold">+ نشر رحلة جديدة 🚀</a>

@@ -1,13 +1,13 @@
 @model IEnumerable<AlMosafer.Application.DTOs.Lines.LineSummaryDto>
 @{
-    ViewData["Title"] = "شبكة الخطوط الرسمية 🛣️";
+    ViewData["Title"] = "شبكة الخطوط الرسمية <i class="alm-ic" data-lucide="route" aria-hidden="true"></i>";
     var cities = ViewBag.Cities as IReadOnlyList<string> ?? new List<string>();
     var selected = ViewBag.SelectedCity as string;
 }
 
 <div class="py-4">
     <div class="text-center mb-4">
-        <h3 class="font-weight-bold text-dark mb-1">🛣️ شبكة الخطوط الرسمية</h3>
+        <h3 class="font-weight-bold text-dark mb-1"><i class="alm-ic" data-lucide="route" aria-hidden="true"></i> شبكة الخطوط الرسمية</h3>
         <p class="text-muted mb-0">خطوط معتمدة بمواقف مرتبة ومواعيد أسبوعية معلنة — اختر خطك واعرف أين وأين تقف الحافلة</p>
     </div>
 
@@ -25,7 +25,7 @@
     @if (!Model.Any())
     {
         <div class="empty-state-card">
-            <div class="display-4 mb-3">🛣️</div>
+            <div class="display-4 mb-3"><i class="alm-ic" data-lucide="route" aria-hidden="true"></i></div>
             <h5 class="font-weight-bold text-dark mb-2">لا توجد خطوط رسمية معلنة بعد@(string.IsNullOrEmpty(selected) ? "" : $" في {selected}")</h5>
             <p class="text-muted mb-3">تُدار الشبكة من إدارة المنصة. وإلى حينها: السائقون ينشرون التحركات الفعلية في «المواصلات الداخلية» وصفحة الرحلات.</p>
             <a asp-controller="Trips" asp-action="InternalLines" class="btn btn-primary font-weight-bold">المواصلات الداخلية المنشورة الآن 🚌</a>
@@ -39,7 +39,7 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="card-almosafer card-almosafer-hover h-100 d-flex flex-column">
                         <div class="card-header-custom d-flex justify-content-between align-items-center" style="background-color: var(--color-primary);">
-                            <span class="font-weight-bold">🛣️ @line.Name</span>
+                            <span class="font-weight-bold"><i class="alm-ic" data-lucide="route" aria-hidden="true"></i> @line.Name</span>
                             <span class="badge bg-light text-dark">@line.City</span>
                         </div>
                         <div class="card-body p-4 d-flex flex-column">

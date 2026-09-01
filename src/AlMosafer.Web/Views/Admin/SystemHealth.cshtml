@@ -9,7 +9,7 @@
             <div class="card-header-custom p-4 d-flex justify-content-between align-items-center">
                 <div>
                     <span class="badge bg-primary mb-1">الرقابة الفنية والتشغيلية</span>
-                    <h3 class="mb-0 font-weight-bold">حالة وصحة المنظومة البرمجية 💻</h3>
+                    <h3 class="mb-0 font-weight-bold">حالة وصحة المنظومة البرمجية <i class="alm-ic" data-lucide="monitor-check" aria-hidden="true"></i></h3>
                 </div>
                 @if (Model.IsDatabaseConnected)
                 {
@@ -51,7 +51,7 @@
 
                 <!-- Support Team Information (Preserved as strictly required) -->
                 <div class="p-3 bg-light rounded border mb-4">
-                    <h6 class="text-accent font-weight-bold mb-2">👨‍💻 مسؤول فريق الدعم الفني المعتمد</h6>
+                    <h6 class="text-accent font-weight-bold mb-2">👨‍<i class="alm-ic" data-lucide="monitor-check" aria-hidden="true"></i> مسؤول فريق الدعم الفني المعتمد</h6>
                     <p class="mb-1 text-dark"><strong>اسم المسؤول:</strong> @Model.SupportManagerName</p>
                     <p class="mb-1 text-dark"><strong>رقم التواصل الفوري:</strong> @Model.SupportManagerPhone</p>
                     <p class="mb-0 text-dark"><strong>رابط واتساب المباشر:</strong> <a href="https://wa.me/967712275038" target="_blank" class="text-success font-weight-bold">https://wa.me/967712275038</a></p>

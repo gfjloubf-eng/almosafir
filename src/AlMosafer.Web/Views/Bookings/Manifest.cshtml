@@ -26,7 +26,7 @@
             <div class="card-almosafer p-3"><h3 class="font-weight-bold text-primary mb-0">@Model.SeatsBookedTotal / @Model.TotalSeats</h3><small class="text-muted">مقاعد محجوزة</small></div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card-almosafer p-3"><h3 class="font-weight-bold text-success mb-0">@Model.BoardedCount ✅</h3><small class="text-muted">صعدوا فعلاً</small></div>
+            <div class="card-almosafer p-3"><h3 class="font-weight-bold text-success mb-0">@Model.BoardedCount <i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i></h3><small class="text-muted">صعدوا فعلاً</small></div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card-almosafer p-3"><h3 class="font-weight-bold text-warning mb-0">@Model.PendingBoardCount ⏳</h3><small class="text-muted">بانتظار الصعود</small></div>
@@ -59,7 +59,7 @@
                             <td>
                                 @if (p.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Paid)
                                 {
-                                    <span class="badge bg-success">مدفوع ✅</span>
+                                    <span class="badge bg-success">مدفوع <i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i></span>
                                 }
                                 else if (p.PaymentStatus == AlMosafer.Domain.Enums.PaymentStatus.Pending)
                                 {
@@ -73,7 +73,7 @@
                             <td>
                                 @if (p.IsBoarded)
                                 {
-                                    <span class="badge bg-info text-dark">✅ صعد</span>
+                                    <span class="badge bg-info text-dark"><i class="alm-ic" data-lucide="circle-check" aria-hidden="true"></i> صعد</span>
                                 }
                                 else
                                 {

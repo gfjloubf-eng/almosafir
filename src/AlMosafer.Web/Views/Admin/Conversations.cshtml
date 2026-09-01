@@ -6,7 +6,7 @@
 <div class="py-3">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h3 class="font-weight-bold text-dark mb-1">مراقبة محادثات الركاب والسائقين 💬</h3>
+            <h3 class="font-weight-bold text-dark mb-1">مراقبة محادثات الركاب والسائقين <i class="alm-ic" data-lucide="messages-square" aria-hidden="true"></i></h3>
             <p class="text-muted mb-0">حصر غرف المحادثات المفتوحة مع الحفاظ التام على خصوصية المحتوى النصي</p>
         </div>
         <a asp-action="Dashboard" class="btn btn-outline-secondary font-weight-bold">← العودة للوحة الإدارة</a>
@@ -15,7 +15,7 @@
     @if (!Model.Any())
     {
         <div class="empty-state-card">
-            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-icon"><i class="alm-ic" data-lucide="messages-square" aria-hidden="true"></i></div>
             <h4 class="font-weight-bold text-dark mb-2">لا توجد محادثات نشطة حالياً</h4>
             <p class="text-muted mb-0">لم يتم بدء محادثات بين الركاب والسائقين في النظام حتى الآن.</p>
         </div>
@@ -34,7 +34,7 @@
                             <th>الخصوصية والحالة</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody data-paginate="12">
                         @foreach (var c in Model)
                         {
                             <tr>

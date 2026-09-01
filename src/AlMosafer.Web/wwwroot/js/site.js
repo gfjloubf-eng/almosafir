@@ -119,3 +119,45 @@ document.addEventListener('DOMContentLoaded', function () {
         bar.style.width = '0';
     });
 })();
+
+/* ═══════════ P43 «جولة التلميع» — الموجة ٢ ═══════════ */
+// 1) أيقونات Lucide: استبدال كل <i data-lucide> برسمة SVG توارث لون السياق
+if (window.lucide && typeof lucide.createIcons === 'function') { lucide.createIcons(); }
+
+// 2) التاريخ بالعربية: كل input[type=date] يعرض «j F Y» عربية ويُرسل Y-m-d (النموذج لا يتغير)
+if (window.flatpickr) {
+    flatpickr('input[type="date"]', {
+        locale: 'ar', dateFormat: 'Y-m-d', altInput: true, altFormat: 'j F Y',
+        disableMobile: true, allowInput: true
+    });
+}
+
+// 3) ترقيم فوري عام: [data-paginate="N"] على tbody (صفوف) أو حاوية (بطاقات) — عملياً بلا خادم
+document.querySelectorAll('[data-paginate]').forEach(function (box) {
+    var size = parseInt(box.getAttribute('data-paginate'), 10) || 10;
+    var items = Array.prototype.slice.call(box.children);
+    if (!items.length) return;
+    if (items.length === 1 && items[0].querySelector && items[0].querySelector('td[colspan]')) return; // صف «لا توجد بيانات» يبقى كما هو
+    if (items.length <= size) return;
+    var pages = Math.ceil(items.length / size), cur = 1;
+    var table = box.tagName === 'TBODY' ? box.closest('table') : null;
+    var pager = document.createElement('nav');
+    pager.className = 'alm-pager';
+    pager.setAttribute('aria-label', 'ترقيم القائمة');
+    function render() {
+        items.forEach(function (el, i) { el.style.display = (i >= (cur - 1) * size && i < cur * size) ? '' : 'none'; });
+        pager.innerHTML =
+            '<button type="button" class="alm-pg-btn" data-mv="-1"' + (cur === 1 ? ' disabled' : '') + '>‹ السابق</button>' +
+            '<span class="alm-pg-info">صفحة ' + cur + ' من ' + pages + '</span>' +
+            '<button type="button" class="alm-pg-btn" data-mv="1"' + (cur === pages ? ' disabled' : '') + '>التالي ›</button>';
+    }
+    pager.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-mv]');
+        if (!b || b.disabled) return;
+        cur = Math.min(pages, Math.max(1, cur + parseInt(b.getAttribute('data-mv'), 10)));
+        render();
+        (table || box).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    ((table && table.parentElement) || box.parentElement).appendChild(pager);
+    render();
+});
