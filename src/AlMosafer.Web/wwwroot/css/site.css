@@ -912,3 +912,117 @@ button[type="submit"]:disabled { cursor: progress; opacity: .85; }
     .board-time { min-width: 4.2rem; }
     .board-countdown { width: 100%; text-align: center; }
 }
+
+/* ═══════════ P51 «رحلتي الحية»: القصة السردية للرحلة — خط زمني يضيء لحظياً ═══════════ */
+.jrn-card {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+[data-theme="dark"] .jrn-card { background: #1b2634; border-color: #2c3a4d; }
+
+.jrn-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    padding: 1.1rem 1.4rem;
+    background: linear-gradient(90deg, #0f172a 0%, #14203a 100%);
+    color: #e2e8f0;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.14);
+}
+.jrn-route { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.15rem; }
+.jrn-arrow { color: #34d399; display: inline-flex; }
+.jrn-arrow .alm-ic { width: 1.1em; height: 1.1em; }
+.jrn-meta { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 1.1rem; color: #cbd5e1; font-size: 0.85rem; font-weight: 600; }
+.jrn-countdown {
+    margin-inline-start: auto;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #5eead4;
+    font-variant-numeric: tabular-nums;
+    padding: 0.35rem 0.9rem;
+    background: rgba(94, 234, 212, 0.1);
+    border: 1px solid rgba(94, 234, 212, 0.3);
+    border-radius: 999px;
+}
+
+.jrn-timeline { padding: 1.4rem 1.4rem 1.1rem; position: relative; }
+.jrn-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    padding-bottom: 1.35rem;
+    opacity: 0.55;
+    transition: opacity 0.35s ease;
+}
+.jrn-step:last-child { padding-bottom: 0.15rem; }
+
+/* خط الاتصال بين الفصول */
+.jrn-step::before {
+    content: "";
+    position: absolute;
+    top: 2.6rem;
+    bottom: 0.35rem;
+    inset-inline-start: 1.35rem;
+    width: 2px;
+    background: var(--color-border);
+    border-radius: 2px;
+}
+.jrn-step:last-child::before { display: none; }
+
+.jrn-dot {
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    background: #eef2f7;
+    border: 2px solid #e2e8f0;
+    z-index: 1;
+    transition: transform 0.25s ease;
+}
+[data-theme="dark"] .jrn-dot { background: #14202c; border-color: #2c3a4d; }
+
+.jrn-title { font-weight: 800; color: var(--color-primary); margin-bottom: 0.1rem; }
+[data-theme="dark"] .jrn-title { color: #f4f6f8; }
+.jrn-sub { font-size: 0.86rem; color: var(--color-text-muted); line-height: 1.7; }
+.jrn-sub a { color: #0d9488; font-weight: 700; }
+
+/* الفصل المُضاء */
+.jrn-step.done { opacity: 1; }
+.jrn-step.done .jrn-dot {
+    background: linear-gradient(135deg, #0d9488, #14b8a6);
+    border-color: transparent;
+    box-shadow: 0 8px 18px -6px rgba(13, 148, 136, 0.55);
+    transform: scale(1.06);
+}
+.jrn-step.done::before { background: linear-gradient(180deg, #14b8a6, #0d9488); }
+
+/* نبضة الإضاءة لحظة حدوث الفصل حيّاً */
+.jrn-step.lit .jrn-dot { animation: jrn-light 0.9s ease; }
+@keyframes jrn-light {
+    0%   { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.6); }
+    70%  { box-shadow: 0 0 0 1.1rem rgba(13, 148, 136, 0); }
+    100% { box-shadow: 0 8px 18px -6px rgba(13, 148, 136, 0.55); }
+}
+
+/* دعوة التقييم عند الوصول */
+.jrn-rate {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.9rem 1.4rem;
+    background: linear-gradient(90deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.02));
+    border-top: 1px solid rgba(5, 150, 105, 0.2);
+    color: var(--color-primary);
+}
+[data-theme="dark"] .jrn-rate { color: #e8ecf1; }

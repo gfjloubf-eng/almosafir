@@ -19,5 +19,7 @@ public class BookingDetailsDto
     public decimal TotalAmount { get; set; }
     public BookingStatus Status { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
+    /// <summary>حالة الرحلة نفسها — يحدد فصول «القصة الحية» (انطلق/اكتمل).</summary>
+    public TripStatus TripStatus { get; set; }
     public DateTime BookingTime { get; set; }
 }

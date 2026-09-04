@@ -1,0 +1,222 @@
+@using AlMosafer.Domain.Enums
+@model IEnumerable<AlMosafer.Application.DTOs.Bookings.BookingDetailsDto>
+@{
+    ViewData["Title"] = "رحلتي الحية — القصة السردية للرحلة";
+    ViewData["Description"] = "رحلتي الحية: قصتك من الحجز حتى الوصول تُروى فصلاً فصلاً — خط زمني يضيء لحظياً مع تقدّم رحلتك الفعلي عبر البث المباشر.";
+
+    var list = (Model ?? Enumerable.Empty<AlMosafer.Application.DTOs.Bookings.BookingDetailsDto>()).ToList();
+    var active = list
+        .Where(x => x.Status != BookingStatus.Cancelled && (x.TripStatus == TripStatus.Open || x.TripStatus == TripStatus.Started))
+        .OrderBy(x => x.TripTime)
+        .ToList();
+    var completed = list
+        .Where(x => x.Status != BookingStatus.Cancelled && x.TripStatus == TripStatus.Completed)
+        .OrderByDescending(x => x.TripTime)
+        .ToList();
+}
+
+<section class="mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <span class="eyebrow-chip mb-2"><i class="alm-ic" data-lucide="film" aria-hidden="true"></i> قصتك تُروى فصلاً فصلاً</span>
+            <h1 class="display-6 hero-title mb-1">رحلتي <span class="text-gradient">الحية</span></h1>
+            <p class="text-muted mb-0">خط زمني من 5 فصول يضيء لحظياً مع تقدّم رحلتك الفعلية — من الحجز حتى الوصول — بلا أي تحديث يدوي.</p>
+        </div>
+        <div class="board-live-badge">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span id="jrnConn">جارٍ الاتصال بالبث المباشر…</span>
+        </div>
+    </div>
+</section>
+
+@if (!active.Any() && !completed.Any())
+{
+    <div class="empty-state-card">
+        <div class="empty-state-icon"><i class="alm-ic" data-lucide="compass" aria-hidden="true"></i></div>
+        <h4 class="font-weight-bold text-dark mb-2">لا توجد رحلات في قصتك بعد</h4>
+        <p class="text-muted mb-3">احجز رحلتك الأولى وستروى قصتك هنا فصلاً فصلاً.</p>
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent font-weight-bold">ابحث عن رحلة الآن 🔍</a>
+    </div>
+}
+
+@foreach (var t in active)
+{
+    var isStarted = t.TripStatus == TripStatus.Started;
+    var isBoarded = t.Status == BookingStatus.Boarded;
+    var rateUrl = Url.Action("Create", "Ratings", new { tripId = t.TripId });
+
+    <article class="jrn-card mb-4" data-trip-id="@t.TripId" data-booking-id="@t.BookingId" data-triptime="@t.TripTime.ToString("yyyy-MM-ddTHH:mm:ss")">
+        <header class="jrn-head">
+            <div class="jrn-route">
+                <span class="jrn-city">@t.FromCity</span>
+                <span class="jrn-arrow"><i class="alm-ic" data-lucide="arrow-left" aria-hidden="true"></i></span>
+                <span class="jrn-city">@t.ToCity</span>
+            </div>
+            <div class="jrn-meta">
+                <span>🚗 @t.DriverName</span>
+                <span>🪑 @t.SeatsBooked مقعد</span>
+                <span>💵 @t.TotalAmount.ToString("N0") ريال</span>
+            </div>
+            <div class="jrn-countdown" data-countdown dir="ltr">--:--:--</div>
+        </header>
+
+        <div class="jrn-timeline">
+            <div class="jrn-step done" data-chapter="booked">
+                <div class="jrn-dot">🎫</div>
+                <div class="jrn-body">
+                    <div class="jrn-title">الفصل الأول — تم الحجز</div>
+                    <div class="jrn-sub">أُكّد حجزك ذرّياً ووصل الإيصال الإلكتروني. <a asp-controller="Bookings" asp-action="Receipt" asp-route-id="@t.BookingId">عرض البطاقة + QR</a></div>
+                </div>
+            </div>
+
+            <div class="jrn-step done" data-chapter="countdown">
+                <div class="jrn-dot">⏳</div>
+                <div class="jrn-body">
+                    <div class="jrn-title">الفصل الثاني — العد التنازلي</div>
+                    <div class="jrn-sub">موعد الانطلاق: @t.TripTime.ToString("yyyy-MM-dd — HH:mm") — الساعة أعلى البطاقة تتناقص لحظياً.</div>
+                </div>
+            </div>
+
+            <div class="jrn-step @(isStarted ? "done" : "")" data-chapter="started">
+                <div class="jrn-dot">🚗</div>
+                <div class="jrn-body">
+                    <div class="jrn-title">الفصل الثالث — انطلق السائق</div>
+                    <div class="jrn-sub">@(isStarted ? "انطلقت الرحلة — رحلة سعيدة!" : "سيضيء هذا الفصل لحظياً حين يبدأ السائق الرحلة.")</div>
+                </div>
+            </div>
+
+            <div class="jrn-step @(isBoarded ? "done" : "")" data-chapter="boarded">
+                <div class="jrn-dot">✅</div>
+                <div class="jrn-body">
+                    <div class="jrn-title">الفصل الرابع — تم الصعود</div>
+                    <div class="jrn-sub">@(isBoarded ? "تم تسجيل صعودك في كشف الركوب." : "سيضيء حين يمسح السائق QR بطاقتك عند الصعود.")</div>
+                </div>
+            </div>
+
+            <div class="jrn-step" data-chapter="arrived">
+                <div class="jrn-dot">🏁</div>
+                <div class="jrn-body">
+                    <div class="jrn-title">الفصل الخامس — وصلت بسلام</div>
+                    <div class="jrn-sub">سيضيء عند اكتمال الرحلة، وهنا تجد دعوة تقييم سائقك.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="jrn-rate d-none" data-rate>
+            <span class="font-weight-bold">وصلت بسلام! 🏁 كيف كانت رحلتك مع @t.DriverName؟</span>
+            <a href="@rateUrl" class="btn btn-accent btn-sm font-weight-bold">قيّم سائقك ⭐</a>
+        </div>
+    </article>
+}
+
+@if (completed.Any())
+{
+    <h4 class="font-weight-bold text-dark mt-4 mb-3">رحلات مكتملة 🏁</h4>
+    <div class="row g-3">
+        @foreach (var t in completed)
+        {
+            var rateUrl = Url.Action("Create", "Ratings", new { tripId = t.TripId });
+            <div class="col-md-6">
+                <div class="card-almosafer p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong class="text-dark">@t.FromCity ← @t.ToCity</strong>
+                        <span class="badge badge-open">اكتملت ✓</span>
+                    </div>
+                    <div class="text-muted small mb-2">🚗 @t.DriverName · @t.TripTime.ToString("yyyy-MM-dd HH:mm")</div>
+                    <a href="@rateUrl" class="btn btn-outline-success btn-sm font-weight-bold">قيّم هذه الرحلة ⭐</a>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+            var cards = Array.prototype.slice.call(document.querySelectorAll('.jrn-card[data-trip-id]'));
+            var connBadge = document.getElementById('jrnConn');
+
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function format(ms) {
+                var s = Math.max(0, Math.floor(ms / 1000));
+                return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor((s % 3600) / 60)) + ':' + pad(s % 60);
+            }
+
+            function light(card, chapter) {
+                var el = card.querySelector('.jrn-step[data-chapter="' + chapter + '"]');
+                if (el && !el.classList.contains('done')) {
+                    el.classList.add('done');
+                    el.classList.add('lit');
+                    setTimeout(function () { el.classList.remove('lit'); }, 900);
+                }
+            }
+
+            function arrive(card) {
+                light(card, 'started');
+                light(card, 'boarded');
+                light(card, 'arrived');
+                var rate = card.querySelector('[data-rate]');
+                if (rate) rate.classList.remove('d-none');
+            }
+
+            // العد التنازلي
+            function tick() {
+                var now = Date.now();
+                cards.forEach(function (card) {
+                    var iso = card.getAttribute('data-triptime');
+                    var t = new Date(iso);
+                    if (isNaN(t.getTime())) return;
+                    var diff = t.getTime() - now;
+                    var cd = card.querySelector('[data-countdown]');
+                    if (cd) cd.textContent = diff <= 0 ? 'ينطلق الآن' : format(diff);
+                });
+            }
+            tick();
+            setInterval(tick, 1000);
+
+            // البث الحي: إضاءة الفصول لحظياً
+            if (window.signalR) {
+                var conn = new signalR.HubConnectionBuilder()
+                    .withUrl('/hubs/live')
+                    .withAutomaticReconnect()
+                    .build();
+
+                conn.on('TripStarted', function (p) {
+                    if (!p) return;
+                    cards.forEach(function (c) {
+                        if (c.getAttribute('data-trip-id') === String(p.tripId)) light(c, 'started');
+                    });
+                });
+
+                conn.on('BookingBoarded', function (p) {
+                    if (!p) return;
+                    cards.forEach(function (c) {
+                        if (c.getAttribute('data-trip-id') === String(p.tripId) &&
+                            c.getAttribute('data-booking-id') === String(p.bookingId)) light(c, 'boarded');
+                    });
+                });
+
+                conn.on('TripCompleted', function (p) {
+                    if (!p) return;
+                    cards.forEach(function (c) {
+                        if (c.getAttribute('data-trip-id') === String(p.tripId)) arrive(c);
+                    });
+                });
+
+                conn.start()
+                    .then(function () {
+                        if (connBadge) connBadge.textContent = 'متصل — قصتك حية الآن';
+                        cards.forEach(function (c) {
+                            var id = parseInt(c.getAttribute('data-trip-id'), 10);
+                            if (id) conn.invoke('WatchTrip', id).catch(function () { });
+                        });
+                    })
+                    .catch(function () {
+                        if (connBadge) connBadge.textContent = 'غير متصل بالبث (الحالة محفوظة)';
+                    });
+            }
+        })();
+    </script>
+}

@@ -157,8 +157,10 @@ public class TripsController : Controller
         var result = await _tripService.StartTripAsync(GetCurrentUserId(), id);
         if (result.Success)
         {
-            // P50: بث لحظة الانطلاق لحظياً إلى لوحة الانطلاق المفتوحة على كل الشاشات
-            await _liveHub.Clients.Group("board").SendAsync("TripStarted", new { tripId = id });
+            // P50/P51: بث لحظة الانطلاق — للوحة الانطلاق ولمن يتابع «رحلته الحية» معاً
+            var payload = new { tripId = id };
+            await _liveHub.Clients.Group("board").SendAsync("TripStarted", payload);
+            await _liveHub.Clients.Group($"trip-{id}").SendAsync("TripStarted", payload);
         }
         TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
         return RedirectToAction(nameof(MyTrips));
@@ -170,6 +172,13 @@ public class TripsController : Controller
     public async Task<IActionResult> Complete(int id)
     {
         var result = await _tripService.CompleteTripAsync(GetCurrentUserId(), id);
+        if (result.Success)
+        {
+            // P51: بث لحظة الوصول — يُضيء الفصل الأخير في «رحلتي الحية» ويُظهر دعوة التقييم
+            var payload = new { tripId = id };
+            await _liveHub.Clients.Group("board").SendAsync("TripCompleted", payload);
+            await _liveHub.Clients.Group($"trip-{id}").SendAsync("TripCompleted", payload);
+        }
         TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
         return RedirectToAction(nameof(MyTrips));
     }

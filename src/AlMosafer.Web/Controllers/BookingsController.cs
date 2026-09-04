@@ -109,6 +109,11 @@ public class BookingsController : Controller
     public async Task<IActionResult> Board(int bookingId, int tripId)
     {
         var result = await _bookingService.MarkBoardedAsync(GetCurrentUserId(), bookingId);
+        if (result.Success)
+        {
+            // P51: بث لحظة الصعود — يُضيء فصل «تم الصعود» في «رحلتي الحية» لحظياً
+            await _liveHub.Clients.Group($"trip-{tripId}").SendAsync("BookingBoarded", new { tripId, bookingId });
+        }
         TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
         return RedirectToAction(nameof(Manifest), new { tripId });
     }
