@@ -53,6 +53,40 @@
     </div>
 </section>
 
+@{
+    // P49/UI «أرقام تصنع الثقة»: إحصاءات حية من قاعدة البيانات — عنصر يلفت الزائر من النظرة الأولى
+    var publicStats = ViewBag.PublicStats as AlMosafer.Application.DTOs.Reports.PublicStatsDto ?? new AlMosafer.Application.DTOs.Reports.PublicStatsDto();
+    var citiesCount = (ViewBag.Cities as IReadOnlyList<string>)?.Count ?? 0;
+}
+<section class="stats-strip rvl" aria-label="أرقام المنصة الحية">
+    <div class="row g-3 text-center">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-value"><span data-count="@publicStats.ActiveTrips">0</span></div>
+                <div class="stat-label"><i class="alm-ic" data-lucide="car" aria-hidden="true"></i> رحلة متاحة الآن</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-value"><span data-count="@publicStats.DriversCount">0</span></div>
+                <div class="stat-label"><i class="alm-ic" data-lucide="shield-check" aria-hidden="true"></i> سائق معتمد</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-value"><span data-count="@citiesCount">0</span></div>
+                <div class="stat-label"><i class="alm-ic" data-lucide="map-pin" aria-hidden="true"></i> مدينة مغطاة</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-value"><span data-count="@publicStats.CompletedBookings">0</span></div>
+                <div class="stat-label"><i class="alm-ic" data-lucide="ticket-check" aria-hidden="true"></i> حجز منجز</div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- كيف تعمل المنصة -->
 <section class="mb-5 rvl" aria-label="خطوات الاستخدام">
     <div class="text-center mb-4">

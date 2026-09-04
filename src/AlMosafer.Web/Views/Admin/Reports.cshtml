@@ -239,8 +239,8 @@
     </div>
 </div>
 
-<!-- Include Chart.js Library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Include Chart.js Library (محلي — كان من jsdelivr CDN فأصبح يعمل بلا إنترنت) -->
+<script src="~/lib/chartjs/chart.umd.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         if (typeof Chart === 'undefined') return;

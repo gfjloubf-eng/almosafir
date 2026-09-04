@@ -193,7 +193,42 @@ document.querySelectorAll('[data-paginate]').forEach(function (box) {
     });
 })();
 
-/* ═══════════ P48 «المعيارية البشرية»: اتفاقيات UX قياسية لكل النظام ═══════════ */
+/* ═══════════ P49/UI «أرقام تصنع الثقة»: عدّ تصاعدي لإحصاءات الرئيسية ═══════════ */
+// كل عنصر يحمل data-count = الرقم المستهدف؛ يعدّ من 0 إليه بسلاسة حين يدخل نطاق الرؤية
+(function () {
+    var targets = document.querySelectorAll('[data-count]');
+    if (!targets.length) return;
+
+    var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var fmt = function (n) {
+        // فواصل آلاف بأرقام لاتينية واضحة (نفس أسلوب أسعار التذاكر في النظام)
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
+    var run = function (el) {
+        var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+        if (reducedMotion || target === 0) { el.textContent = fmt(target); return; }
+        var dur = 1200, start = null;
+        var step = function (ts) {
+            if (start === null) start = ts;
+            var p = Math.min((ts - start) / dur, 1);
+            var eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+            el.textContent = fmt(Math.round(target * eased));
+            if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    };
+
+    if (!('IntersectionObserver' in window)) { targets.forEach(run); return; }
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { run(e.target); io.unobserve(e.target); }
+        });
+    }, { threshold: 0.4 });
+    targets.forEach(function (el) { io.observe(el); });
+})();
+
+
 // 1) حارس الإرسال المزدوج + زر «جارٍ التنفيذ…» لكل نموذج POST — يمنع الحجز المكرر بنقرتين متتاليتين
 // 2) data-confirm: تأكيد موحد للإجراءات الهدامة (الحذف/الإلغاء) بنص عربي صريح
 // 3) نجمة حمراء تلقائية على تسميات الحقول المطلوبة (required) — اتفاقية النماذج العالمية

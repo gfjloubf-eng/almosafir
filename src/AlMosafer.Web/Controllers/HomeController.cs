@@ -29,6 +29,8 @@ public class HomeController : Controller
         ViewBag.TopDrivers = await _reportingService.GetTopDriversAsync(4);
         // P43: اقتراحات المدن الحيّة من شبكة الخطوط المعتمدة (فارغة تلقائياً إن لم تُضف خطوط بعد)
         ViewBag.Cities = await _lineService.GetActiveCitiesAsync();
+        // P49/UI: أرقام مصداقية خفيفة لشريط الإحصاءات في الرئيسية
+        ViewBag.PublicStats = await _reportingService.GetPublicStatsAsync();
 
         return View();
     }

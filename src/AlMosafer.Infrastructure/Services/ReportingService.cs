@@ -239,6 +239,22 @@ public class ReportingService : IReportingService
             .ToList();
     }
 
+    public async Task<PublicStatsDto> GetPublicStatsAsync()
+    {
+        // استعلامات COUNT خفيفة — مناسبة لصفحة عامة يفتحها كل زائر (لا تحميل كيانات)
+        var activeTrips = await _dbContext.Trips.AsNoTracking().CountAsync(t => t.Status == TripStatus.Open);
+        var drivers = await _dbContext.Users.AsNoTracking().CountAsync(u => u.Role == UserRole.Driver);
+        var completedBookings = await _dbContext.Bookings.AsNoTracking()
+            .CountAsync(b => b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded);
+
+        return new PublicStatsDto
+        {
+            ActiveTrips = activeTrips,
+            DriversCount = drivers,
+            CompletedBookings = completedBookings
+        };
+    }
+
     private async Task<List<DriverPerformanceDto>> CalculateDriverPerformanceAsync(ReportFilterDto filter)
     {
         var query = _dbContext.Trips

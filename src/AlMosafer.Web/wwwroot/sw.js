@@ -4,7 +4,7 @@
 //  · الصفحات العامة (الرئيسية/الخطوط/المواصلات الداخلية): «قديم أثناء التحديث» SWR —
 //    مسافر بلا شبكة في المحطة يقرأ آخر جداول معروفة. دون أي بيانات شخصية.
 //  · الصفحات الشخصية (حجوزاتي/الملف/المحادثات…): شبكة أولاً دائماً؛ عند الانقطاع صفحة اعتذار مهذبة.
-const STATIC_CACHE = 'musafer-static-v2';
+const STATIC_CACHE = 'musafer-static-v3';
 const PAGES_CACHE = 'musafer-pages-v1';
 const PUBLIC_PAGES = ['/', '/Lines', '/Trips/InternalLines'];
 const STATIC_ASSETS = [
@@ -16,7 +16,15 @@ const STATIC_ASSETS = [
   '/lib/lucide/lucide.min.js',
   '/lib/flatpickr/flatpickr.min.js',
   '/lib/flatpickr/flatpickr.min.css',
-  '/lib/flatpickr/flatpickr.ar.js'
+  '/lib/flatpickr/flatpickr.ar.js',
+  '/fonts/cairo-arabic-400-normal.woff2',
+  '/fonts/cairo-arabic-600-normal.woff2',
+  '/fonts/cairo-arabic-700-normal.woff2',
+  '/fonts/cairo-arabic-800-normal.woff2',
+  '/fonts/cairo-latin-400-normal.woff2',
+  '/fonts/cairo-latin-600-normal.woff2',
+  '/fonts/cairo-latin-700-normal.woff2',
+  '/fonts/cairo-latin-800-normal.woff2'
 ];
 
 self.addEventListener('install', (event) => {
@@ -52,7 +60,7 @@ self.addEventListener('fetch', (event) => {
   // 1) الأصول الثابتة: الكاش أولاً
   if (url.pathname.startsWith('/lib/') || url.pathname.startsWith('/css/') ||
       url.pathname.startsWith('/js/') || url.pathname.startsWith('/icons/') ||
-      url.pathname.startsWith('/img/')) {
+      url.pathname.startsWith('/img/') || url.pathname.startsWith('/fonts/')) {
     event.respondWith(
       caches.match(req).then((cached) =>
         cached || fetch(req).then((res) => {
