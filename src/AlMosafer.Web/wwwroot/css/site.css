@@ -793,3 +793,122 @@ button[type="submit"]:disabled { cursor: progress; opacity: .85; }
 
 [data-theme="dark"] .stat-card { background-color: #1b2634 !important; border-color: #2c3a4d !important; }
 [data-theme="dark"] .stat-label { color: #9fb0c3; }
+
+/* ═══════════ P50 «عصر التطوير»: لحظات حية — نبض / مقاعد / لوحة انطلاق ═══════════ */
+
+/* — النقطة النابضة: إحساس الاتصال الحي فوري */
+.live-dot {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+    animation: alm-live-pulse 1.6s infinite;
+}
+@keyframes alm-live-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+    70%  { box-shadow: 0 0 0 0.6rem rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+/* — شارة «بث مباشر» العلوية */
+.board-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    color: #166534;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+[data-theme="dark"] .board-live-badge { color: #86efac; background: rgba(34, 197, 94, 0.12); }
+
+/* — حبة المقاعد الحية في صفحة الرحلة */
+.live-seats-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    font-weight: 600;
+}
+[data-theme="dark"] .live-seats-pill { background: #14202c; border-color: #2c3a4d; }
+
+/* نبضة الرقم عند تغيّره لحظياً */
+.seat-pulse {
+    display: inline-block;
+    animation: alm-seat-pop 0.6s ease;
+}
+@keyframes alm-seat-pop {
+    0%   { transform: scale(1); color: #16a34a; }
+    35%  { transform: scale(1.45); color: #0d9488; }
+    100% { transform: scale(1); color: #16a34a; }
+}
+
+/* — لوحة الانطلاق: صفوف بأسلوب المطارات */
+.board-list { display: flex; flex-direction: column; gap: 0.85rem; }
+.board-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem 1.25rem;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.board-row:hover { box-shadow: var(--shadow-md); }
+.board-row.board-departed { opacity: 0.55; transform: scale(0.99); }
+
+.board-time { min-width: 5.2rem; text-align: center; }
+.board-clock { font-size: 1.6rem; font-weight: 800; line-height: 1.1; color: var(--color-primary); font-variant-numeric: tabular-nums; }
+.board-date { font-size: 0.78rem; color: var(--color-text-muted); }
+[data-theme="dark"] .board-clock { color: #f4f6f8; }
+
+.board-route { flex: 1 1 16rem; }
+.board-cities { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.1rem; color: var(--color-primary); }
+.board-city { white-space: nowrap; }
+.board-arrow { color: #0d9488; display: inline-flex; }
+.board-arrow .alm-ic { width: 1.1em; height: 1.1em; }
+[data-theme="dark"] .board-cities { color: #f4f6f8; }
+.board-driver { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.15rem; }
+
+.board-countdown {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #0d9488;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    padding: 0.35rem 0.85rem;
+    background: rgba(13, 148, 136, 0.08);
+    border-radius: 999px;
+    border: 1px solid rgba(13, 148, 136, 0.25);
+}
+.board-departed .board-countdown { color: #b45309; background: rgba(217, 119, 6, 0.1); border-color: rgba(217, 119, 6, 0.3); }
+
+.board-status {
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.35em 0.9em;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #166534;
+    white-space: nowrap;
+}
+.board-status.badge-warning-custom { background: #fef3c7; color: #92400e; }
+[data-theme="dark"] .board-status { background: rgba(34, 197, 94, 0.15); color: #86efac; }
+[data-theme="dark"] .board-status.badge-warning-custom { background: rgba(217, 119, 6, 0.18); color: #fcd34d; }
+
+@media (max-width: 575.98px) {
+    .board-time { min-width: 4.2rem; }
+    .board-countdown { width: 100%; text-align: center; }
+}

@@ -13,4 +13,6 @@ public interface ITripService
     Task<TripDetailsDto?> GetTripByIdAsync(int tripId);
     Task<IEnumerable<TripDetailsDto>> SearchTripsAsync(TripSearchFilterDto filter);
     Task<IEnumerable<TripDetailsDto>> GetDriverTripsAsync(int driverId);
+    /// <summary>عدد المقاعد المتبقية في رحلة (للحظات الحية — استعلام خفيف بلا كيانات كاملة).</summary>
+    Task<int> GetAvailableSeatsAsync(int tripId);
 }

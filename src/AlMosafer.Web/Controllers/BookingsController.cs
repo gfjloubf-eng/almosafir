@@ -2,8 +2,10 @@ using System.Security.Claims;
 using QRCoder;
 using AlMosafer.Application.DTOs.Bookings;
 using AlMosafer.Application.Interfaces;
+using AlMosafer.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AlMosafer.Web.Controllers;
 
@@ -12,11 +14,15 @@ public class BookingsController : Controller
 {
     private readonly IBookingService _bookingService;
     private readonly ITicketSignatureService _ticketSignature;
+    private readonly ITripService _tripService;
+    private readonly IHubContext<LiveHub> _liveHub;
 
-    public BookingsController(IBookingService bookingService, ITicketSignatureService ticketSignature)
+    public BookingsController(IBookingService bookingService, ITicketSignatureService ticketSignature, ITripService tripService, IHubContext<LiveHub> liveHub)
     {
         _ticketSignature = ticketSignature;
         _bookingService = bookingService;
+        _tripService = tripService;
+        _liveHub = liveHub;
     }
 
     [HttpPost]
@@ -37,6 +43,11 @@ public class BookingsController : Controller
             TempData["ErrorMessage"] = result.Message;
             return RedirectToAction("Details", "Trips", new { id = dto.TripId });
         }
+
+        // P50 «عصر التطوير»: بث المقاعد المتبقية لحظياً لكل من يتابع الرحلة (شاشات أخرى تتحدث بلا تحديث يدوي)
+        var availableSeats = await _tripService.GetAvailableSeatsAsync(dto.TripId);
+        await _liveHub.Clients.Group($"trip-{dto.TripId}")
+            .SendAsync("SeatsUpdated", new { tripId = dto.TripId, availableSeats });
 
         TempData["SuccessMessage"] = result.Message;
         return RedirectToAction(nameof(Receipt), new { id = result.BookingId.Value });

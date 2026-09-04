@@ -74,6 +74,14 @@
                 <div class="card-almosafer p-4 bg-light border-accent">
                     <h5 class="font-weight-bold text-primary mb-3">حجز المقاعد والخصائص 🎫</h5>
 
+                    <!-- P50 «عصر التطوير»: عدّاد المقاعد الحية — يتحدث لحظياً عبر WebSocket دون تحديث الصفحة -->
+                    <div class="live-seats-pill mb-3" data-trip-id="@Model.Id" data-available="@Model.AvailableSeats">
+                        <span class="live-dot" aria-hidden="true"></span>
+                        <span class="text-muted">المقاعد المتبقية الآن:</span>
+                        <strong class="text-success fs-5" id="liveSeatsCount">@Model.AvailableSeats</strong>
+                        <span class="text-muted small" id="liveSeatsConn">جارٍ الاتصال بالبث المباشر…</span>
+                    </div>
+
                     @if (Model.AvailableSeats <= 0)
                     {
                         <div class="alert alert-danger mb-0 text-center font-weight-bold">
@@ -161,6 +169,7 @@
 </div>
 
 @section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const seatsSelect = document.getElementById('seatsSelect');
@@ -171,5 +180,59 @@
                 });
             }
         });
+
+        // P50 «عصر التطوير»: المقاعد الحية — تتناقص أمامك لحظياً حين يحجز آخرون، بلا تحديث
+        (function () {
+            if (!window.signalR) return;
+            var pill = document.querySelector('.live-seats-pill');
+            if (!pill) return;
+            var tripId = parseInt(pill.getAttribute('data-trip-id'), 10);
+            var counter = document.getElementById('liveSeatsCount');
+            var connBadge = document.getElementById('liveSeatsConn');
+
+            var conn = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/live')
+                .withAutomaticReconnect()
+                .build();
+
+            conn.on('SeatsUpdated', function (p) {
+                if (!p || String(p.tripId) !== String(tripId)) return;
+                var n = parseInt(p.availableSeats, 10);
+                if (isNaN(n)) return;
+
+                if (counter) {
+                    counter.textContent = n;
+                    counter.classList.remove('seat-pulse');
+                    void counter.offsetWidth; // إعادة تشغيل نبضة التغيير
+                    counter.classList.add('seat-pulse');
+                }
+
+                var sel = document.getElementById('seatsSelect');
+                if (sel) {
+                    if (n <= 0) {
+                        // امتلأت الرحلة بالكامل — إعادة تحميل لعرض حالة Full الصريحة
+                        location.reload();
+                        return;
+                    }
+                    var cur = parseInt(sel.value, 10) || 1;
+                    var html = '';
+                    for (var i = 1; i <= n; i++) {
+                        html += '<option value="' + i + '">' + i + ' مقعد</option>';
+                    }
+                    sel.innerHTML = html;
+                    sel.value = Math.min(cur, n);
+                    sel.dispatchEvent(new Event('change')); // يحدّث الإجمالي + المدخل داخل النافذة المنبثقة
+                }
+            });
+
+            conn.start()
+                .then(function () {
+                    if (connBadge) connBadge.textContent = '● بث مباشر نشط';
+                    return conn.invoke('WatchTrip', tripId);
+                })
+                .catch(function () {
+                    if (connBadge) connBadge.textContent = 'غير متصل بالبث';
+                });
+        })();
     </script>
 }
