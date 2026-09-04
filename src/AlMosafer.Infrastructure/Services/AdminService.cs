@@ -176,6 +176,7 @@ public class AdminService : IAdminService
                 PricePerSeat = b.Trip != null ? b.Trip.PricePerSeat : 0,
                 TotalAmount = (b.Trip != null ? b.Trip.PricePerSeat : 0) * b.SeatsBooked,
                 Status = b.Status,
+                TripStatus = b.Trip != null ? b.Trip.Status : TripStatus.Open,
                 BookingTime = b.BookingTime
             })
             .ToListAsync();

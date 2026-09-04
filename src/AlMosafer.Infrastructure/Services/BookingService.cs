@@ -229,6 +229,7 @@ public class BookingService : IBookingService
             PricePerSeat = booking.Trip.PricePerSeat,
             TotalAmount = booking.SeatsBooked * booking.Trip.PricePerSeat,
             Status = booking.Status,
+            TripStatus = booking.Trip.Status,
             PaymentStatus = booking.Payment?.Status ?? PaymentStatus.Pending,
             BookingTime = booking.BookingTime
         };
@@ -262,6 +263,7 @@ public class BookingService : IBookingService
             PricePerSeat = b.Trip.PricePerSeat,
             TotalAmount = b.SeatsBooked * b.Trip.PricePerSeat,
             Status = b.Status,
+            TripStatus = b.Trip.Status,
             PaymentStatus = b.Payment?.Status ?? PaymentStatus.Pending,
             BookingTime = b.BookingTime
         });
@@ -295,6 +297,7 @@ public class BookingService : IBookingService
             PricePerSeat = b.Trip.PricePerSeat,
             TotalAmount = b.SeatsBooked * b.Trip.PricePerSeat,
             Status = b.Status,
+            TripStatus = b.Trip.Status,
             PaymentStatus = b.Payment?.Status ?? PaymentStatus.Pending,
             BookingTime = b.BookingTime
         });

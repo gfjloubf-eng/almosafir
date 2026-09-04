@@ -60,6 +60,7 @@ public class DashboardService : IDashboardService
             PricePerSeat = b.Trip?.PricePerSeat ?? 0,
             TotalAmount = (b.Trip?.PricePerSeat ?? 0) * b.SeatsBooked,
             Status = b.Status,
+            TripStatus = b.Trip?.Status ?? TripStatus.Open,
             BookingTime = b.BookingTime
         });
 
