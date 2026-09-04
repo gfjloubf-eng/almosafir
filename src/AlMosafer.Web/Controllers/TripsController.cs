@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using AlMosafer.Application.DTOs.Trips;
 using AlMosafer.Application.Interfaces;
+using AlMosafer.Web.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AlMosafer.Web.Controllers;
 
@@ -11,12 +13,14 @@ public class TripsController : Controller
     private readonly ITripService _tripService;
     private readonly IWatchlistService _watchlistService;
     private readonly ILineService _lineService;
+    private readonly IHubContext<LiveHub> _liveHub;
 
-    public TripsController(ITripService tripService, IWatchlistService watchlistService, ILineService lineService)
+    public TripsController(ITripService tripService, IWatchlistService watchlistService, ILineService lineService, IHubContext<LiveHub> liveHub)
     {
         _tripService = tripService;
         _watchlistService = watchlistService;
         _lineService = lineService;
+        _liveHub = liveHub;
     }
 
     [HttpGet]
@@ -151,6 +155,11 @@ public class TripsController : Controller
     public async Task<IActionResult> Start(int id)
     {
         var result = await _tripService.StartTripAsync(GetCurrentUserId(), id);
+        if (result.Success)
+        {
+            // P50: بث لحظة الانطلاق لحظياً إلى لوحة الانطلاق المفتوحة على كل الشاشات
+            await _liveHub.Clients.Group("board").SendAsync("TripStarted", new { tripId = id });
+        }
         TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
         return RedirectToAction(nameof(MyTrips));
     }

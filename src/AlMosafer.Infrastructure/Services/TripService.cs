@@ -149,6 +149,26 @@ public class TripService : ITripService
         return (true, "تم إلغاء الرحلة وكافة الحجوزات المرتبطة بها.");
     }
 
+    public async Task<int> GetAvailableSeatsAsync(int tripId)
+    {
+        // P50: استعلام خفيف للحظات الحية — عدد المقاعد المتبقية بلا تحميل كيانات كاملة
+        var trip = await _dbContext.Trips
+            .AsNoTracking()
+            .Include(t => t.Bookings)
+            .FirstOrDefaultAsync(t => t.Id == tripId);
+
+        if (trip == null)
+        {
+            return 0;
+        }
+
+        int bookedSeats = trip.Bookings
+            .Where(b => (b.Status == BookingStatus.Confirmed || b.Status == BookingStatus.Boarded))
+            .Sum(b => b.SeatsBooked);
+
+        return Math.Max(0, trip.Seats - bookedSeats);
+    }
+
     public async Task<TripDetailsDto?> GetTripByIdAsync(int tripId)
     {
         var trip = await _dbContext.Trips

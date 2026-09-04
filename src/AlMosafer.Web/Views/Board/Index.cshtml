@@ -1,0 +1,128 @@
+@model IEnumerable<AlMosafer.Application.DTOs.Trips.TripDetailsDto>
+@{
+    ViewData["Title"] = "لوحة الانطلاق الحية — منصة المسافر";
+    ViewData["Description"] = "لوحة انطلاق حية بأسلوب المطارات: الرحلات القادمة بين المدن اليمنية بعدّادات زمنية تتحدث كل ثانية، وحالة كل رحلة تنقلب لحظياً عند الانطلاق.";
+}
+
+<section class="mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <span class="eyebrow-chip mb-2"><i class="alm-ic" data-lucide="radio-tower" aria-hidden="true"></i> بث مباشر عبر WebSocket</span>
+            <h1 class="display-6 hero-title mb-1">لوحة الانطلاق <span class="text-gradient">الحية</span></h1>
+            <p class="text-muted mb-0">عدّادات زمنية تتناقص كل ثانية، وحالة الرحلة تنقلب لحظياً أمام عينيك عند انطلاقها — بلا أي تحديث يدوي.</p>
+        </div>
+        <div class="board-live-badge">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span id="boardConn">جارٍ الاتصال بالبث المباشر…</span>
+        </div>
+    </div>
+</section>
+
+@if (!Model.Any())
+{
+    <div class="empty-state-card">
+        <div class="empty-state-icon"><i class="alm-ic" data-lucide="bus" aria-hidden="true"></i></div>
+        <h4 class="font-weight-bold text-dark mb-2">لا توجد رحلات قادمة الآن</h4>
+        <p class="text-muted mb-3">ما إن ينشر السائقون رحلاتهم، ستظهر هنا فوراً بعدّادات حية.</p>
+        <a asp-controller="Trips" asp-action="Index" class="btn btn-accent font-weight-bold">تصفح الرحلات المتاحة 🔍</a>
+    </div>
+}
+else
+{
+    <div class="board-list">
+        @foreach (var t in Model)
+        {
+            <div class="board-row" data-trip-id="@t.Id" data-triptime="@t.TripTime.ToString("yyyy-MM-ddTHH:mm:ss")">
+                <div class="board-time">
+                    <div class="board-clock">@t.TripTime.ToString("HH:mm")</div>
+                    <div class="board-date">@t.TripTime.ToString("yyyy-MM-dd")</div>
+                </div>
+                <div class="board-route">
+                    <div class="board-cities">
+                        <span class="board-city">@t.FromCity</span>
+                        <span class="board-arrow"><i class="alm-ic" data-lucide="arrow-left" aria-hidden="true"></i></span>
+                        <span class="board-city">@t.ToCity</span>
+                    </div>
+                    <div class="board-driver">🚗 @t.DriverName · @t.PricePerSeat.ToString("N0") ريال / مقعد</div>
+                </div>
+                <div class="board-meta">
+                    <span class="badge badge-open">🪑 @t.AvailableSeats متبقية</span>
+                </div>
+                <div class="board-countdown" data-countdown dir="ltr">--:--:--</div>
+                <span class="board-status" data-status>متاحة</span>
+            </div>
+        }
+    </div>
+    <p class="text-center text-muted small mt-3">
+        <i class="alm-ic" data-lucide="info" aria-hidden="true"></i>
+        هذه اللوحة حية: افتح نافذتين جنباً إلى جنب وشاهد العدّادات تتناقص معاً، وعندما يبدأ السائق رحلته تنقلب حالتها هنا فوراً.
+    </p>
+}
+
+@section Scripts {
+    <script src="~/lib/signalr/signalr.min.js"></script>
+    <script>
+        (function () {
+            'use strict';
+            var rows = Array.prototype.slice.call(document.querySelectorAll('.board-row'));
+            var connBadge = document.getElementById('boardConn');
+
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function format(ms) {
+                var s = Math.max(0, Math.floor(ms / 1000));
+                return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor((s % 3600) / 60)) + ':' + pad(s % 60);
+            }
+
+            function markDeparted(row, label) {
+                row.classList.add('board-departed');
+                var cd = row.querySelector('[data-countdown]');
+                var st = row.querySelector('[data-status]');
+                if (cd) cd.textContent = label || 'انطلق للتو';
+                if (st) { st.textContent = 'انطلق'; st.classList.remove('badge-open'); st.classList.add('badge-warning-custom'); }
+            }
+
+            function tick() {
+                var now = Date.now();
+                rows.forEach(function (row) {
+                    if (row.classList.contains('board-departed')) return;
+                    var iso = row.getAttribute('data-triptime');
+                    var t = new Date(iso);
+                    if (isNaN(t.getTime())) return;
+                    var diff = t.getTime() - now;
+                    var cd = row.querySelector('[data-countdown]');
+                    if (diff <= 0) {
+                        markDeparted(row, 'ينطلق الآن');
+                    } else if (cd) {
+                        cd.textContent = format(diff);
+                    }
+                });
+            }
+
+            tick();
+            setInterval(tick, 1000);
+
+            // البث الحي: انقلاب الحالة فورياً من الخادم (لا انتظار العدّاد)
+            if (window.signalR) {
+                var conn = new signalR.HubConnectionBuilder()
+                    .withUrl('/hubs/live')
+                    .withAutomaticReconnect()
+                    .build();
+
+                conn.on('TripStarted', function (p) {
+                    if (!p) return;
+                    var row = document.querySelector('.board-row[data-trip-id="' + p.tripId + '"]');
+                    if (row) markDeparted(row, 'انطلق للتو');
+                });
+
+                conn.start()
+                    .then(function () {
+                        if (connBadge) connBadge.textContent = 'متصل — البث الحي نشط';
+                        return conn.invoke('WatchBoard');
+                    })
+                    .catch(function () {
+                        if (connBadge) connBadge.textContent = 'غير متصل بالبث (العدّاد محلي)';
+                    });
+            }
+        })();
+    </script>
+}

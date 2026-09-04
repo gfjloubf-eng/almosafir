@@ -297,6 +297,8 @@ app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = staticContentPr
 
 // P40: نقطة النبض الحي — يحرسها [Authorize] على Hub نفسه (نفس كوكي الجلسة)
 app.MapHub<AlMosafer.Web.Hubs.AppHub>("/hubs/app");
+// P50 «عصر التطوير»: نقطة البث العام (بلا [Authorize]) — لحظات حية عامة (مقاعد/لوحة انطلاق)
+app.MapHub<AlMosafer.Web.Hubs.LiveHub>("/hubs/live");
 
 app.MapControllerRoute(
     name: "default",
