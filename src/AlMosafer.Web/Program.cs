@@ -105,6 +105,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ILogTailService>(_ => new LogTailService(builder.Environment.ContentRootPath));
 // P43 التذكرة الموقّعة ضد التزوير
 builder.Services.AddScoped<ITicketSignatureService, TicketSignatureService>();
+// P54 مساعد المسافر الذكي: محرك نوايا قاعدي واعٍ بالبيانات الحية (بلا مفتاح خارجي)
+builder.Services.AddScoped<IAssistantService, AlMosafer.Infrastructure.Services.AssistantService>();
 
 // Configure Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -292,12 +292,34 @@
         </div>
     </footer>
 
+    <!-- P54 «مساعد المسافر الذكي»: زر عائم + نافذة محادثة — يجيب كتابةً وصوتاً -->
+    <button type="button" id="almAssistFab" class="alm-assist-fab" aria-label="فتح مساعد المسافر" aria-expanded="false">
+        <i class="alm-ic" data-lucide="bot" aria-hidden="true"></i>
+    </button>
+    <div id="almAssistPanel" class="alm-assist-panel" role="dialog" aria-label="مساعد المسافر الذكي" hidden>
+        <header class="alm-assist-head">
+            <div class="alm-assist-title">
+                <span class="live-dot" aria-hidden="true"></span>
+                <span><strong>مساعد المسافر</strong> <small>يجيبك فوراً</small></span>
+            </div>
+            <button type="button" id="almAssistClose" class="alm-assist-close" aria-label="إغلاق المساعد"><i class="alm-ic" data-lucide="x" aria-hidden="true"></i></button>
+        </header>
+        <div id="almAssistMessages" class="alm-assist-messages" aria-live="polite"></div>
+        <div id="almAssistChips" class="alm-assist-chips"></div>
+        <footer class="alm-assist-foot">
+            <input id="almAssistInput" type="text" class="alm-assist-input" placeholder="اكتب سؤالك هنا…" autocomplete="off" />
+            <button type="button" id="almAssistMic" class="alm-assist-tool" aria-label="إدخال صوتي" hidden><i class="alm-ic" data-lucide="mic" aria-hidden="true"></i></button>
+            <button type="button" id="almAssistSend" class="alm-assist-send" aria-label="إرسال"><i class="alm-ic" data-lucide="send" aria-hidden="true"></i></button>
+        </footer>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/lucide/lucide.min.js"></script>
     <script src="~/lib/flatpickr/flatpickr.min.js"></script>
     <script src="~/lib/flatpickr/flatpickr.ar.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/assistant.js" asp-append-version="true"></script>
     @if (User.Identity?.IsAuthenticated == true)
     {
         @* P40 «النبض الحي»: عميل SignalR مورَّد محلياً + هوية المستخدم + منطق الشارة والتنبيهات الفورية *@
