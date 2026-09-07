@@ -10,6 +10,9 @@ echo.
 
 rem أوقف أي نسخة قديمة شغالة (تمسك المنفذ)
 taskkill /F /IM AlMosafer.Web.exe >nul 2>&1
+
+rem تحرير المنفذ 5163 من أي عملية شبحية مهما كان اسمها — يحل «address already in use» نهائياً
+for /f "tokens=5" %%p in ('netstat -aon ^| findstr ":5163" ^| findstr "LISTENING"') do taskkill /F /PID %%p >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 rem فتح المنفذ (مرة واحدة في العمر كمسؤول؛ إن فشل بصمت فالقاعدة موجودة من قبل)
