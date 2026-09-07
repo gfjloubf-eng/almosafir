@@ -56,6 +56,38 @@
     }
 </head>
 <body>
+    <!-- P53 «الترحيب»: شاشة افتتاح بالشعار — تظهر مرة واحدة لكل جلسة ثم تفسح المجال للمنصة -->
+    <div id="almSplash" class="alm-splash" aria-hidden="true">
+        <div class="alm-splash-inner">
+            <div class="alm-splash-logo">
+                <img src="~/icons/icon.svg" alt="شعار منصة المسافر" width="108" height="108" />
+            </div>
+            <div class="alm-splash-brand">منصة المسافر</div>
+            <div class="alm-splash-tag">AlMosafer — رحلات بين المدن اليمنية</div>
+            <div class="alm-splash-bar"><span class="alm-splash-fill"></span></div>
+        </div>
+    </div>
+    <script>
+        // كشف فوري بلا وميض: لا تظهر إلا مع عمل JS، ومرة واحدة لكل جلسة تبويب، مع شبكة أمان لا تحجب الصفحة أبداً
+        (function () {
+            var s = document.getElementById('almSplash');
+            if (!s) return;
+            var shown = false;
+            try { shown = sessionStorage.getItem('almSplashShown') === '1'; } catch (e) { }
+            if (shown) { s.parentNode.removeChild(s); return; }
+            s.classList.add('alm-splash-show');
+            try { sessionStorage.setItem('almSplashShown', '1'); } catch (e) { }
+            var t0 = Date.now();
+            var hide = function () {
+                s.classList.add('alm-splash-hide');
+                setTimeout(function () { s.parentNode.removeChild(s); }, 550);
+            };
+            window.addEventListener('load', function () {
+                setTimeout(hide, Math.max(0, 1000 - (Date.now() - t0)));
+            });
+            setTimeout(hide, 4000); // شبكة أمان قصوى: لا يبقى أبداً فوق الصفحة
+        })();
+    </script>
     <div id="navProgress" aria-hidden="true"></div>
     <a href="#main-content" class="visually-hidden-focusable p-2 bg-primary text-white position-absolute">الانتقال المباشر إلى المحتوى الرئيسي</a>
 

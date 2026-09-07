@@ -1026,3 +1026,106 @@ button[type="submit"]:disabled { cursor: progress; opacity: .85; }
     color: var(--color-primary);
 }
 [data-theme="dark"] .jrn-rate { color: #e8ecf1; }
+
+/* ═══════════ P53 «الترحيب»: شاشة افتتاح بالشعار — تحية قبل الدخول ═══════════ */
+.alm-splash {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    direction: rtl;
+    background:
+        radial-gradient(60% 80% at 50% 18%, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0) 60%),
+        radial-gradient(50% 70% at 85% 90%, rgba(52, 211, 153, 0.12) 0%, rgba(52, 211, 153, 0) 55%),
+        #0f172a;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+.alm-splash.alm-splash-show { display: flex; }
+.alm-splash.alm-splash-hide { opacity: 0; pointer-events: none; }
+
+.alm-splash-inner { padding: 1.5rem; color: #f1f5f9; }
+.alm-splash-logo {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.4rem;
+    animation: alm-splash-pop 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+.alm-splash-logo::before {
+    content: "";
+    position: absolute;
+    inset: -14px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.28), transparent 70%);
+    animation: alm-splash-glow 1.6s ease-in-out infinite;
+    z-index: -1;
+}
+.alm-splash-logo img {
+    width: 108px;
+    height: 108px;
+    border-radius: 24px;
+    box-shadow: 0 18px 50px -12px rgba(2, 6, 23, 0.9);
+}
+
+.alm-splash-brand {
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    background: linear-gradient(90deg, #38bdf8, #34d399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: alm-splash-rise 0.6s ease both;
+    animation-delay: 0.15s;
+}
+.alm-splash-tag {
+    margin-top: 0.4rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    animation: alm-splash-rise 0.6s ease both;
+    animation-delay: 0.28s;
+}
+.alm-splash-bar {
+    width: 190px;
+    height: 4px;
+    margin: 1.5rem auto 0;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.2);
+    overflow: hidden;
+}
+.alm-splash-fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #34d399);
+    animation: alm-splash-load 1.4s ease forwards;
+    animation-delay: 0.1s;
+}
+
+@keyframes alm-splash-pop {
+    0%   { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+@keyframes alm-splash-rise {
+    0%   { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes alm-splash-load {
+    0%   { width: 0; }
+    100% { width: 100%; }
+}
+@keyframes alm-splash-glow {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50%      { opacity: 1; transform: scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alm-splash-logo, .alm-splash-logo::before,
+    .alm-splash-brand, .alm-splash-tag { animation: none; }
+    .alm-splash-fill { animation: none; width: 100%; }
+}
