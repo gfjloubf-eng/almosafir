@@ -62,6 +62,15 @@
                     </div>
                 </div>
 
+                <!-- P52 «الخريطة»: نقطة التجمع على خريطة تفاعلية — Leaflet + OpenStreetMap (بلا مفتاح) -->
+                <div class="card-almosafer mb-4 overflow-hidden" id="tripMapCard">
+                    <div class="card-header-custom d-flex align-items-center gap-2">
+                        <i class="alm-ic" data-lucide="map-pin" aria-hidden="true"></i> نقطة التجمع على الخريطة
+                    </div>
+                    <div id="tripMap" data-from="@Model.FromCity" data-to="@Model.ToCity" style="height: 300px;"></div>
+                    <div class="p-2 text-center text-muted small">🗺️ الخرائط من OpenStreetMap — الإحداثيات تقريبية وتتطلب اتصالاً بالإنترنت</div>
+                </div>
+
                 @if (!string.IsNullOrWhiteSpace(Model.Description))
                 {
                     <div class="p-3 bg-white border rounded mb-4">
@@ -170,6 +179,69 @@
 
 @section Scripts {
     <script src="~/lib/signalr/signalr.min.js"></script>
+    <link rel="stylesheet" href="~/lib/leaflet/leaflet.css" />
+    <script src="~/lib/leaflet/leaflet.js"></script>
+    <script>
+        // P52 «الخريطة»: نقطة التجمع على خريطة OpenStreetMap — Leaflet مورّد محلياً بلا مفتاح خارجي
+        (function () {
+            var mapEl = document.getElementById('tripMap');
+            if (!mapEl || !window.L) return;
+
+            var from = (mapEl.getAttribute('data-from') || '').trim();
+            var to = (mapEl.getAttribute('data-to') || '').trim();
+
+            // إحداثيات تقريبية للمدن اليمنية (ثابتة في الكود — بلا هجرة قاعدة بيانات)
+            var CITIES = {
+                'صنعاء': [15.3694, 44.1910],
+                'عدن': [12.7855, 45.0187],
+                'تعز': [13.5795, 44.0209],
+                'الحديدة': [14.7978, 42.9545],
+                'إب': [13.9667, 44.1833],
+                'ذمار': [14.5428, 44.4051],
+                'الضالع': [13.6958, 44.7314],
+                'البيضاء': [13.9850, 45.5728],
+                'مأرب': [15.4591, 45.3267],
+                'المكلا': [14.5300, 49.1242],
+                'سيئون': [15.9444, 48.7889],
+                'صعدة': [16.9397, 43.7603],
+                'حجة': [15.6917, 43.6021],
+                'عمران': [15.6594, 43.9439],
+                'لحج': [13.0567, 44.8819],
+                'أبين': [13.0960, 45.3710],
+                'شبوة': [14.5450, 46.8360],
+                'المحويت': [15.4700, 43.5440]
+            };
+
+            var fromC = CITIES[from];
+            var toC = (from !== to) ? CITIES[to] : null;
+            if (!fromC && !toC) { var c = document.getElementById('tripMapCard'); if (c) c.style.display = 'none'; return; }
+
+            var map = L.map(mapEl, { scrollWheelZoom: false });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            var bounds = L.latLngBounds([]);
+            if (fromC) {
+                L.marker(fromC).addTo(map).bindPopup('<b>' + from + '</b> — نقطة الانطلاق');
+                bounds.extend(fromC);
+            }
+            if (toC) {
+                L.marker(toC).addTo(map).bindPopup('<b>' + to + '</b> — نقطة الوصول');
+                bounds.extend(toC);
+            }
+            if (fromC && toC) {
+                L.polyline([fromC, toC], { color: '#0d9488', weight: 3, dashArray: '6,8', opacity: 0.8 }).addTo(map);
+            }
+
+            if (fromC && !toC) {
+                map.setView(fromC, 11);
+            } else if (bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [30, 30] });
+            }
+        })();
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const seatsSelect = document.getElementById('seatsSelect');
