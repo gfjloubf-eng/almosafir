@@ -10,6 +10,9 @@ echo.
 
 rem أوقف أي نسخة قديمة شغالة (تمسك الملفات والمنفذ)
 taskkill /F /IM AlMosafer.Web.exe >nul 2>&1
+
+rem تحرير المنفذ 5163 من أي عملية شبحية مهما كان اسمها — يحل «address already in use» نهائياً
+for /f "tokens=5" %%p in ('netstat -aon ^| findstr ":5163" ^| findstr "LISTENING"') do taskkill /F /PID %%p >nul 2>&1
 timeout /t 1 /nobreak >nul
 
 rem اسحب آخر الكود — gc.auto=0 يمنع مشكلة قفل الحزم القديمة
