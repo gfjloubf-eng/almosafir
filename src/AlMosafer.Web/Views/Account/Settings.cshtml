@@ -32,8 +32,8 @@
                             <li>المطوّر المسؤول: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Developer"]) ? "عمار عادل المصوعي" : Config["SupportTeam:Developer"])</strong></li>
                             <li>بمساعدة التطوير: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:AssistantDeveloper"]) ? "عبد الملك فواز" : Config["SupportTeam:AssistantDeveloper"])</strong></li>
                             <li>إدارة المنصة: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:Management"]) ? "إدارة منصة المسافر" : Config["SupportTeam:Management"])</strong></li>
-                            <li>بريد الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:ContactEmail"]) ? "support@almusafer.local" : Config["SupportTeam:ContactEmail"])</strong></li>
-                            <li>واتساب الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:WhatsApp"]) ? "عبر صفحة المحادثات داخل المنصة" : Config["SupportTeam:WhatsApp"])</strong></li>
+                            <li>بريد الدعم: <strong class="text-dark"><a href="mailto:@(string.IsNullOrWhiteSpace(Config["SupportTeam:ContactEmail"]) ? "jfgloub@gmail.com" : Config["SupportTeam:ContactEmail"])" class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:ContactEmail"]) ? "jfgloub@gmail.com" : Config["SupportTeam:ContactEmail"])</a></strong></li>
+                            <li>واتساب الدعم: <strong class="text-dark">@(string.IsNullOrWhiteSpace(Config["SupportTeam:WhatsApp"]) ? "712275038" : Config["SupportTeam:WhatsApp"])</strong></li>
                         </ul>
                         <small class="text-muted d-block mt-2">«تُدار هذه الأسماء من إعدادات النظام (SupportTeam:*) ولا تُحرَّر من هنا.»</small>
                     </div>
@@ -93,7 +93,7 @@
                         <p class="mb-1 text-dark"><strong>إطار العمل:</strong> C# & ASP.NET Core 10 (Target Framework net10.0)</p>
                         <p class="mb-1 text-dark"><strong>معمارية المشروع:</strong> Clean Layered Architecture (Domain, Application, Infrastructure, Web)</p>
                         <p class="mb-1 text-dark"><strong>قاعدة البيانات:</strong> MySQL / MariaDB (XAMPP Server Environment)</p>
-                        <p class="mb-0 text-dark"><strong>فريق الدعم الفني:</strong> عمار عادل المصوعي (712275038) — بمساعدة عبد الملك فواز</p>
+                        <p class="mb-0 text-dark"><strong>فريق الدعم الفني:</strong> عمار عادل المصوعي (712275038) · jfgloub@gmail.com — بمساعدة عبد الملك فواز</p>
                     </div>
                 </div>
 

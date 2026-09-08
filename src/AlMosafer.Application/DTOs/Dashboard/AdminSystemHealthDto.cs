@@ -9,5 +9,6 @@ public class AdminSystemHealthDto
     public string RuntimeVersion { get; set; } = ".NET 10.0";
     public string SupportManagerName { get; set; } = "عمار عادل المصوعي";
     public string SupportManagerPhone { get; set; } = "712275038";
+    public string SupportManagerEmail { get; set; } = "jfgloub@gmail.com";
     public DateTime CheckedAt { get; set; } = DateTime.UtcNow;
 }
