@@ -293,6 +293,7 @@ public class AdminService : IAdminService
             RuntimeVersion = ".NET 10.0",
             SupportManagerName = "عمار عادل المصوعي",
             SupportManagerPhone = "712275038",
+            SupportManagerEmail = "jfgloub@gmail.com",
             CheckedAt = DateTime.UtcNow
         };
     }

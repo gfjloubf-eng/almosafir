@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Config
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -280,12 +281,19 @@
                     <small class="text-muted">هندسة وتصميم المعمارية البرمجية C# & ASP.NET Core Clean Architecture</small>
                 </div>
                 <div class="col-md-6 text-md-end text-center">
+                    @{
+                        var supDeveloper = string.IsNullOrWhiteSpace(Config["SupportTeam:Developer"]) ? "عمار عادل المصوعي" : Config["SupportTeam:Developer"];
+                        var supAssistant = string.IsNullOrWhiteSpace(Config["SupportTeam:AssistantDeveloper"]) ? "عبد الملك فواز" : Config["SupportTeam:AssistantDeveloper"];
+                        var supEmail = string.IsNullOrWhiteSpace(Config["SupportTeam:ContactEmail"]) ? "jfgloub@gmail.com" : Config["SupportTeam:ContactEmail"];
+                        var supWhatsApp = string.IsNullOrWhiteSpace(Config["SupportTeam:WhatsApp"]) ? "712275038" : Config["SupportTeam:WhatsApp"];
+                    }
                     <div class="footer-support-box">
                         <span class="font-weight-bold text-dark">🛠️ فريق الدعم الفني:</span>
-                        <span class="text-dark">مسؤول الدعم: <strong>عمار عادل المصوعي</strong></span>
-                        <span class="text-dark">· بمساعدة التطوير: <strong>عبد الملك فواز</strong></span>
-                        <a href="tel:712275038" class="footer-support-link" aria-label="الاتصال بمسؤول الدعم الفني">📞 712275038</a>
-                        <a href="https://wa.me/967712275038" target="_blank" rel="noopener noreferrer" class="footer-whatsapp-link" aria-label="التواصل عبر واتساب مع مسؤول الدعم الفني">💬 واتساب 712275038</a>
+                        <span class="text-dark">مسؤول الدعم: <strong>@supDeveloper</strong></span>
+                        <span class="text-dark">· بمساعدة التطوير: <strong>@supAssistant</strong></span>
+                        <a href="mailto:@supEmail" class="footer-support-link" aria-label="مراسلة فريق الدعم الفني بالبريد">📧 @supEmail</a>
+                        <a href="tel:@supWhatsApp" class="footer-support-link" aria-label="الاتصال بمسؤول الدعم الفني">📞 @supWhatsApp</a>
+                        <a href="https://wa.me/967@supWhatsApp" target="_blank" rel="noopener noreferrer" class="footer-whatsapp-link" aria-label="التواصل عبر واتساب مع مسؤول الدعم الفني">💬 واتساب @supWhatsApp</a>
                     </div>
                 </div>
             </div>
