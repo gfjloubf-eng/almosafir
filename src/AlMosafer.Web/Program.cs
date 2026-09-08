@@ -253,6 +253,7 @@ try
         {
             var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
             await authService.SeedDefaultAdminAsync(adminEmail, adminPassword);
+            Console.WriteLine($"[AlMosafer] ✅ حساب الأدمن جاهز: {adminEmail.Trim().ToLowerInvariant()}");
         }
     }
 }

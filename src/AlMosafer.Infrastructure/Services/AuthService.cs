@@ -303,11 +303,14 @@ public class AuthService : IAuthService
     public async Task SeedDefaultAdminAsync(string adminEmail, string adminPassword)
     {
         var normalizedEmail = adminEmail.Trim().ToLowerInvariant();
-        var adminExists = await _dbContext.Users.AnyAsync(u => u.Role == UserRole.Admin || u.Email.ToLower() == normalizedEmail);
 
-        if (!adminExists)
+        // إعداد حاسم (Upsert): يضمن وجود حساب أدمن بالبريد المُهيّأ من متغيرات البيئة،
+        // ويصحّح كلمة المرور إن كان الحساب موجوداً من قبل — فلا يعلق المستخدم بكلمة مرور قديمة.
+        var admin = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
+
+        if (admin == null)
         {
-            var adminUser = new User
+            admin = new User
             {
                 Name = "مدير النظام",
                 Email = normalizedEmail,
@@ -316,11 +319,12 @@ public class AuthService : IAuthService
                 City = "تعز",
                 CreatedAt = DateTime.UtcNow
             };
-
-            adminUser.PasswordHash = _passwordHasher.HashPassword(adminUser, adminPassword);
-
-            _dbContext.Users.Add(adminUser);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Users.Add(admin);
         }
+
+        admin.Role = UserRole.Admin;
+        admin.PasswordHash = _passwordHasher.HashPassword(admin, adminPassword);
+
+        await _dbContext.SaveChangesAsync();
     }
 }
