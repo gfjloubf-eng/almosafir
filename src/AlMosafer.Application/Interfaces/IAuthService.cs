@@ -10,6 +10,7 @@ public interface IAuthService
     Task<(bool Success, string Message, User? User)> ValidateLoginAsync(LoginDto dto);
     Task<UserProfileDto?> GetUserProfileAsync(int userId);
     Task<(bool Success, string Message)> UpdateUserProfileAsync(int userId, UpdateUserProfileDto dto);
+    Task<(bool Success, string Message)> UpdateUserPhotoAsync(int userId, string? photoPath);
     Task<(bool Success, string Message)> ChangePasswordAsync(int userId, ChangePasswordDto dto);
     Task SeedDefaultAdminAsync(string adminEmail, string adminPassword);
     Task<(bool Success, string Message)> RequestPasswordResetAsync(string email, string resetUrlTemplate);

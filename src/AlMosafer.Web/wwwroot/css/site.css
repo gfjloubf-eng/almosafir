@@ -1319,3 +1319,9 @@ button[type="submit"]:disabled { cursor: progress; opacity: .85; }
 }
 .alm-assist-send:hover { filter: brightness(1.1); }
 .alm-assist-mic-on { color: #dc2626; background: rgba(220, 38, 38, 0.12); }
+
+/* ===== صورة البروفايل الشخصية ===== */
+.profile-photo-preview {
+    object-fit: cover;
+    background-color: #e2e8f0;
+}

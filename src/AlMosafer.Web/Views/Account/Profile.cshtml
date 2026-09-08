@@ -19,9 +19,18 @@
                 <!-- Main Header info -->
                 <div class="row align-items-center mb-4">
                     <div class="col-md-3 text-center mb-3 mb-md-0">
-                        <div class="display-2 bg-light rounded-circle text-primary d-inline-block p-3 border shadow-sm">
-                            👤
-                        </div>
+                        @if (string.IsNullOrEmpty(Model.Photo))
+                        {
+                            <div class="display-2 bg-light rounded-circle text-primary d-inline-block p-3 border shadow-sm">
+                                👤
+                            </div>
+                        }
+                        else
+                        {
+                            <img src="@Model.Photo" alt="الصورة الشخصية لـ @Model.Name"
+                                 class="profile-photo-preview rounded-circle border shadow-sm"
+                                 style="width:120px;height:120px;object-fit:cover;" />
+                        }
                     </div>
                     <div class="col-md-9">
                         <h3 class="font-weight-bold text-dark mb-1">@Model.Name</h3>
