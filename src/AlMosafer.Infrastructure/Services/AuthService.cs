@@ -262,6 +262,19 @@ public class AuthService : IAuthService
         return (true, "تم تحديث بيانات الملف الشخصي بنجاح.");
     }
 
+    public async Task<(bool Success, string Message)> UpdateUserPhotoAsync(int userId, string? photoPath)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return (false, "المستخدم غير موجود.");
+        }
+
+        user.Photo = photoPath;
+        await _dbContext.SaveChangesAsync();
+        return (true, "تم تحديث الصورة الشخصية بنجاح.");
+    }
+
     public async Task<(bool Success, string Message)> ChangePasswordAsync(int userId, ChangePasswordDto dto)
     {
         var user = await _dbContext.Users.FindAsync(userId);

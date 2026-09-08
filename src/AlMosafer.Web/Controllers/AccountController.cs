@@ -14,11 +14,13 @@ public class AccountController : Controller
 {
     private readonly IAuthService _authService;
     private readonly ILogger<AccountController> _logger;
+    private readonly IWebHostEnvironment _env;
 
-    public AccountController(IAuthService authService, ILogger<AccountController> logger)
+    public AccountController(IAuthService authService, ILogger<AccountController> logger, IWebHostEnvironment env)
     {
         _authService = authService;
         _logger = logger;
+        _env = env;
     }
 
     [HttpGet]
@@ -229,13 +231,14 @@ public class AccountController : Controller
             VehicleYear = profile.VehicleYear
         };
 
+        ViewBag.CurrentPhoto = profile.Photo;
         return View(dto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize]
-    public async Task<IActionResult> EditProfile(UpdateUserProfileDto dto)
+    public async Task<IActionResult> EditProfile(UpdateUserProfileDto dto, IFormFile? photoFile)
     {
         if (!ModelState.IsValid)
         {
@@ -243,6 +246,42 @@ public class AccountController : Controller
         }
 
         var userId = GetCurrentUserId();
+
+        // رفع الصورة الشخصية (اختياري): امتداد مسموح + حجم أقصى 2MB
+        if (photoFile != null && photoFile.Length > 0)
+        {
+            var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var ext = Path.GetExtension(photoFile.FileName).ToLowerInvariant();
+            if (!allowed.Contains(ext))
+            {
+                ModelState.AddModelError(string.Empty, "صيغة الصورة غير مدعومة. استخدم JPG أو PNG أو GIF أو WebP.");
+                return View(dto);
+            }
+            if (photoFile.Length > 2 * 1024 * 1024)
+            {
+                ModelState.AddModelError(string.Empty, "حجم الصورة يتجاوز الحد الأقصى (2 ميجابايت).");
+                return View(dto);
+            }
+
+            var uploadDir = Path.Combine(_env.WebRootPath, "uploads", "profiles");
+            Directory.CreateDirectory(uploadDir);
+
+            var fileName = $"user_{userId}_{Guid.NewGuid():N}{ext}";
+            var fullPath = Path.Combine(uploadDir, fileName);
+
+            await using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await photoFile.CopyToAsync(stream);
+            }
+
+            var photoResult = await _authService.UpdateUserPhotoAsync(userId, $"/uploads/profiles/{fileName}");
+            if (!photoResult.Success)
+            {
+                ModelState.AddModelError(string.Empty, photoResult.Message);
+                return View(dto);
+            }
+        }
+
         var result = await _authService.UpdateUserProfileAsync(userId, dto);
         if (!result.Success)
         {

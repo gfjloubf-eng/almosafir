@@ -18,8 +18,25 @@
                     </div>
                 }
 
-                <form asp-action="EditProfile" method="post">
+                <form asp-action="EditProfile" method="post" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
+
+                    <div class="mb-4 text-center">
+                        <label class="form-label font-weight-bold d-block">الصورة الشخصية 📷</label>
+                        <div id="photoPreviewWrap" class="mx-auto mb-2" style="width:120px;height:120px;">
+                            @if (string.IsNullOrEmpty(ViewBag.CurrentPhoto as string))
+                            {
+                                <div id="photoPreview" class="profile-photo-preview rounded-circle border shadow-sm w-100 h-100 d-flex align-items-center justify-content-center bg-light" style="font-size:3.2rem;">👤</div>
+                            }
+                            else
+                            {
+                                <img id="photoPreview" class="profile-photo-preview rounded-circle border shadow-sm w-100 h-100" src="@ViewBag.CurrentPhoto" alt="معاينة الصورة الشخصية" style="object-fit:cover;" />
+                            }
+                        </div>
+                        <input type="file" id="photoFile" name="photoFile" accept=".jpg,.jpeg,.png,.gif,.webp,image/*"
+                               class="form-control form-control-custom" onchange="previewPhoto(this)" />
+                        <small class="text-muted d-block mt-1">اختياري — JPG أو PNG أو GIF أو WebP، بحد أقصى 2 ميجابايت</small>
+                    </div>
 
                     <div class="mb-3">
                         <label asp-for="Name" class="form-label font-weight-bold">الاسم الكامل *</label>
@@ -72,3 +89,30 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function previewPhoto(input) {
+            if (!input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                let img = document.getElementById('photoPreview');
+                if (img && img.tagName === 'IMG') {
+                    img.src = e.target.result;
+                    return;
+                }
+                // العنصر الحالي هو أيقونة 👤 — نستبدلها بصورة حقيقية
+                const wrap = document.getElementById('photoPreviewWrap');
+                if (img) img.remove();
+                const newImg = document.createElement('img');
+                newImg.id = 'photoPreview';
+                newImg.className = 'profile-photo-preview rounded-circle border shadow-sm w-100 h-100';
+                newImg.alt = 'معاينة الصورة الشخصية';
+                newImg.style.objectFit = 'cover';
+                newImg.src = e.target.result;
+                wrap.appendChild(newImg);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    </script>
+}
