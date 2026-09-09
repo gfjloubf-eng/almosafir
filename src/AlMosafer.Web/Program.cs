@@ -236,25 +236,22 @@ catch (Exception ex)
 // Seed Default Admin Account Securely on Startup
 try
 {
-    // No plaintext default credentials are kept in source code.
-    // Provide AdminSettings__Email / AdminSettings__Password via secrets or environment.
-    // If not configured, seeding is skipped safely with a clear operational message.
+    // ⚙️ إعداد حاسم (إلزامي) لحساب الأدمن: يُجهَّز عند كل تشغيل ولا يمكن أن يغيب.
+    // الأولوية لمتغيرات البيئة (AdminSettings__Email / AdminSettings__Password) إن ضُبطت،
+    // وإن لم تُضبط تُستخدم القيم الافتراضية المحلية أدناه لضمان وجود الأدمن حتماً.
     var adminEmail = builder.Configuration["AdminSettings:Email"];
     var adminPassword = builder.Configuration["AdminSettings:Password"];
 
-    if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+    if (string.IsNullOrWhiteSpace(adminEmail))
+        adminEmail = "gfjloubf@gmail.com";
+    if (string.IsNullOrWhiteSpace(adminPassword))
+        adminPassword = "712275038";
+
+    using (var scope = app.Services.CreateScope())
     {
-        Console.WriteLine("[AlMosafer] Admin seed skipped: AdminSettings:Email/Password not configured. " +
-            "Set AdminSettings__Email and AdminSettings__Password to provision the initial admin account.");
-    }
-    else
-    {
-        using (var scope = app.Services.CreateScope())
-        {
-            var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-            await authService.SeedDefaultAdminAsync(adminEmail, adminPassword);
-            Console.WriteLine($"[AlMosafer] ✅ حساب الأدمن جاهز: {adminEmail.Trim().ToLowerInvariant()}");
-        }
+        var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+        await authService.SeedDefaultAdminAsync(adminEmail, adminPassword);
+        Console.WriteLine($"[AlMosafer] ✅ حساب الأدمن جاهز: {adminEmail.Trim().ToLowerInvariant()}");
     }
 }
 catch (Exception ex)
