@@ -71,9 +71,30 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@Model.Id" />
                         <select name="newRole" class="form-select form-control-custom" style="max-width:220px;">
-                            <option value="Traveler" @(Model.Role == AlMosafer.Domain.Enums.UserRole.Traveler ? "selected" : null)>مسافر (Traveler)</option>
-                            <option value="Driver" @(Model.Role == AlMosafer.Domain.Enums.UserRole.Driver ? "selected" : null)>سائق (Driver)</option>
-                            <option value="Admin" @(Model.Role == AlMosafer.Domain.Enums.UserRole.Admin ? "selected" : null)>مدير (Admin)</option>
+                            @if (Model.Role == AlMosafer.Domain.Enums.UserRole.Traveler)
+                            {
+                                <option value="Traveler" selected>مسافر (Traveler)</option>
+                            }
+                            else
+                            {
+                                <option value="Traveler">مسافر (Traveler)</option>
+                            }
+                            @if (Model.Role == AlMosafer.Domain.Enums.UserRole.Driver)
+                            {
+                                <option value="Driver" selected>سائق (Driver)</option>
+                            }
+                            else
+                            {
+                                <option value="Driver">سائق (Driver)</option>
+                            }
+                            @if (Model.Role == AlMosafer.Domain.Enums.UserRole.Admin)
+                            {
+                                <option value="Admin" selected>مدير (Admin)</option>
+                            }
+                            else
+                            {
+                                <option value="Admin">مدير (Admin)</option>
+                            }
                         </select>
                         <button type="submit" class="btn btn-accent font-weight-bold">تحديث الصلاحية 🔄</button>
                     </form>
