@@ -85,6 +85,19 @@ public class AdminService : IAdminService
         };
     }
 
+    public async Task<(bool Success, string Message)> ChangeUserRoleAsync(int userId, UserRole newRole)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+        {
+            return (false, "المستخدم غير موجود.");
+        }
+
+        user.Role = newRole;
+        await _dbContext.SaveChangesAsync();
+        return (true, $"تم تغيير صلاحية الحساب إلى: {newRole} بنجاح.");
+    }
+
     public async Task<IEnumerable<TripDetailsDto>> GetTripsAsync(string? origin = null, string? destination = null, int? driverId = null, TripStatus? statusFilter = null)
     {
         var query = _dbContext.Trips
