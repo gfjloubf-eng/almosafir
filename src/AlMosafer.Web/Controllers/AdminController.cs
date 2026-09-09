@@ -74,6 +74,24 @@ public class AdminController : Controller
         return View(user);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> ChangeUserRole(int id, UserRole newRole)
+    {
+        var result = await _adminService.ChangeUserRoleAsync(id, newRole);
+        if (result.Success)
+        {
+            TempData["SuccessMessage"] = result.Message;
+        }
+        else
+        {
+            TempData["ErrorMessage"] = result.Message;
+        }
+
+        return RedirectToAction(nameof(UserDetails), new { id });
+    }
+
     [HttpGet]
     public async Task<IActionResult> Trips(string? origin = null, string? destination = null, int? driverId = null, TripStatus? status = null)
     {

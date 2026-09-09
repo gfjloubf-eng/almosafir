@@ -14,6 +14,7 @@ public interface IAdminService
 {
     Task<IEnumerable<UserProfileDto>> GetUsersAsync(string? search = null, UserRole? roleFilter = null);
     Task<UserProfileDto?> GetUserDetailsAsync(int userId);
+    Task<(bool Success, string Message)> ChangeUserRoleAsync(int userId, UserRole newRole);
     Task<IEnumerable<TripDetailsDto>> GetTripsAsync(string? origin = null, string? destination = null, int? driverId = null, TripStatus? statusFilter = null);
     Task<IEnumerable<BookingDetailsDto>> GetBookingsAsync(BookingStatus? statusFilter = null);
     Task<IEnumerable<PaymentDetailsDto>> GetPaymentsAsync();
